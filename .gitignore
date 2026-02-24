@@ -1,0 +1,8 @@
+skills_private/
+vault_raw/
+*.env
+.env
+__pycache__/
+.venv/
+venv/
+dist/
