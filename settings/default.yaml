@@ -1,0 +1,4 @@
+knowledge_mode: reference   # reference | digest | transform | evolve
+gate_level: 1               # 0..3 (strictness)
+auto_evolve: false
+max_skill_md_bytes: 50000
