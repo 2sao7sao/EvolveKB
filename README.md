@@ -93,6 +93,12 @@ python scripts/run.py --intent compare_frameworks --question "对比 GraphRAG �
 ```
 
 ---
+### Settings
+
+You can control how knowledge is used via a settings file:
+
+```bash
+python scripts/run.py --intent compare_frameworks --question "..." --settings settings/default.yaml
 
 ## Skill format (SKILL.md)
 

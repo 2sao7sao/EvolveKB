@@ -78,6 +78,18 @@ def load_settings(repo: Path, settings_arg: Optional[str]) -> Dict[str, Any]:
         raise SystemExit("Settings YAML must be a mapping/dict at top level")
 
     settings.update(data)
+# --- basic settings validation (PR #4) ---
+    allowed_modes = {"reference", "digest", "transform","evolve"}
+    mode = settings.get("knowledge_mode")
+    if mode not in allowed_modes:
+        raise SystemExit(f"Invalid knowledge_mode: {mode}.Allowed: {sorted(allowed_modes)}")
+    try:
+        gate = int(settings.get("gate_level"))
+    except Exception:
+        raise SystemExit(f"Invalid gate_level: {settings.get('gate_level')} (must be int 0..3)")
+    if gate < 0 or gate > 3:
+        raise SystemExit(f"Invalid gate_level: {gate} (must be int 0..3)")
+    settings["gate_level"] = gate
     return settings
 
 
