@@ -18,6 +18,7 @@
 
 - [Vision](#vision)
 - [Use cases](#use-cases)
+- [Knowledge vs Usage](#knowledge-vs-usage)
 - [How it works](#how-it-works)
 - [Minimal runnable demo](#minimal-runnable-demo)
 - [Ingest a document](#ingest-a-document)
@@ -63,6 +64,23 @@ Traditional RAG is good at “finding”, but weak at “turning knowledge into 
 - **Gate**: quality control and evolution constraints
 
 ---
+
+## Knowledge vs Usage
+
+EvolveKB separates assets into two types:
+
+- **Knowledge**: distilled, model‑understood information (what we know)
+- **Usage**: how to apply knowledge (how we use it)
+
+Directory layout:
+
+```text
+kb/
+  knowledge/   # distilled knowledge blocks
+  usage/       # playbooks / procedures / strategies
+```
+
+Schema & gate rules: [kb/SCHEMA.md](kb/SCHEMA.md)
 
 ## Use cases
 
