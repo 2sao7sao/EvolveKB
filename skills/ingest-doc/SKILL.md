@@ -9,10 +9,10 @@ metadata:
       in:
         doc_path: $inputs.doc_path
       out: $ctx.outline
-    - call: compose-skill-draft
+    - call: compose-knowledge-md
       in:
         outline: $ctx.outline
-      out: $outputs.skill_md
+      out: $outputs.knowledge_md
 ---
 
 # ingest-doc (playbook)

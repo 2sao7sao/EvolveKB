@@ -36,6 +36,11 @@ def main() -> int:
     if r.returncode != 0:
         return r.returncode
 
+    # Gate: knowledge base assets
+    r = subprocess.run([sys.executable, str(repo / "scripts" / "kb_validate.py")])
+    if r.returncode != 0:
+        return r.returncode
+
     # Gate: leanness (soft limits)
     max_total_skills = int(os.environ.get("MAX_SKILLS", "500"))
     skills_root = repo / "skills"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ingest a markdown document and generate a procedure skill draft."""
+"""Ingest a markdown document and generate a knowledge asset."""
 
 from __future__ import annotations
 
@@ -10,14 +10,14 @@ from pathlib import Path
 from frontmatter import parse_frontmatter
 
 # Import helpers from run.py (deterministic placeholder implementations)
-from run import extract_outline, compose_skill_draft
+from run import extract_outline, compose_knowledge_md
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--doc", required=True, help="Path to a markdown document")
-    ap.add_argument("--out", default=None, help="Output skills directory (default: repo/skills)")
-    ap.add_argument("--force", action="store_true", help="Overwrite existing skill folder")
+    ap.add_argument("--out", default=None, help="Output knowledge directory (default: repo/kb/knowledge)")
+    ap.add_argument("--force", action="store_true", help="Overwrite existing knowledge file")
     args = ap.parse_args()
 
     repo = Path(__file__).resolve().parents[1]
@@ -26,26 +26,26 @@ def main() -> int:
         doc_path = repo / doc_path
 
     outline = extract_outline(str(doc_path))
-    skill_md = compose_skill_draft(outline)
-    fm = parse_frontmatter(skill_md)
+    knowledge_md = compose_knowledge_md(outline)
+    fm = parse_frontmatter(knowledge_md)
     name = fm.frontmatter.get("name")
     if not name:
-        print("Failed to parse skill name from generated draft", file=sys.stderr)
+        print("Failed to parse knowledge name from generated draft", file=sys.stderr)
         return 2
 
-    skills_root = Path(args.out) if args.out else repo / "skills"
-    if not skills_root.is_absolute():
-        skills_root = repo / skills_root
+    kb_root = Path(args.out) if args.out else repo / "kb" / "knowledge"
+    if not kb_root.is_absolute():
+        kb_root = repo / kb_root
 
-    skill_dir = skills_root / name
-    if skill_dir.exists() and not args.force:
-        print(f"Skill already exists: {skill_dir}. Use --force to overwrite.", file=sys.stderr)
+    kb_root.mkdir(parents=True, exist_ok=True)
+    out_path = kb_root / f"{name}.md"
+    if out_path.exists() and not args.force:
+        print(f"Knowledge already exists: {out_path}. Use --force to overwrite.", file=sys.stderr)
         return 1
 
-    skill_dir.mkdir(parents=True, exist_ok=True)
-    (skill_dir / "SKILL.md").write_text(skill_md, encoding="utf-8")
+    out_path.write_text(knowledge_md, encoding="utf-8")
 
-    print(f"[ingest] wrote {skill_dir / 'SKILL.md'}")
+    print(f"[ingest] wrote {out_path}")
     return 0
 
 

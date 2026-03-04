@@ -9,6 +9,7 @@ metadata:
     outline: list
     summary: str
     doc_name: str
+    doc_path: str
 ---
 
 # extract-outline (procedure)

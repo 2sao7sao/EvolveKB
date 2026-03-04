@@ -21,7 +21,7 @@
 - [Knowledge vs Usage](#knowledge-vs-usage)
 - [How it works](#how-it-works)
 - [Minimal runnable demo](#minimal-runnable-demo)
-- [Ingest a document](#ingest-a-document)
+- [Ingest to knowledge](#ingest-to-knowledge)
 - [Mode presets](#mode-presets)
 - [Roadmap](#roadmap)
 
@@ -120,13 +120,15 @@ Expected outputs: [examples/demo.md](examples/demo.md) (reference / digest / tra
 
 ---
 
-## Ingest a document
+## Ingest to knowledge
 
-Generate a procedure skill draft directly from a markdown file:
+Generate a knowledge asset directly from a markdown file:
+
+Usage evolves separately based on verification and user behavior, and is stored under `kb/usage`.
 
 ```bash
 python scripts/ingest.py --doc path/to/your.md
-# -> skills/ingest-<doc_name>/SKILL.md
+# -> kb/knowledge/<doc_name>.md
 ```
 
 You can also run the playbook directly:

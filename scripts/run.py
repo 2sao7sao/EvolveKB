@@ -183,12 +183,12 @@ def extract_outline(doc_path: str) -> Dict[str, Any]:
                 summary = " ".join(buf).strip()
                 break
             continue
-        if not ln.startswith("#"):
+        if not ln.startswith("#") and not ln.lstrip().startswith("<"):
             buf.append(ln.strip())
     if not summary and buf:
         summary = " ".join(buf).strip()
 
-    return {"headings": headings, "summary": summary, "doc_name": p.stem}
+    return {"headings": headings, "summary": summary, "doc_name": p.stem, "doc_path": str(p)}
 
 def compose_skill_draft(outline: Dict[str, Any]) -> str:
     doc_name = outline.get("doc_name") or "doc"
@@ -220,6 +220,32 @@ def compose_skill_draft(outline: Dict[str, Any]) -> str:
     ]
     return "\n".join(fm + body_lines) + "\n"
 
+def compose_knowledge_md(outline: Dict[str, Any]) -> str:
+    doc_name = outline.get("doc_name") or "doc"
+    doc_path = outline.get("doc_path") or doc_name
+    name = f"{doc_name}".lower().replace("_", "-").replace(" ", "-")
+    headings = outline.get("headings") or []
+    summary = outline.get("summary") or ""
+    concepts = [h.get("title") for h in headings[:8] if h.get("title")]  # top headings as concepts
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    fm_dict = {
+        "name": name,
+        "kind": "knowledge",
+        "source": doc_path,
+        "summary": summary or "N/A",
+        "concepts": concepts,
+        "updated_at": today,
+    }
+    fm_yaml = yaml.safe_dump(fm_dict, sort_keys=False, allow_unicode=True).strip()
+    fm = ["---", fm_yaml, "---", ""]
+    body = [
+        f"# {doc_name}",
+        "",
+        "## Notes",
+        summary or "N/A",
+    ]
+    return "\n".join(fm + body) + "\n"
 
 PROC_IMPL = {
     "normalize-question": lambda env, args: normalize_question(args["question"]),
@@ -228,6 +254,7 @@ PROC_IMPL = {
     "compose-answer-md": lambda env, args: compose_answer_md(args["norm"], args["matrix"]),
     "extract-outline": lambda env, args: extract_outline(args["doc_path"]),
     "compose-skill-draft": lambda env, args: compose_skill_draft(args["outline"]),
+    "compose-knowledge-md": lambda env, args: compose_knowledge_md(args["outline"]),
 }
 
 
@@ -384,7 +411,7 @@ def main():
         print(f"[proposal] {proposal_path}")
 
     if not rendered:
-        rendered = env["outputs"].get("skill_md", "")
+        rendered = env["outputs"].get("skill_md", "") or env["outputs"].get("knowledge_md", "")
     print(rendered)
 
 
