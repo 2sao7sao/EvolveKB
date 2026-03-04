@@ -1,4 +1,6 @@
 knowledge_mode: digest
+# output_template: compact | expanded
+output_template: expanded
 # gate_level: 0..3 (strictness)
 gate_level: 1
 auto_evolve: false

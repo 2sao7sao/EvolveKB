@@ -62,6 +62,7 @@ def load_settings(repo: Path, settings_arg: Optional[str]) -> Dict[str, Any]:
         "gate_level": 1,
         "auto_evolve": False,
         "max_skill_md_bytes": 50000,
+        "output_template": "expanded",
     }
     if not settings_arg:
         return settings
@@ -79,10 +80,14 @@ def load_settings(repo: Path, settings_arg: Optional[str]) -> Dict[str, Any]:
 
     settings.update(data)
 # --- basic settings validation (PR #4) ---
-    allowed_modes = {"reference", "digest", "transform","evolve"}
+    allowed_modes = {"reference", "digest", "transform", "evolve"}
     mode = settings.get("knowledge_mode")
     if mode not in allowed_modes:
         raise SystemExit(f"Invalid knowledge_mode: {mode}.Allowed: {sorted(allowed_modes)}")
+    allowed_templates = {"compact", "expanded"}
+    template = settings.get("output_template")
+    if template not in allowed_templates:
+        raise SystemExit(f"Invalid output_template: {template}. Allowed: {sorted(allowed_templates)}")
     try:
         gate = int(settings.get("gate_level"))
     except Exception:
@@ -187,7 +192,10 @@ def assign_path(path: str, env: Dict[str, Any], value: Any):
     cur[parts[-1]] = value
 
 
-def render_by_mode(mode: str, gate_level: int, base_md: str, norm: Dict[str, Any], matrix: List[Dict[str, str]]) -> str:
+def render_by_mode(mode: str, gate_level: int, base_md: str, norm: Dict[str, Any], matrix: List[Dict[str, str]], template: str) -> str:
+    if template == "compact":
+        return base_md
+
     if mode == "reference":
         return base_md
 
@@ -295,7 +303,8 @@ def main():
     matrix = env.get("ctx", {}).get("matrix", [])
     mode = settings.get("knowledge_mode", "reference")
     gate = int(settings.get("gate_level", 1))
-    print(render_by_mode(mode, gate, base_md, norm, matrix))
+    template = settings.get("output_template", "expanded")
+    print(render_by_mode(mode, gate, base_md, norm, matrix, template))
 
 
 if __name__ == "__main__":

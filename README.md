@@ -94,7 +94,7 @@ Expected outputs: [examples/demo.md](examples/demo.md) (reference / digest / tra
 
 ## Mode presets
 
-You can switch knowledge behavior via presets:
+You can switch knowledge behavior via presets. Output verbosity is controlled by `output_template` in each preset:
 
 ```bash
 python scripts/run.py --intent compare_frameworks --question "..." --settings settings/reference.yaml
@@ -104,6 +104,10 @@ python scripts/run.py --intent compare_frameworks --question "..." --settings se
 ```
 
 ---
+
+## Mode comparison
+
+<img src="assets/mode_matrix.svg" alt="mode comparison" width="100%" />
 
 ## Knowledge usage modes
 

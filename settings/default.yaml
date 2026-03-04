@@ -1,4 +1,6 @@
 knowledge_mode: reference   # reference | digest | transform | evolve
+# output_template: compact | expanded
+output_template: expanded
 gate_level: 1               # 0..3 (strictness)
 auto_evolve: false
 max_skill_md_bytes: 50000

@@ -16,6 +16,16 @@ Allowed values:
 
 Default: `reference`
 
+### `output_template` (string)
+
+How verbose the rendered output should be.
+
+Allowed values:
+- `compact` — only the core answer
+- `expanded` — include digest/transform/evolve blocks
+
+Default: `expanded`
+
 ### `gate_level` (int)
 
 How strict the validation/evolution gates should be.
@@ -45,6 +55,7 @@ Default: `50000`
 
 ```yaml
 knowledge_mode: reference
+output_template: compact
 gate_level: 1
 auto_evolve: false
 max_skill_md_bytes: 50000
