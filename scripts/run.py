@@ -187,6 +187,68 @@ def assign_path(path: str, env: Dict[str, Any], value: Any):
     cur[parts[-1]] = value
 
 
+def render_by_mode(mode: str, gate_level: int, base_md: str, norm: Dict[str, Any], matrix: List[Dict[str, str]]) -> str:
+    if mode == "reference":
+        return base_md
+
+    if mode == "digest":
+        targets = norm.get("targets") or []
+        bullets = [
+            f"- 核心问题：{norm.get('raw')}",
+            f"- 目标对象：{', '.join(targets) if targets else '未显式识别'}",
+            f"- 结论：execution-first 更适合闭域可枚举入口；开放域仍需要检索路径",
+        ]
+        return "\n".join(
+            [
+                base_md,
+                "\n## Digest (结构化摘要)",
+                "\n".join(bullets),
+            ]
+        )
+
+    if mode == "transform":
+        steps = [
+            "- normalize-question",
+            "- build-comparison-axes",
+            "- contrast-matrix",
+            "- compose-answer-md",
+        ]
+        return "\n".join(
+            [
+                base_md,
+                "\n## Transform (可执行草案)",
+                "### Proposed playbook",
+                "```yaml\n---\nname: compare-frameworks\nmetadata:\n  kind: playbook\n  intent: compare_frameworks\n  steps:\n"
+                + "\n".join([f"    - call: {s}" for s in steps])
+                + "\n---\n```",
+                "### Proposed procedures",
+                "- normalize-question: 结构化问题意图与对象\n- build-comparison-axes: 生成对比维度\n- contrast-matrix: 生成对比矩阵\n- compose-answer-md: 组织输出文档",
+            ]
+        )
+
+    if mode == "evolve":
+        checklist = [
+            "- 结构正确：playbook/procedure schema 校验",
+            "- 引用完整：关键结论可回溯",
+            "- 内容瘦身：避免冗长描述",
+            "- 可回滚：变更可撤销",
+        ]
+        return "\n".join(
+            [
+                base_md,
+                "\n## Evolve (变更提案草稿)",
+                "### Proposal",
+                "- 新增 playbook: compare-frameworks",
+                "- 新增 procedures: normalize-question / build-comparison-axes / contrast-matrix / compose-answer-md",
+                f"- Gate level: {gate_level}",
+                "### Gate checklist",
+                "\n".join(checklist),
+            ]
+        )
+
+    return base_md
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--intent", required=True)
@@ -228,7 +290,12 @@ def main():
         if out_path:
             assign_path(out_path, env, result)
 
-    print(env["outputs"].get("answer_md", ""))
+    base_md = env["outputs"].get("answer_md", "")
+    norm = env.get("ctx", {}).get("norm", {})
+    matrix = env.get("ctx", {}).get("matrix", [])
+    mode = settings.get("knowledge_mode", "reference")
+    gate = int(settings.get("gate_level", 1))
+    print(render_by_mode(mode, gate, base_md, norm, matrix))
 
 
 if __name__ == "__main__":

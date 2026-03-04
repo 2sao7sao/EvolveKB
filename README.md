@@ -88,7 +88,7 @@ python -m pip install -r requirements.txt
 python scripts/run.py --intent compare_frameworks --question "对比 GraphRAG 和 Execution-first 的差异" --settings settings/reference.yaml
 ```
 
-Expected output example: [examples/demo.md](examples/demo.md)
+Expected outputs: [examples/demo.md](examples/demo.md) (reference / digest / transform / evolve)
 
 ---
 
