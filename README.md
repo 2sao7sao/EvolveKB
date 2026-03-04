@@ -1,32 +1,49 @@
 <img src="assets/banner.png" alt="banner" width="100%" />
 
-# EvolveKB — Skills‑Driven Knowledge Base (Execution‑First)
+# EvolveKB — Your Execution‑First Knowledge Companion
 
-[![Status](https://img.shields.io/badge/status-WIP-yellow)](./README.md)
+[![Status](https://img.shields.io/badge/status-Concept%20%2F%20WIP-yellow)](./README.md)
+[![Stars](https://img.shields.io/github/stars/2sao7sao/EvolveKB?style=flat)](https://github.com/2sao7sao/EvolveKB)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 > 把“知识”变成 **可执行的技能**。  
-> 不止做 recall/rerank，而是沉淀为 **可复用的流程（playbook）与过程（procedure）**，在门控下持续演进。
+> 不是简单存文档，而是让 AI 学会 **你的知识使用逻辑**，并在门控下持续演进。
+
+---
+
+## Quick links
+
+- [Vision](#vision)
+- [Use cases](#use-cases)
+- [How it works](#how-it-works)
+- [Roadmap](#roadmap)
 
 ---
 
 ## TL;DR
 
-- 传统 RAG 更擅长“找资料”，但不擅长“把资料变成可复用流程”。
-- **EvolveKB** 选择 execution‑first：先让知识可执行，再谈召回增强。
-- 你可以选择 **引用 / 消化 / 转化 / 演进** 四种用法，让知识按你的方式参与推理。
+- 一个“外挂知识库”：重点是**知识使用逻辑**，而不是存储介质。
+- 支持 **引用 / 消化 / 转化 / 演进** 四种用法，按你的习惯参与推理。
+- 目标是让 AI **更懂你要什么知识、如何存、怎么用才有效**。
+
+---
+
+## Vision
+
+**Execution‑first**：先让知识可执行，再谈召回增强。  
+我们希望 AI 不只是“找得到资料”，而是“知道如何组织与使用资料”。
+
+当前状态：**Concept / WIP**（偏产品方向探索，尚未形成稳定可用的工程版本）。
 
 ---
 
 ## Why (问题是什么)
 
-传统 RAG 的主路径是：query → recall → rerank → LLM 参考候选内容生成。工程成熟，但常见问题：
+传统 RAG 更擅长“找资料”，不擅长“让资料变成可复用流程”：
 
-- **理解浅**：更像“片段附近拼接”，而非结构化理解与沉淀。
+- **理解浅**：多是片段拼接，而非结构化理解与沉淀。
 - **multi‑hop 易断链**：chunk 切分导致跨段逻辑断裂。
-- **可用性不足**：GraphRAG / RAPTER 等提升联结，但核心仍是“更好的召回”。
-
-如果你想要的是“可复用的流程、可执行的步骤”，传统 RAG 还不够。
+- **用法单一**：同一知识对不同用户/任务缺乏可配置的使用策略。
 
 ---
 
@@ -36,12 +53,20 @@
 
 - **Playbook**：面向一个 intent 的完整流程
 - **Procedure**：可复用的原子能力
+- **Settings**：控制知识如何参与推理与产出
 - **Gate**：质量控制与演进门控
-- **Settings**：让同一套知识在不同策略下表现不同
 
 ---
 
-## How (系统怎么跑)
+## Use cases
+
+- **摒弃纯向量库路径**：不依赖“只做召回”，而是让知识可执行。
+- **持续演进的知识更新**：在门控下沉淀更新，形成可回滚的版本演进。
+- **更懂你的知识习惯**：通过交互学习你希望“如何存、怎么用、何时更新”。
+
+---
+
+## How it works
 
 1. 用户提问 / 上传资料
 2. 读取 settings：选择知识使用模式（reference / digest / transform / evolve）
@@ -52,7 +77,7 @@
 
 ---
 
-## Knowledge usage modes（四种用法）
+## Knowledge usage modes
 
 | Mode | 作用 | 典型场景 |
 | --- | --- | --- |
@@ -63,135 +88,19 @@
 
 ---
 
-## Repository structure
-
-```text
-skills/
-  <skill-name>/
-    SKILL.md        # YAML frontmatter + markdown body
-scripts/
-  validate.py       # repo-level checks (symlinks, size limits, etc.)
-  skill_validate.py # validates skills: schema, naming, playbook/procedure refs
-  run.py            # minimal runner: route by intent -> execute playbook/procedures
-AGENT.md            # gate rules / slimming constraints / authoring rules
-USER.md             # user-facing usage guidance
-```
-
----
-
-## Quick start
-
-```bash
-python -m pip install -r requirements.txt
-python scripts/validate.py
-python scripts/run.py --intent compare_frameworks --question "对比 GraphRAG 和 md-knowledge 的差异"
-```
-
----
-
-## Settings
-
-你可以用 settings 文件控制“知识如何参与推理与产出”：
-
-```bash
-python scripts/run.py \
-  --intent compare_frameworks \
-  --question "..." \
-  --settings settings/default.yaml
-```
-
-建议配置字段（planned）：
-
-- `knowledge_mode`: reference | digest | transform | evolve
-- `gate_level`: 0..3（越高越严格）
-- `auto_evolve`: true/false
-- `max_skill_md_bytes`: 50000
-- `allowed_tools`: [ ... ]
-- `memory_policy`: conservative | balanced | aggressive
-
----
-
-## Skill format (SKILL.md)
-
-每个 skill 由两部分构成：
-
-1. YAML frontmatter（强校验：结构化元信息）
-2. Markdown body（人类可读：保持精简，长资料下沉）
-
-### Playbook example
-
-```yaml
----
-name: compare-frameworks
-description: Compare two frameworks and output a structured decision memo.
-allowed-tools: []
-metadata:
-  kind: playbook
-  intent: compare_frameworks
-  steps:
-    - id: normalize
-      uses: normalize-question
-    - id: compare
-      uses: compare-frameworks
----
-```
-
-### Procedure example
-
-```yaml
----
-name: normalize-question
-description: Normalize user question into structured requirements.
-allowed-tools: []
-metadata:
-  kind: procedure
-  inputs:
-    question: string
-  outputs:
-    normalized_question: string
----
-```
-
----
-
-## Gates should evolve
-
-- 初期：人类定义 Gate（可控、快速落地）
-- 中期：模型在 Gate 下演进知识，产出失败样例/边界案例
-- 后期：系统用这些案例升级 Gate 与 Schema（新增字段、增强校验、优化 slimming 策略、加入回归测试）
-
-目标：让 gate 从“人工规则”变成“反馈驱动的规则”。
-
----
-
 ## Roadmap
 
-1. ✅ README / docs 可读性
+1. ✅ README / 产品叙事定稿
 2. ⏭️ 引入 settings 文件，用户可选知识使用模式
-3. ⏭️ 上 CI：每次提交自动跑 `python scripts/validate.py`
-4. ⏭️ 扩展 skill schema（version/owner/tags/examples）+ 更严格校验
-5. ⏭️ 引入可插拔执行层（tool/llm executor）
-6. ⏭️ 加入“gate evolution loop”
+3. ⏭️ 定义核心 skill schema 与 gate 规则
+4. ⏭️ 实现最小可运行 demo（一条 end‑to‑end 路径）
+5. ⏭️ 引入“gate evolution loop”
 
 ---
 
-## Contributing (self workflow)
+## Star history
 
-每次只做一个小改动，保证可回滚：
-
-```bash
-git checkout main
-git pull
-git checkout -b chore/readme-improve
-
-# edit README.md
-
-git add README.md
-git commit -m "Improve README"
-git push -u origin chore/readme-improve
-```
-
-在 GitHub 点 **Compare & pull request** 创建 PR，无误后 Merge。
+![Star History](https://api.star-history.com/svg?repos=2sao7sao/EvolveKB&type=Date)
 
 ---
 
