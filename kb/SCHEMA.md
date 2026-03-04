@@ -30,13 +30,16 @@ Required frontmatter:
 name: <kebab-name>
 kind: usage
 uses: [knowledge-name-1, knowledge-name-2]
+intent: <intent-name>
 strategy: playbook | procedure | checklist
+pattern: required | not_needed | TBD
 steps: []
+updated_at: YYYY-MM-DD
 ---
 ```
 
 ## Gate rules (minimal)
 
 - `knowledge` must include `source`, `summary`, `concepts`, `updated_at`.
-- `usage` must include `uses` and `steps`.
+- `usage` must include `uses`, `intent`, `pattern`, `steps`, `updated_at`.
 - `usage.uses` must reference existing `knowledge.name` entries.

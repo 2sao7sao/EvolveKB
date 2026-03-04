@@ -14,6 +14,7 @@ import argparse
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+import re
 
 import yaml
 
@@ -413,6 +414,59 @@ def main():
     if not rendered:
         rendered = env["outputs"].get("skill_md", "") or env["outputs"].get("knowledge_md", "")
     print(rendered)
+
+    # Auto-generate usage (best-effort, only if playbook exists)
+    try:
+        pb = skills[pb_name]
+        if pb["kind"] == "playbook":
+            usage_dir = repo / "kb" / "usage"
+            usage_dir.mkdir(parents=True, exist_ok=True)
+            usage_name = pb["frontmatter"]["name"]
+            usage_path = usage_dir / f"{usage_name}.md"
+            steps = [st.get("call") for st in pb["metadata"].get("steps") or [] if isinstance(st, dict)]
+            today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            # best-effort: map any knowledge assets by name hints in question
+            uses = []
+            for k in (repo / "kb" / "knowledge").glob("*.md"):
+                if k.stem in (args.question or "").lower():
+                    uses.append(k.stem)
+            if not uses:
+                uses = ["TBD"]
+
+            if usage_path.exists():
+                # Update only updated_at and keep the rest intact
+                text = usage_path.read_text(encoding="utf-8")
+                if "updated_at:" in text:
+                    text = re.sub(r"updated_at: .*", f"updated_at: {today}", text)
+                else:
+                    text = text.replace("---\n", f"---\nupdated_at: {today}\n", 1)
+                usage_path.write_text(text, encoding="utf-8")
+            else:
+                fm = {
+                    "name": usage_name,
+                    "kind": "usage",
+                    "uses": uses,
+                    "intent": args.intent,
+                    "strategy": "playbook",
+                    "pattern": "TBD",
+                    "steps": steps,
+                    "updated_at": today,
+                }
+                fm_yaml = yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip()
+                body = f"# {usage_name}\n\nAuto-generated usage plan.\n"
+                usage_path.write_text("---\n" + fm_yaml + "\n---\n\n" + body, encoding="utf-8")
+
+            # Update usage index
+            index_path = usage_dir / "index.md"
+            if index_path.exists():
+                index = index_path.read_text(encoding="utf-8")
+                entry = f"- {usage_name} (pattern: TBD)"
+                if entry not in index:
+                    index += f"\n{entry}\n"
+                    index_path.write_text(index, encoding="utf-8")
+    except Exception:
+        # best-effort only
+        pass
 
 
 if __name__ == "__main__":

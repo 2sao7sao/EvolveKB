@@ -23,6 +23,7 @@
 - [最小可运行 Demo](#最小可运行-demo)
 - [知识摄取](#知识摄取)
 - [模式预设](#模式预设)
+- [用法复盘](#用法复盘每周)
 - [路线图](#路线图)
 
 ---
@@ -183,6 +184,17 @@ python scripts/run.py --intent compare_frameworks --question "..." --settings se
 ```bash
 python scripts/validate.py --settings settings/evolve.yaml
 ```
+
+## 用法复盘（每周）
+
+生成每周 usage 复盘报告与 TBD 清单：
+
+```bash
+python scripts/review_usage.py
+# -> outputs/reviews/usage_review_<timestamp>.md
+```
+
+用法索引会自动维护在 `kb/usage/index.md`。
 
 ## 路线图
 

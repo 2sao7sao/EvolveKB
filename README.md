@@ -23,6 +23,7 @@
 - [Minimal runnable demo](#minimal-runnable-demo)
 - [Ingest to knowledge](#ingest-to-knowledge)
 - [Mode presets](#mode-presets)
+- [Usage review](#usage-review-weekly)
 - [Roadmap](#roadmap)
 
 ---
@@ -183,6 +184,17 @@ Run repo validation with a settings file to apply gate rules:
 ```bash
 python scripts/validate.py --settings settings/evolve.yaml
 ```
+
+## Usage review (weekly)
+
+Generate a weekly recap of usage assets and TBD patterns:
+
+```bash
+python scripts/review_usage.py
+# -> outputs/reviews/usage_review_<timestamp>.md
+```
+
+The usage index is auto‑maintained at `kb/usage/index.md`.
 
 ## Roadmap
 
