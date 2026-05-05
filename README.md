@@ -33,6 +33,7 @@
 - A “knowledge sidecar” that focuses on **knowledge logic**, not storage.
 - Four modes: **reference / digest / transform / evolve**.
 - AI learns what to store, how to use it, and when to update.
+- Phase 2 adds a package runtime, typed asset registry, KB index/log, and lintable self-iteration loop.
 
 ---
 
@@ -118,6 +119,32 @@ python scripts/run.py --intent compare_frameworks --question "Compare GraphRAG v
 ```
 
 Expected outputs: [examples/demo.md](examples/demo.md) (reference / digest / transform / evolve)
+
+Package CLI:
+
+```bash
+python -m pip install -e ".[dev]"
+evolvekb validate --settings settings/evolve.yaml
+evolvekb run --intent compare_frameworks --question "Compare GraphRAG vs Execution-first" --settings settings/reference.yaml
+evolvekb skills list
+evolvekb kb index
+evolvekb kb lint --gate-level 2
+```
+
+## Self-iteration loop
+
+EvolveKB borrows from the LLM Wiki pattern: raw sources should stay stable, compiled markdown should accumulate model-understood synthesis, and index/log files should help the model navigate what changed.
+
+EvolveKB specializes this into an execution-first runtime:
+
+- `kb/knowledge/` stores what is known.
+- `kb/usage/` stores how knowledge should be applied.
+- `skills/` stores executable playbooks and procedures.
+- `kb/index.md` is the content-oriented navigation layer.
+- `kb/log.md` is the append-only evolution timeline.
+- Gates and proposals keep future self-updates reviewable instead of silent.
+
+Reference notes: [Karpathy LLM Wiki comparison](docs/karpathy-llm-wiki-comparison.md)
 
 ---
 

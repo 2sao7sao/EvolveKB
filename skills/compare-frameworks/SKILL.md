@@ -1,6 +1,8 @@
 ---
+schema_version: 2
 name: compare-frameworks
-description: Compare two frameworks/approaches using a stable, execution-first playbook (no retrieval).
+description: Compare two frameworks or approaches using a stable, execution-first playbook.
+allowed-tools: []
 metadata:
   kind: playbook
   intent: compare_frameworks
@@ -23,6 +25,11 @@ metadata:
         norm: $ctx.norm
         matrix: $ctx.matrix
       out: $outputs.answer_md
+  preconditions:
+    - question must describe two or more approaches to compare
+  postconditions:
+    - outputs.answer_md must include a comparison table and tradeoffs
+  version: 0.2.0
 ---
 
 # compare-frameworks (playbook)

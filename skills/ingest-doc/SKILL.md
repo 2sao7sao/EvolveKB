@@ -1,6 +1,8 @@
 ---
+schema_version: 2
 name: ingest-doc
 description: Ingest a markdown document and draft a procedure skill.
+allowed-tools: []
 metadata:
   kind: playbook
   intent: ingest_doc
@@ -13,6 +15,11 @@ metadata:
       in:
         outline: $ctx.outline
       out: $outputs.knowledge_md
+  preconditions:
+    - doc_path must point to a readable markdown file
+  postconditions:
+    - outputs.knowledge_md must include knowledge frontmatter
+  version: 0.2.0
 ---
 
 # ingest-doc (playbook)
