@@ -6,7 +6,11 @@ from pathlib import Path
 from typing import Sequence
 
 from evolvekb.assets.registry import AssetRegistry
+from evolvekb.evals.runner import run_evals
+from evolvekb.evolution.proposal import apply_proposal, create_write_file_proposal, list_proposals, rollback_proposal
 from evolvekb.gates.engine import print_validation, validate_repo
+from evolvekb.ingestion.compiler import compile_markdown
+from evolvekb.retrieval.keyword import evidence_pack
 from evolvekb.skills.registry import SkillRegistry
 from evolvekb.skills.runtime import PlaybookRuntime
 from evolvekb.wiki import append_kb_log, lint_kb, rebuild_kb_index
@@ -43,6 +47,37 @@ def cmd_run(args: argparse.Namespace) -> int:
     if result.proposal_path:
         print(f"[proposal] {result.proposal_path}")
     print(result.rendered)
+    return 0
+
+
+def cmd_ingest(args: argparse.Namespace) -> int:
+    try:
+        result = compile_markdown(_repo(), args.doc, write=True, proposal=args.proposal)
+    except Exception as exc:
+        print(str(exc))
+        return 1
+    print(f"[source] {result.source.id}")
+    print(f"[chunks] {len(result.chunks)}")
+    print(f"[claims] {len(result.claims)}")
+    print(f"[concepts] {len(result.concepts)}")
+    if result.knowledge_path:
+        print(f"[knowledge] {result.knowledge_path}")
+    if result.proposal_path:
+        print(f"[proposal] {result.proposal_path}")
+    return 0
+
+
+def cmd_query(args: argparse.Namespace) -> int:
+    pack = evidence_pack(_repo(), args.query, limit=args.limit)
+    if args.json:
+        print(json.dumps(pack, ensure_ascii=False, indent=2))
+        return 0
+    print(f"# Evidence for: {args.query}\n")
+    if not pack["evidence"]:
+        print("- no evidence found")
+        return 1 if args.require_evidence else 0
+    for item in pack["evidence"]:
+        print(f"- ({item['score']:.2f}) `{item['name']}` from {item['source_ref']}: {item['text']}")
     return 0
 
 
@@ -127,6 +162,79 @@ def cmd_skill_validate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_proposal_list(args: argparse.Namespace) -> int:
+    rows = list_proposals(_repo())
+    if not rows:
+        print("No proposals found")
+        return 0
+    for row in rows:
+        print(f"{row['id']}\t{row['status']}\t{row['path']}\t{row['title']}")
+    return 0
+
+
+def cmd_proposal_create(args: argparse.Namespace) -> int:
+    content = Path(args.content_file).read_text(encoding="utf-8")
+    path = create_write_file_proposal(
+        repo=_repo(),
+        title=args.title,
+        proposal_type=args.type,
+        path=args.path,
+        content=content,
+        rationale=args.rationale,
+        evidence_ids=args.evidence_id or [],
+    )
+    print(f"[proposal] {path}")
+    return 0
+
+
+def cmd_proposal_apply(args: argparse.Namespace) -> int:
+    try:
+        manifest = apply_proposal(_repo(), args.proposal)
+    except Exception as exc:
+        print(str(exc))
+        return 1
+    print(f"[applied] {manifest}")
+    return 0
+
+
+def cmd_proposal_rollback(args: argparse.Namespace) -> int:
+    try:
+        rollback_proposal(_repo(), args.proposal_id)
+    except Exception as exc:
+        print(str(exc))
+        return 1
+    print(f"[rolled_back] {args.proposal_id}")
+    return 0
+
+
+def cmd_eval_run(args: argparse.Namespace) -> int:
+    results = run_evals(_repo(), args.patterns)
+    failed = [result for result in results if not result.passed]
+    for result in results:
+        status = "PASS" if result.passed else "FAIL"
+        print(f"{status}\t{result.id}\t{result.category}\t{result.message}")
+    return 1 if failed else 0
+
+
+def cmd_evolve_doc(args: argparse.Namespace) -> int:
+    try:
+        result = compile_markdown(_repo(), args.doc, write=True, proposal=True)
+        validation_results = validate_repo(_repo(), args.settings)
+        failed = [item for item in validation_results if not item.passed]
+        eval_results = run_evals(_repo(), args.eval) if args.eval else []
+    except Exception as exc:
+        print(str(exc))
+        return 1
+    print(f"[proposal] {result.proposal_path}")
+    print(f"[gates] {'passed' if not failed else 'failed'}")
+    for item in failed:
+        print(f"- [{item.gate_id}] {item.message}")
+    for item in eval_results:
+        status = "PASS" if item.passed else "FAIL"
+        print(f"[eval] {status} {item.id}: {item.message}")
+    return 1 if failed or any(not item.passed for item in eval_results) else 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="evolvekb")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -142,6 +250,18 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--settings", default=None)
     run.add_argument("--no-side-effects", action="store_true")
     run.set_defaults(func=cmd_run)
+
+    ingest = sub.add_parser("ingest")
+    ingest.add_argument("doc")
+    ingest.add_argument("--proposal", action="store_true")
+    ingest.set_defaults(func=cmd_ingest)
+
+    query = sub.add_parser("query")
+    query.add_argument("query")
+    query.add_argument("--limit", type=int, default=5)
+    query.add_argument("--json", action="store_true")
+    query.add_argument("--require-evidence", action="store_true")
+    query.set_defaults(func=cmd_query)
 
     skills = sub.add_parser("skills")
     skills_sub = skills.add_subparsers(dest="skills_command", required=True)
@@ -162,6 +282,39 @@ def build_parser() -> argparse.ArgumentParser:
     kb_log.add_argument("event_type")
     kb_log.add_argument("message")
     kb_log.set_defaults(func=cmd_kb_log)
+
+    proposal = sub.add_parser("proposal")
+    proposal_sub = proposal.add_subparsers(dest="proposal_command", required=True)
+    proposal_list = proposal_sub.add_parser("list")
+    proposal_list.set_defaults(func=cmd_proposal_list)
+    proposal_create = proposal_sub.add_parser("create")
+    proposal_create.add_argument("--title", required=True)
+    proposal_create.add_argument("--type", default="knowledge_update")
+    proposal_create.add_argument("--path", required=True)
+    proposal_create.add_argument("--content-file", required=True)
+    proposal_create.add_argument("--rationale", required=True)
+    proposal_create.add_argument("--evidence-id", action="append")
+    proposal_create.set_defaults(func=cmd_proposal_create)
+    proposal_apply = proposal_sub.add_parser("apply")
+    proposal_apply.add_argument("proposal")
+    proposal_apply.set_defaults(func=cmd_proposal_apply)
+    proposal_rollback = proposal_sub.add_parser("rollback")
+    proposal_rollback.add_argument("proposal_id")
+    proposal_rollback.set_defaults(func=cmd_proposal_rollback)
+
+    eval_parser = sub.add_parser("eval")
+    eval_sub = eval_parser.add_subparsers(dest="eval_command", required=True)
+    eval_run = eval_sub.add_parser("run")
+    eval_run.add_argument("patterns", nargs="+")
+    eval_run.set_defaults(func=cmd_eval_run)
+
+    evolve = sub.add_parser("evolve")
+    evolve_sub = evolve.add_subparsers(dest="evolve_command", required=True)
+    evolve_doc = evolve_sub.add_parser("doc")
+    evolve_doc.add_argument("doc")
+    evolve_doc.add_argument("--settings", default=None)
+    evolve_doc.add_argument("--eval", action="append")
+    evolve_doc.set_defaults(func=cmd_evolve_doc)
 
     return parser
 

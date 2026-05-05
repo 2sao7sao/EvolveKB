@@ -1,0 +1,6 @@
+id: eval_routing_answer_with_evidence_001
+category: routing_eval
+input:
+  intent: answer_with_evidence
+expected:
+  selected_playbook: answer-with-evidence

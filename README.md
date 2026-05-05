@@ -24,6 +24,7 @@
 - [Ingest to knowledge](#ingest-to-knowledge)
 - [Mode presets](#mode-presets)
 - [Phase 2 updates](#phase-2-updates)
+- [Phase 3 updates](#phase-3-updates)
 - [Self-iteration loop](#self-iteration-loop)
 - [Usage review](#usage-review-weekly)
 - [Roadmap](#roadmap)
@@ -138,6 +139,8 @@ evolvekb run --intent compare_frameworks --question "Compare GraphRAG vs Executi
 evolvekb skills list
 evolvekb kb index
 evolvekb kb lint --gate-level 2
+evolvekb query "execution-first knowledge runtime"
+evolvekb eval run "evals/*.yaml"
 ```
 
 Legacy scripts are still supported:
@@ -179,15 +182,43 @@ evolvekb kb lint --gate-level 2
 evolvekb kb log note "Reviewed a knowledge update"
 ```
 
-Not implemented yet:
+---
 
-- real retrieval / hybrid search
-- ingestion compiler with claim extraction
-- proposal apply / rollback workflow
-- eval harness
+## Phase 3 updates
+
+The next roadmap items are now implemented as a minimal local-first loop:
+
+- **Complete gate evolution loop**: `evolvekb evolve doc <path>` compiles a source into a proposal, runs gates, can run evals, and records the action in `kb/log.md`.
+- **Claim/evidence ingestion compiler**: `evolvekb ingest <doc>` now writes `kb/sources`, `kb/chunks`, `kb/claims`, `kb/concepts`, and a v2 knowledge asset. `--proposal` creates a reviewable proposal instead of writing canonical knowledge directly.
+- **Proposal apply / rollback workflow**: `evolvekb proposal create|list|apply|rollback` supports reviewable write-file proposals, backups, manifests, status updates, rollback, index rebuilds, and log entries.
+- **Eval harness**: `evolvekb eval run "evals/*.yaml"` runs YAML eval cases. Current categories cover retrieval and routing.
+- **Retrieval-as-evidence**: `evolvekb query <query>` runs keyword retrieval over knowledge blocks and compiled claims, returning an evidence pack with citations.
+- **More playbooks and examples**: `answer-with-evidence` adds an evidence-first playbook using `retrieve-evidence` and `compose-evidence-answer`; examples and eval cases were added under `examples/` and `evals/`.
+
+New self-iteration commands:
+
+```bash
+evolvekb ingest README.md
+evolvekb ingest README.md --proposal
+evolvekb query "execution-first knowledge runtime"
+evolvekb run --intent answer_with_evidence --question "What is execution-first knowledge?"
+evolvekb evolve doc README.md --settings settings/evolve.yaml --eval "evals/*.yaml"
+evolvekb proposal list
+evolvekb proposal apply <proposal-id-or-path>
+evolvekb proposal rollback <proposal-id>
+evolvekb eval run "evals/*.yaml"
+```
+
+Remaining future work:
+
 - HTTP API
+- richer LLM-based claim extraction
+- contradiction detection
+- semantic/vector and graph retrieval
+- human review UI for proposals
+- larger eval corpus and more domain playbooks
 
-These are intentionally left for later milestones; Phase 2 establishes the runtime, schema, registry, and self-iteration foundation.
+Phase 2 established the runtime, schema, registry, and self-iteration foundation. Phase 3 turns that foundation into a working local evolution loop.
 
 ## Self-iteration loop
 
@@ -328,10 +359,15 @@ The usage index is auto‑maintained at `kb/usage/index.md`. Usage events are st
 4. ✅ Package runtime + CLI
 5. ✅ Schema v2 + AssetRegistry
 6. ✅ KB index/log + lintable self-iteration loop
-7. ⏭️ Claim/evidence ingestion compiler
-8. ⏭️ Proposal apply / rollback workflow
-9. ⏭️ Eval harness and retrieval-as-evidence
-10. ⏭️ More playbooks and examples
+7. ✅ Complete gate evolution loop
+8. ✅ Claim/evidence ingestion compiler
+9. ✅ Proposal apply / rollback workflow
+10. ✅ Eval harness and retrieval-as-evidence
+11. ✅ More playbooks and examples
+12. ⏭️ HTTP API and review UI
+13. ⏭️ LLM-backed claim extraction and contradiction checks
+14. ⏭️ Hybrid retrieval: keyword + semantic + graph
+15. ⏭️ Larger eval corpus and domain playbook library
 
 ---
 
@@ -346,6 +382,7 @@ ruff check evolvekb tests scripts
 python -m evolvekb.cli validate --settings settings/evolve.yaml
 python scripts/validate.py --settings settings/evolve.yaml
 python -m evolvekb.cli kb lint --gate-level 2
+python -m evolvekb.cli eval run "evals/*.yaml"
 ```
 
 ---

@@ -24,6 +24,7 @@
 - [知识摄取](#知识摄取)
 - [模式预设](#模式预设)
 - [Phase 2 更新](#phase-2-更新)
+- [Phase 3 更新](#phase-3-更新)
 - [自我迭代机制](#自我迭代机制)
 - [用法复盘](#用法复盘每周)
 - [路线图](#路线图)
@@ -138,6 +139,8 @@ evolvekb run --intent compare_frameworks --question "对比 GraphRAG 和 Executi
 evolvekb skills list
 evolvekb kb index
 evolvekb kb lint --gate-level 2
+evolvekb query "execution-first knowledge runtime"
+evolvekb eval run "evals/*.yaml"
 ```
 
 旧脚本入口仍然兼容：
@@ -179,15 +182,43 @@ evolvekb kb lint --gate-level 2
 evolvekb kb log note "Reviewed a knowledge update"
 ```
 
-尚未实现：
+---
 
-- 真正的 retrieval / hybrid search
-- 带 claim extraction 的 ingestion compiler
-- proposal apply / rollback workflow
-- eval harness
+## Phase 3 更新
+
+下面这些原本在路线图里的“下一步”现在已经以本地最小闭环方式实现：
+
+- **完整 gate evolution loop**：`evolvekb evolve doc <path>` 会把 source 编译为 proposal，运行 gates，可选运行 evals，并写入 `kb/log.md`。
+- **Claim/evidence ingestion compiler**：`evolvekb ingest <doc>` 会写入 `kb/sources`、`kb/chunks`、`kb/claims`、`kb/concepts` 和 v2 knowledge asset。加 `--proposal` 时不会直接改 canonical knowledge，而是生成可审阅 proposal。
+- **Proposal apply / rollback workflow**：`evolvekb proposal create|list|apply|rollback` 支持 write-file proposal、备份、manifest、状态更新、回滚、index rebuild 和 log 记录。
+- **Eval harness**：`evolvekb eval run "evals/*.yaml"` 支持 YAML eval cases。目前覆盖 retrieval 和 routing。
+- **Retrieval-as-evidence**：`evolvekb query <query>` 会对 knowledge blocks 和已编译 claims 做 keyword retrieval，返回带 citation 的 evidence pack。
+- **更多 playbook 与示例**：新增 `answer-with-evidence` playbook，包含 `retrieve-evidence` 和 `compose-evidence-answer` 两个 procedures；同时补了 `examples/` 和 `evals/` 示例。
+
+新增自我迭代命令：
+
+```bash
+evolvekb ingest README.md
+evolvekb ingest README.md --proposal
+evolvekb query "execution-first knowledge runtime"
+evolvekb run --intent answer_with_evidence --question "What is execution-first knowledge?"
+evolvekb evolve doc README.md --settings settings/evolve.yaml --eval "evals/*.yaml"
+evolvekb proposal list
+evolvekb proposal apply <proposal-id-or-path>
+evolvekb proposal rollback <proposal-id>
+evolvekb eval run "evals/*.yaml"
+```
+
+仍待后续增强：
+
 - HTTP API
+- 更强的 LLM claim extraction
+- contradiction detection
+- semantic/vector 与 graph retrieval
+- proposal human review UI
+- 更大的 eval corpus 和更多领域 playbook
 
-这些会放在后续 milestone。当前阶段先打好 runtime、schema、registry 和自我迭代基础。
+Phase 2 打好了 runtime、schema、registry 和自我迭代基础。Phase 3 已经把这些基础串成一条可运行的本地演进闭环。
 
 ---
 
@@ -330,10 +361,15 @@ python scripts/review_usage.py
 4. ✅ Package runtime + CLI
 5. ✅ Schema v2 + AssetRegistry
 6. ✅ KB index/log + lint 自我迭代基础
-7. ⏭️ Claim/evidence ingestion compiler
-8. ⏭️ Proposal apply / rollback workflow
-9. ⏭️ Eval harness 与 retrieval-as-evidence
-10. ⏭️ 增加更多 playbook 与示例
+7. ✅ 完整 gate evolution loop
+8. ✅ Claim/evidence ingestion compiler
+9. ✅ Proposal apply / rollback workflow
+10. ✅ Eval harness 与 retrieval-as-evidence
+11. ✅ 增加更多 playbook 与示例
+12. ⏭️ HTTP API 与 review UI
+13. ⏭️ LLM-backed claim extraction 与 contradiction checks
+14. ⏭️ Hybrid retrieval：keyword + semantic + graph
+15. ⏭️ 更大的 eval corpus 与领域 playbook library
 
 ---
 
@@ -348,6 +384,7 @@ ruff check evolvekb tests scripts
 python -m evolvekb.cli validate --settings settings/evolve.yaml
 python scripts/validate.py --settings settings/evolve.yaml
 python -m evolvekb.cli kb lint --gate-level 2
+python -m evolvekb.cli eval run "evals/*.yaml"
 ```
 
 ---

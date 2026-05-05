@@ -21,7 +21,11 @@ from evolvekb.core.models import (
     SkillAsset,
     UsageAsset,
 )
+from evolvekb.evals.runner import run_evals
+from evolvekb.evolution.proposal import apply_proposal, create_write_file_proposal, rollback_proposal
 from evolvekb.gates.engine import validate_repo
+from evolvekb.ingestion.compiler import compile_markdown
+from evolvekb.retrieval.keyword import keyword_retrieve
 from evolvekb.skills.registry import SkillRegistry
 from evolvekb.skills.runtime import PlaybookRuntime, compose_knowledge_from_doc
 from evolvekb.wiki import append_kb_log, lint_kb, rebuild_kb_index
@@ -370,6 +374,58 @@ def test_runtime_ingest_doc_outputs_v2_knowledge(tmp_path: Path) -> None:
     assert "schema_version: 2" in knowledge_md
 
 
+def test_runtime_answer_with_evidence_output() -> None:
+    result = PlaybookRuntime(REPO).run(
+        "answer_with_evidence",
+        question="What is execution-first knowledge?",
+        settings_arg="settings/reference.yaml",
+        write_side_effects=False,
+    )
+    assert "Evidence-backed answer" in result.rendered
+    assert "execution-first-kb" in result.rendered
+
+
+def test_compile_markdown_writes_source_claims_and_knowledge(tmp_path: Path) -> None:
+    doc = tmp_path / "source.md"
+    doc.write_text("# Source\n\nExecution-first knowledge should become reusable skills.", encoding="utf-8")
+    result = compile_markdown(tmp_path, doc, write=True)
+    assert result.source.id.startswith("src_")
+    assert result.chunks
+    assert result.claims
+    assert (tmp_path / "kb" / "sources" / f"{result.source.id}.json").exists()
+    assert (tmp_path / "kb" / "claims" / f"{result.source.id}.jsonl").exists()
+    assert result.knowledge_path is not None
+    assert result.knowledge_path.exists()
+
+
+def test_keyword_retrieval_finds_current_knowledge() -> None:
+    items = keyword_retrieve(REPO, "execution-first knowledge runtime", limit=5)
+    assert any(item.name == "execution-first-kb" for item in items)
+
+
+def test_eval_runner_passes_current_eval_cases() -> None:
+    results = run_evals(REPO, ["evals/*.yaml"])
+    assert results
+    assert all(result.passed for result in results)
+
+
+def test_proposal_apply_and_rollback(tmp_path: Path) -> None:
+    content = "# Demo\n"
+    proposal = create_write_file_proposal(
+        repo=tmp_path,
+        title="Create demo",
+        proposal_type="knowledge_update",
+        path="kb/knowledge/demo.md",
+        content=content,
+        rationale="Test proposal",
+    )
+    manifest = apply_proposal(tmp_path, str(proposal))
+    assert manifest.exists()
+    assert (tmp_path / "kb" / "knowledge" / "demo.md").read_text(encoding="utf-8") == content
+    rollback_proposal(tmp_path, proposal.stem)
+    assert not (tmp_path / "kb" / "knowledge" / "demo.md").exists()
+
+
 def test_validate_repo_has_no_failures() -> None:
     assert [r for r in validate_repo(REPO, "settings/evolve.yaml") if not r.passed] == []
 
@@ -541,3 +597,74 @@ def test_cli_kb_lint_passes_temp_repo(tmp_path: Path) -> None:
     )
     assert result.returncode == 0
     assert "KB LINT PASSED" in result.stdout
+
+
+def test_cli_query_returns_evidence() -> None:
+    result = run_cmd(
+        sys.executable,
+        "-m",
+        "evolvekb.cli",
+        "query",
+        "execution-first knowledge runtime",
+        "--require-evidence",
+    )
+    assert result.returncode == 0
+    assert "execution-first-kb" in result.stdout
+
+
+def test_cli_eval_run_passes() -> None:
+    result = run_cmd(sys.executable, "-m", "evolvekb.cli", "eval", "run", "evals/*.yaml")
+    assert result.returncode == 0
+    assert "PASS" in result.stdout
+
+
+def test_cli_ingest_compiles_document(tmp_path: Path) -> None:
+    doc = tmp_path / "doc.md"
+    doc.write_text("# Doc\n\nExecution-first knowledge should be recorded.", encoding="utf-8")
+    result = run_cmd(sys.executable, "-m", "evolvekb.cli", "ingest", "doc.md", cwd=tmp_path)
+    assert result.returncode == 0
+    assert "[claims]" in result.stdout
+    assert (tmp_path / "kb" / "knowledge" / "doc.md").exists()
+
+
+def test_cli_proposal_apply_and_rollback(tmp_path: Path) -> None:
+    content = tmp_path / "content.md"
+    content.write_text("# Proposed\n", encoding="utf-8")
+    create = run_cmd(
+        sys.executable,
+        "-m",
+        "evolvekb.cli",
+        "proposal",
+        "create",
+        "--title",
+        "Create proposed",
+        "--path",
+        "kb/knowledge/proposed.md",
+        "--content-file",
+        str(content),
+        "--rationale",
+        "Test CLI proposal",
+        cwd=tmp_path,
+    )
+    assert create.returncode == 0
+    proposal_path = create.stdout.strip().split(" ", 1)[1]
+    apply = run_cmd(
+        sys.executable, "-m", "evolvekb.cli", "proposal", "apply", proposal_path, cwd=tmp_path
+    )
+    assert apply.returncode == 0
+    assert (tmp_path / "kb" / "knowledge" / "proposed.md").exists()
+    proposal_id = Path(proposal_path).stem
+    rollback = run_cmd(
+        sys.executable, "-m", "evolvekb.cli", "proposal", "rollback", proposal_id, cwd=tmp_path
+    )
+    assert rollback.returncode == 0
+    assert not (tmp_path / "kb" / "knowledge" / "proposed.md").exists()
+
+
+def test_cli_evolve_doc_creates_proposal(tmp_path: Path) -> None:
+    doc = tmp_path / "doc.md"
+    doc.write_text("# Doc\n\nExecution-first knowledge should be reviewed before updates.", encoding="utf-8")
+    result = run_cmd(sys.executable, "-m", "evolvekb.cli", "evolve", "doc", "doc.md", cwd=tmp_path)
+    assert result.returncode == 0
+    assert "[gates] passed" in result.stdout
+    assert list((tmp_path / "kb" / "proposals").glob("*.md"))

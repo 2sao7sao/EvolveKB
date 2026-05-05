@@ -10,6 +10,7 @@ import yaml
 
 from evolvekb.assets.frontmatter import parse_frontmatter
 from evolvekb.core.config import Settings, load_settings
+from evolvekb.retrieval.keyword import evidence_pack
 from evolvekb.skills.registry import SkillRegistry
 from evolvekb.wiki import append_kb_log
 
@@ -87,6 +88,21 @@ def compose_answer_md(norm: dict[str, Any], matrix: list[dict[str, str]]) -> str
     for row in matrix:
         lines.append(f"| {row['axis']} | {row['A']} | {row['B']} | {row['tradeoff']} |")
     lines.append("\n## 建议\n- 闭域可枚举入口：execution-first 更稳。\n- 开放域入口不可枚举：GraphRAG 弹性更强。")
+    return "\n".join(lines)
+
+
+def retrieve_evidence(repo: Path, query: str, limit: int = 5) -> dict[str, Any]:
+    return evidence_pack(repo, query, limit=limit)
+
+
+def compose_evidence_answer(question: str, evidence: dict[str, Any]) -> str:
+    lines = ["# Evidence-backed answer\n", f"Question: {question}", "", "## Evidence"]
+    items = evidence.get("evidence") or []
+    if not items:
+        lines.append("- No matching evidence found.")
+    for item in items:
+        lines.append(f"- `{item['name']}` ({item['source_ref']}): {item['text']}")
+    lines.extend(["", "## Answer", "Use the evidence above as grounded context before drafting a final response."])
     return "\n".join(lines)
 
 
@@ -188,6 +204,12 @@ PROC_IMPL: dict[str, ProcedureImpl] = {
     "extract-outline": lambda env, args: extract_outline(args["doc_path"]),
     "compose-skill-draft": lambda env, args: compose_skill_draft(args["outline"]),
     "compose-knowledge-md": lambda env, args: compose_knowledge_md(args["outline"]),
+    "retrieve-evidence": lambda env, args: retrieve_evidence(
+        Path(str(env["repo"])), args["query"], int(args.get("limit", 5))
+    ),
+    "compose-evidence-answer": lambda env, args: compose_evidence_answer(
+        args["question"], args["evidence"]
+    ),
 }
 
 
@@ -295,6 +317,7 @@ class PlaybookRuntime:
         playbook = self.skill_registry.pick_playbook(intent)
         env: dict[str, Any] = {
             "settings": settings.model_dump(),
+            "repo": str(self.repo),
             "inputs": {"question": question, "doc_path": doc},
             "ctx": {},
             "outputs": {},
