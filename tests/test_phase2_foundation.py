@@ -35,8 +35,8 @@ def write(path: Path, text: str) -> None:
     path.write_text(textwrap.dedent(text).lstrip(), encoding="utf-8")
 
 
-def run_cmd(*args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(args, cwd=REPO, text=True, capture_output=True, check=False)
+def run_cmd(*args: str, cwd: Path = REPO) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(args, cwd=cwd, text=True, capture_output=True, check=False)
 
 
 def test_settings_defaults() -> None:
@@ -501,7 +501,43 @@ def test_lint_kb_reports_orphan_knowledge(tmp_path: Path) -> None:
     assert any(issue.code == "orphan_knowledge" for issue in issues)
 
 
-def test_cli_kb_lint_passes_current_repo() -> None:
-    result = run_cmd(sys.executable, "-m", "evolvekb.cli", "kb", "lint", "--gate-level", "2")
+def test_cli_kb_lint_passes_temp_repo(tmp_path: Path) -> None:
+    write(
+        tmp_path / "kb" / "knowledge" / "demo.md",
+        """
+        ---
+        schema_version: 2
+        id: kb_demo
+        name: demo
+        kind: knowledge
+        block_type: reference
+        summary: Demo knowledge
+        concepts: [demo]
+        updated_at: 2026-05-01
+        ---
+        # Demo
+        """,
+    )
+    write(
+        tmp_path / "kb" / "usage" / "demo.md",
+        """
+        ---
+        schema_version: 2
+        id: usage_demo
+        name: demo
+        kind: usage
+        intent: demo
+        strategy: playbook
+        pattern: required
+        uses: [demo]
+        steps: []
+        updated_at: 2026-05-01
+        ---
+        # Demo
+        """,
+    )
+    result = run_cmd(
+        sys.executable, "-m", "evolvekb.cli", "kb", "lint", "--gate-level", "2", cwd=tmp_path
+    )
     assert result.returncode == 0
     assert "KB LINT PASSED" in result.stdout
