@@ -1,6 +1,6 @@
 <img src="assets/banner.png" alt="banner" width="100%" />
 
-# EvolveKB — 执行优先的知识伴侣
+# EvolveKB
 
 [![状态](https://img.shields.io/badge/status-Concept%20%2F%20WIP-yellow)](./README.md)
 [![Stars](https://img.shields.io/github/stars/2sao7sao/EvolveKB?style=flat)](https://github.com/2sao7sao/EvolveKB)
@@ -9,398 +9,326 @@
 
 **语言：** [English](README.md) | 简体中文
 
-> 把“知识”变成 **可执行的技能**。  
-> 不只是存文档，而是让 AI 学会 **你的知识使用逻辑**，并在门控下持续演进。
+EvolveKB 是一个 execution-first knowledge runtime。它把 source material 编译成结构化知识，记录这些知识应该如何被使用，把任务路由到可执行 skills，并通过 gates、proposals、logs 和 evals 让知识库持续演进。
 
----
+它的目标不是再做一个 vector-store wrapper，而是让模型能够理解、记录、验证、使用和更新知识。
 
-## 快速导航
+## 目录
 
-- [愿景](#愿景)
-- [典型用例](#典型用例)
-- [知识与用法](#知识与用法)
-- [工作流程](#工作流程)
-- [最小可运行 Demo](#最小可运行-demo)
-- [知识摄取](#知识摄取)
-- [模式预设](#模式预设)
-- [Phase 2 更新](#phase-2-更新)
-- [Phase 3 更新](#phase-3-更新)
-- [自我迭代机制](#自我迭代机制)
-- [用法复盘](#用法复盘每周)
+- [为什么需要 EvolveKB](#为什么需要-evolvekb)
+- [当前状态](#当前状态)
+- [快速开始](#快速开始)
+- [核心概念](#核心概念)
+- [工作机制](#工作机制)
+- [CLI 参考](#cli-参考)
+- [项目结构](#项目结构)
+- [自我迭代模型](#自我迭代模型)
+- [示例](#示例)
+- [开发](#开发)
 - [路线图](#路线图)
 
----
+## 为什么需要 EvolveKB
 
-## TL;DR
+传统 RAG 在查询时召回 chunks，再让模型从碎片中临时综合答案。这个路径有价值，但它不会沉淀“知识应该如何被使用”。
 
-- 一个“外挂知识库”：重点是**知识使用逻辑**，而不是存储介质。
-- 支持 **引用 / 消化 / 转化 / 演进** 四种用法，按你的习惯参与推理。
-- 目标是让 AI **更懂你要什么知识、如何存、怎么用才有效**。
-- Phase 2 增加 package runtime、类型化资产注册表、KB index/log、lint 自检，以及面向自我迭代的基础机制。
-
----
-
-## 愿景
-
-**Execution‑first**：先让知识可执行，再谈召回增强。  
-我们希望 AI 不只是“找得到资料”，而是“知道如何组织与使用资料”。
-
-当前状态：**Concept / WIP**（偏产品方向探索，尚未形成稳定可用的工程版本）。
-
----
-
-## 为什么
-
-传统 RAG 更擅长“找资料”，不擅长“让资料变成可复用流程”：
-
-- **理解浅**：多是片段拼接，而非结构化理解与沉淀。
-- **multi‑hop 易断链**：chunk 切分导致跨段逻辑断裂。
-- **用法单一**：同一知识对不同用户/任务缺乏可配置的使用策略。
-
----
-
-## 我们提供什么
-
-**EvolveKB = 把知识升级为技能**：
-
-- **Playbook**：面向一个 intent 的完整流程
-- **Procedure**：可复用的原子能力
-- **Settings**：控制知识如何参与推理与产出
-- **Gate**：质量控制与演进门控
-- **Index / Log**：用于导航和追踪演进历史，支撑自我迭代
-
----
-
-## 知识与用法
-
-EvolveKB 将资产分为两类：
-
-- **知识**：模型消化后的信息（是什么）
-- **用法**：如何使用这些知识（怎么用）
-
-目录结构：
+EvolveKB 走另一条路径：
 
 ```text
-evolvekb/       # package runtime、资产注册表、门控、CLI
-kb/
-  index.md     # 全局内容索引
-  log.md       # 追加式演进日志
-  knowledge/   # 结构化知识块
-  usage/       # playbooks / procedures / strategies
-skills/        # 可执行 SKILL.md playbooks/procedures
-settings/      # 模式预设与 gate 设置
-scripts/       # 兼容旧命令的 wrapper
+source material
+  -> claims, concepts, knowledge blocks
+  -> usage rules
+  -> executable skills
+  -> gates, evals, proposals, logs
+  -> reviewed knowledge updates
 ```
 
-Schema 与门控规则： [kb/SCHEMA.md](kb/SCHEMA.md)
+Retrieval 仍然存在，但它只是 evidence supply。核心产物是一个可以在审阅和门控下持续改进的知识库。
 
-## 典型用例
+## 当前状态
 
-- **摒弃纯向量库路径**：不依赖“只做召回”，而是让知识可执行。
-- **持续演进的知识更新**：在门控下沉淀更新，形成可回滚的版本演进。
-- **更懂你的知识习惯**：通过交互学习你希望“如何存、怎么用、何时更新”。
+EvolveKB 目前是 local-first 的 Concept / WIP，已经具备可运行的 Python runtime 和 CLI。
 
----
+当前已支持：
 
-## 工作流程
+- 可安装的 `evolvekb` package 和 CLI。
+- `schema_version: 2` 的 knowledge、usage、skills、gates、proposals、traces 资产。
+- AssetRegistry，支持引用校验和稳定 hash。
+- Playbook runtime，支持 deterministic skill execution。
+- Markdown ingestion，输出 sources、chunks、claims、concepts 和 knowledge assets。
+- 对 knowledge blocks 和 compiled claims 的 keyword retrieval。
+- Proposal create/apply/rollback、backup manifest、index rebuild 和 log。
+- YAML eval runner，覆盖 retrieval 和 routing。
+- KB index、KB log、lint 命令，用于自我迭代维护。
+- 兼容旧 `scripts/*.py` 命令。
 
-1. 用户提问 / 上传资料
-2. 读取 settings：选择知识使用模式（reference / digest / transform / evolve）
-3. 路由到对应 playbook
-4. playbook 调用 procedures 分步执行
-5. 每一步在 gate 下生成可验证中间产物
-6. 若开启 evolve：提出变更 → gate 审核 → 合并为知识库新版本
+后续计划：
 
----
+- HTTP API 和 review UI。
+- LLM-backed claim extraction。
+- Contradiction detection。
+- Semantic/vector 和 graph retrieval。
+- 更大的 eval corpus 和领域 playbook library。
 
-## 架构示意
-
-<img src="assets/architecture.svg" alt="architecture" width="100%" />
-
----
-
-## 最小可运行 Demo
-
-仓库内已经包含一条最小端到端路径（不依赖外部工具）：
-
-```bash
-python -m pip install -r requirements.txt
-python scripts/run.py --intent compare_frameworks --question "对比 GraphRAG 和 Execution-first" --settings settings/reference.yaml
-```
-
-期望输出示例：[examples/demo.md](examples/demo.md)（reference / digest / transform / evolve）
-
-Package CLI：
+## 快速开始
 
 ```bash
 python -m pip install -e ".[dev]"
 evolvekb validate --settings settings/evolve.yaml
-evolvekb run --intent compare_frameworks --question "对比 GraphRAG 和 Execution-first" --settings settings/reference.yaml
-evolvekb skills list
-evolvekb kb index
-evolvekb kb lint --gate-level 2
-evolvekb query "execution-first knowledge runtime"
+```
+
+运行原始对比 demo：
+
+```bash
+evolvekb run \
+  --intent compare_frameworks \
+  --question "对比 GraphRAG 和 Execution-first" \
+  --settings settings/reference.yaml
+```
+
+运行证据优先回答：
+
+```bash
+evolvekb run \
+  --intent answer_with_evidence \
+  --question "What is execution-first knowledge?"
+```
+
+把 Markdown 文档摄取进 KB：
+
+```bash
+evolvekb ingest README.md
+```
+
+生成 ingest proposal，而不是直接写 canonical knowledge：
+
+```bash
+evolvekb ingest README.md --proposal
+```
+
+运行 evals：
+
+```bash
 evolvekb eval run "evals/*.yaml"
 ```
 
-旧脚本入口仍然兼容：
+旧命令仍然可用：
 
 ```bash
 python scripts/validate.py --settings settings/evolve.yaml
-python scripts/run.py --intent compare_frameworks --question "对比 GraphRAG 和 Execution-first" --settings settings/reference.yaml
-python scripts/ingest.py --doc path/to/your.md
+python scripts/run.py --intent compare_frameworks --question "对比 GraphRAG 和 Execution-first"
+python scripts/ingest.py --doc README.md
 python scripts/review_usage.py
 ```
 
----
+## 核心概念
 
-## Phase 2 更新
+| 概念 | 含义 |
+| --- | --- |
+| Knowledge | 系统知道什么。存放在 `kb/knowledge/`。 |
+| Usage | 知识应该如何被使用。存放在 `kb/usage/`。 |
+| Skill | `skills/*/SKILL.md` 中的可执行 playbooks 和 procedures。 |
+| Playbook | 面向 intent 的工作流，会调用一个或多个 procedures。 |
+| Procedure | Playbook 中可复用的原子步骤。 |
+| Gate | 用于阻断或标记无效资产、危险更新的校验规则。 |
+| Proposal | 修改 canonical KB 前的可审阅变更事务。 |
+| Eval | 用于 routing、retrieval、gates、outputs、evolution 的回归用例。 |
+| Index | `kb/index.md`，knowledge、usage、skills 的导航图。 |
+| Log | `kb/log.md`，追加式演进记录。 |
 
-Phase 2 的目标是把原来的 deterministic MVP demo 升级为 package-quality runtime，同时保留旧脚本命令兼容。
+## 工作机制
 
-已完成：
+```text
+User query / source document
+  -> settings and intent routing
+  -> optional evidence retrieval
+  -> playbook runtime
+  -> gate validation
+  -> answer, proposal, or KB update
+  -> index/log/eval feedback
+```
 
-- **Python package runtime**：新增 `evolvekb/`，包含配置加载、frontmatter 解析、资产注册表、gate 校验、skill 路由、playbook 执行、ingest helper、usage review 和 package helper。
-- **可安装 CLI**：新增 `pyproject.toml`，提供 `evolvekb` 命令和 `.[dev]` 开发依赖。
-- **Pydantic schema v2**：核心模型覆盖 source document、chunk、claim、concept、knowledge block、usage asset、skill asset、gate policy、proposal、run trace。
-- **AssetRegistry**：统一加载 knowledge、usage、skills，生成稳定 hash，解析引用，检测重复 ID、缺失 skill、未知 knowledge 引用，以及在严格 gate 下禁止 `uses: TBD`。
-- **Skill runtime**：按 intent 选择 playbook，逐步执行 procedure，并保留原有 deterministic demo 输出。
-- **资产迁移**：现有 `kb/knowledge`、`kb/usage` 和 `skills/*/SKILL.md` 已迁移到 `schema_version: 2`。
-- **知识/用法种子资产**：新增 `execution-first-kb`，`compare-frameworks` 不再使用 `uses: TBD`，而是引用具体知识资产。
-- **Settings 扩展**：各 mode preset 增加 retrieval flags、proposal review 设置和 gate thresholds，为后续 milestone 预留接口。
-- **CI 与测试**：GitHub Actions 会安装 package、运行资产校验、旧脚本 smoke test 和 pytest。当前测试覆盖 config、frontmatter、models、registry、gates、skills、runtime、CLI、legacy wrappers。
+文档摄取路径：
 
-新增 CLI：
+```text
+Markdown document
+  -> SourceDocument
+  -> SourceChunk
+  -> Claim
+  -> Concept
+  -> KnowledgeBlock
+  -> proposal or canonical write
+```
+
+自我迭代路径：
+
+```text
+run / ingest / query result
+  -> lint and gates
+  -> evals
+  -> proposal
+  -> apply or rollback
+  -> index rebuild
+  -> log entry
+```
+
+## CLI 参考
+
+校验：
 
 ```bash
 evolvekb validate --settings settings/evolve.yaml
-evolvekb run --intent compare_frameworks --question "对比 GraphRAG 和 Execution-first" --settings settings/reference.yaml
-evolvekb skills list
-evolvekb skills inspect compare-frameworks
-evolvekb kb index
 evolvekb kb lint --gate-level 2
-evolvekb kb log note "Reviewed a knowledge update"
 ```
 
----
-
-## Phase 3 更新
-
-下面这些原本在路线图里的“下一步”现在已经以本地最小闭环方式实现：
-
-- **完整 gate evolution loop**：`evolvekb evolve doc <path>` 会把 source 编译为 proposal，运行 gates，可选运行 evals，并写入 `kb/log.md`。
-- **Claim/evidence ingestion compiler**：`evolvekb ingest <doc>` 会写入 `kb/sources`、`kb/chunks`、`kb/claims`、`kb/concepts` 和 v2 knowledge asset。加 `--proposal` 时不会直接改 canonical knowledge，而是生成可审阅 proposal。
-- **Proposal apply / rollback workflow**：`evolvekb proposal create|list|apply|rollback` 支持 write-file proposal、备份、manifest、状态更新、回滚、index rebuild 和 log 记录。
-- **Eval harness**：`evolvekb eval run "evals/*.yaml"` 支持 YAML eval cases。目前覆盖 retrieval 和 routing。
-- **Retrieval-as-evidence**：`evolvekb query <query>` 会对 knowledge blocks 和已编译 claims 做 keyword retrieval，返回带 citation 的 evidence pack。
-- **更多 playbook 与示例**：新增 `answer-with-evidence` playbook，包含 `retrieve-evidence` 和 `compose-evidence-answer` 两个 procedures；同时补了 `examples/` 和 `evals/` 示例。
-
-新增自我迭代命令：
+知识与检索：
 
 ```bash
 evolvekb ingest README.md
 evolvekb ingest README.md --proposal
 evolvekb query "execution-first knowledge runtime"
+```
+
+Playbooks 与 skills：
+
+```bash
+evolvekb run --intent compare_frameworks --question "对比 GraphRAG 和 Execution-first"
 evolvekb run --intent answer_with_evidence --question "What is execution-first knowledge?"
+evolvekb skills list
+evolvekb skills inspect compare-frameworks
+```
+
+演进工作流：
+
+```bash
 evolvekb evolve doc README.md --settings settings/evolve.yaml --eval "evals/*.yaml"
 evolvekb proposal list
 evolvekb proposal apply <proposal-id-or-path>
 evolvekb proposal rollback <proposal-id>
+```
+
+Index、log 与 evals：
+
+```bash
+evolvekb kb index
+evolvekb kb log note "Reviewed a knowledge update"
 evolvekb eval run "evals/*.yaml"
 ```
 
-仍待后续增强：
+## 项目结构
 
-- HTTP API
-- 更强的 LLM claim extraction
-- contradiction detection
-- semantic/vector 与 graph retrieval
-- proposal human review UI
-- 更大的 eval corpus 和更多领域 playbook
+```text
+evolvekb/
+  assets/       # frontmatter、loading、registry、hashing
+  core/         # pydantic models 和 settings
+  evals/        # YAML eval runner
+  evolution/    # proposal create/apply/rollback
+  gates/        # validation gates
+  ingestion/    # deterministic markdown compiler
+  retrieval/    # keyword retrieval as evidence supply
+  skills/       # skill registry 和 playbook runtime
+kb/
+  index.md      # 生成的 KB map
+  log.md        # 追加式演进日志
+  knowledge/    # canonical knowledge assets
+  usage/        # canonical usage assets
+skills/         # SKILL.md playbooks 和 procedures
+settings/       # mode presets
+evals/          # eval cases
+examples/       # 可运行示例和期望输出
+scripts/        # legacy wrappers
+tests/          # pytest suite
+```
 
-Phase 2 打好了 runtime、schema、registry 和自我迭代基础。Phase 3 已经把这些基础串成一条可运行的本地演进闭环。
+Schema 细节见 [kb/SCHEMA.md](kb/SCHEMA.md)。
 
----
+## 自我迭代模型
 
-## 自我迭代机制
+EvolveKB 参考了 Karpathy 的 LLM Wiki pattern：保持 raw sources 稳定，维护模型写出的 markdown，用 index 和 log 帮助模型理解当前知识库，并周期性 lint。
 
-EvolveKB 参考了 Karpathy 的 LLM Wiki pattern：raw sources 保持稳定，模型维护的 markdown 资产持续沉淀理解，`index.md` / `log.md` 帮助模型知道“有什么”和“发生过什么”。
+EvolveKB 将这个思路 runtime 化：
 
-EvolveKB 在这个基础上做了 runtime 化：
-
-- `kb/knowledge/` 存储“知道什么”。
-- `kb/usage/` 存储“如何使用这些知识”。
-- `skills/` 存储可执行 playbooks / procedures。
-- `kb/index.md` 是面向内容的导航层。
-- `kb/log.md` 是追加式演进时间线。
-- Gates 和未来 proposals 让自我更新可审阅，而不是静默改写。
+- Knowledge 和 usage 是分离的资产。
+- Skills 是可执行的，并按 intent 路由。
+- Retrieval 提供证据，但不定义整个系统。
+- Proposals 是可审阅事务，不是静默写入。
+- Gates 和 evals 决定更新是否足够安全。
 
 参考说明：[Karpathy LLM Wiki comparison](docs/karpathy-llm-wiki-comparison.md)
 
-### 与 RAG 的差异
+## 示例
 
-传统 RAG 在查询时召回 chunks，然后让模型临时拼接和重新综合。EvolveKB 的方向不同：
-
-```text
-raw sources
-  -> 模型理解后的 knowledge
-  -> 显式 usage 规则
-  -> 可执行 skills
-  -> gates / logs / proposals
-  -> 更新后的 knowledge 和 usage
-```
-
-后续仍然可以引入 retrieval 作为 evidence supply，但它不是核心。核心是：让模型把理解记录下来，把用法沉淀下来，并在门控下持续更新。
-
-### Karpathy LLM Wiki 可借鉴点
-
-Karpathy 的 LLM Wiki pattern 强调：不可变 raw sources、LLM 维护 wiki、schema 约束流程、`index.md`、`log.md`、周期性 lint。
-
-EvolveKB 借鉴了这些点：
-
-- 将模型综合后的 markdown 作为持久资产。
-- 维护全局内容索引，方便模型和人导航。
-- 维护时间顺序日志，作为演进记忆。
-- lint 知识库，发现 broken reference、orphan asset 等问题。
-- 把有价值的 query output 视为候选知识/用法更新。
-
-EvolveKB 的不同点：
-
-- `knowledge` 和 `usage` 明确分离。
-- `skills` 是可执行的 playbooks / procedures。
-- gates 会校验结构、引用和后续演进安全。
-- 未来更新应通过 proposals，而不是模型静默写入 canonical KB。
-- 项目目标是 agent runtime，而不仅是给人浏览的 wiki。
-
----
-
-## 知识摄取
-
-直接从 Markdown 文档生成知识资产：
-
-用法会在验证与使用中单独演进，存放在 `kb/usage`。
-
-用法会在 playbook 执行后自动生成，并进行每周复盘。
+对比 playbook：
 
 ```bash
-python scripts/ingest.py --doc path/to/your.md
-# -> kb/knowledge/<doc_name>.md
+evolvekb run \
+  --intent compare_frameworks \
+  --question "对比 GraphRAG 和 Execution-first"
 ```
 
-你也可以直接跑 playbook：
+证据优先回答：
 
 ```bash
-python scripts/run.py --intent ingest_doc --doc path/to/your.md --settings settings/transform.yaml
+evolvekb run \
+  --intent answer_with_evidence \
+  --question "What is execution-first knowledge?"
 ```
 
-## 模式预设
-
-通过 presets 切换不同知识行为。输出详细程度由 `output_template` 控制：
+Eval smoke suite：
 
 ```bash
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/reference.yaml
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/digest.yaml
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/transform.yaml
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/evolve.yaml
+evolvekb eval run "evals/*.yaml"
 ```
 
----
+参考：
 
-## 模式对比
+- [examples/demo.md](examples/demo.md)
+- [examples/evidence_answer.md](examples/evidence_answer.md)
 
-<img src="assets/mode_matrix.svg" alt="mode comparison" width="100%" />
+## 开发
 
-## 知识使用模式
-
-| Mode | 作用 | 典型场景 |
-| --- | --- | --- |
-| Reference | 仅引用资料，不改写知识库 | 快速问答 / 保守模式 |
-| Digest | 结构化摘要后再回答 | 需要吸收与总结 |
-| Transform | 转为 procedures/playbooks | 构建可复用技能 |
-| Evolve | 允许提出变更并门控合并 | 持续演进知识库 |
-
----
-
-## 版本化提案
-
-在 `evolve` 模式下，会写入一个可审阅的提案快照：
-
-```bash
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/evolve.yaml
-# -> outputs/proposals/<timestamp>_compare_frameworks.md
-```
-
----
-
-## Gate 校验
-
-使用 settings 触发门控规则校验：
-
-```bash
-python scripts/validate.py --settings settings/evolve.yaml
-evolvekb validate --settings settings/evolve.yaml
-evolvekb kb lint --gate-level 2
-```
-
-## 用法复盘（每周）
-
-生成每周 usage 复盘报告与 TBD 清单：
-
-```bash
-python scripts/review_usage.py
-# -> outputs/reviews/usage_review_<timestamp>.md
-```
-
-用法索引会自动维护在 `kb/usage/index.md`。用法事件存放在 `outputs/usage/events.log`。
-
-## 路线图
-
-1. ✅ README / 产品叙事定稿
-2. ✅ 引入 settings 文件，用户可选知识使用模式
-3. ✅ 最小可运行 demo（一条 end‑to‑end 路径）
-4. ✅ Package runtime + CLI
-5. ✅ Schema v2 + AssetRegistry
-6. ✅ KB index/log + lint 自我迭代基础
-7. ✅ 完整 gate evolution loop
-8. ✅ Claim/evidence ingestion compiler
-9. ✅ Proposal apply / rollback workflow
-10. ✅ Eval harness 与 retrieval-as-evidence
-11. ✅ 增加更多 playbook 与示例
-12. ⏭️ HTTP API 与 review UI
-13. ⏭️ LLM-backed claim extraction 与 contradiction checks
-14. ⏭️ Hybrid retrieval：keyword + semantic + graph
-15. ⏭️ 更大的 eval corpus 与领域 playbook library
-
----
-
-## 验证
-
-当前验证命令：
+安装开发依赖：
 
 ```bash
 python -m pip install -e ".[dev]"
+```
+
+运行检查：
+
+```bash
 pytest -q
 ruff check evolvekb tests scripts
 python -m evolvekb.cli validate --settings settings/evolve.yaml
 python scripts/validate.py --settings settings/evolve.yaml
-python -m evolvekb.cli kb lint --gate-level 2
 python -m evolvekb.cli eval run "evals/*.yaml"
 ```
 
----
+当前测试覆盖 settings、frontmatter parsing、Pydantic models、asset registry、gates、skill routing、runtime execution、ingestion、retrieval、proposals、evals、CLI commands 和 legacy wrappers。
 
-## Star history
+## 路线图
 
-![Star History](https://api.star-history.com/svg?repos=2sao7sao/EvolveKB&type=Date)
+已完成：
 
----
+- README 和产品定位。
+- Settings presets 和 mode-aware output。
+- 最小 end-to-end demo。
+- Package runtime 和 CLI。
+- Schema v2 和 AssetRegistry。
+- KB index/log 与 lintable self-iteration loop。
+- Gate evolution loop。
+- Claim/evidence ingestion compiler。
+- Proposal apply/rollback workflow。
+- Eval harness 与 retrieval-as-evidence。
+- 新增 playbook：`answer-with-evidence`。
 
-## Commit activity
+下一步：
 
-![Commit Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=2sao7sao&repo=EvolveKB&theme=github-compact)
-
----
+- HTTP API 和 proposal review UI。
+- LLM-backed claim extraction。
+- Contradiction 和 supersession checks。
+- Hybrid retrieval：keyword + semantic + graph。
+- 更大的 eval corpus。
+- 更多领域 playbooks 和 examples。
 
 ## License
 
-See `LICENSE`.
+See [LICENSE](LICENSE).
