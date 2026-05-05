@@ -51,6 +51,30 @@ Soft/hard limit used by validators to keep skills lean.
 
 Default: `50000`
 
+### `retrieval` (mapping)
+
+Optional retrieval feature flags. Phase 2 Milestone 1+2 only stores these settings; retrieval implementations arrive in later milestones.
+
+Supported keys:
+- `keyword`
+- `vector`
+- `graph`
+
+### `proposal` (mapping)
+
+Proposal workflow controls.
+
+Supported keys:
+- `require_human_review`
+
+### `gates` (mapping)
+
+Gate thresholds and policy switches.
+
+Supported keys:
+- `citation_coverage_min`
+- `allow_tbd_usage`
+
 ## Example
 
 ```yaml
@@ -59,4 +83,13 @@ output_template: compact
 gate_level: 1
 auto_evolve: false
 max_skill_md_bytes: 50000
+retrieval:
+  keyword: true
+  vector: false
+  graph: false
+proposal:
+  require_human_review: true
+gates:
+  citation_coverage_min: 0.8
+  allow_tbd_usage: false
 ```

@@ -20,11 +20,19 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -e ".[dev]"
 
-      - name: Run repo validation gates
+      - name: Run package validation gates
         env:
           MAX_SKILLS: "250"
           MAX_SKILL_MD_BYTES: "50000"
         run: |
-          python scripts/validate.py
+          python -m evolvekb.cli validate --settings settings/evolve.yaml
+
+      - name: Run legacy validation smoke
+        run: |
+          python scripts/validate.py --settings settings/evolve.yaml
+
+      - name: Run tests
+        run: |
+          pytest

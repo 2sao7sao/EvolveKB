@@ -5,3 +5,12 @@ output_template: compact
 gate_level: 1
 auto_evolve: false
 max_skill_md_bytes: 50000
+retrieval:
+  keyword: true
+  vector: false
+  graph: false
+proposal:
+  require_human_review: true
+gates:
+  citation_coverage_min: 0.8
+  allow_tbd_usage: false
