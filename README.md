@@ -1,404 +1,203 @@
-<img src="assets/banner.png" alt="banner" width="100%" />
+<img src="assets/banner.png" alt="EvolveKB banner" width="100%" />
 
-# EvolveKB — Your Execution‑First Knowledge Companion
+<p align="center">
+  <a href="./README.md"><img src="https://img.shields.io/badge/README-English-0f766e" alt="English README"></a>
+  <a href="./README.zh.md"><img src="https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-b91c1c" alt="Chinese README"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/python-3.11%2B-2563eb" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/status-execution--first%20KB%20runtime-f59e0b" alt="Project status">
+</p>
 
-[![Status](https://img.shields.io/badge/status-Concept%20%2F%20WIP-yellow)](./README.md)
-[![Stars](https://img.shields.io/github/stars/2sao7sao/EvolveKB?style=flat)](https://github.com/2sao7sao/EvolveKB)
-[![Commit Activity](https://img.shields.io/github/commit-activity/m/2sao7sao/EvolveKB)](https://github.com/2sao7sao/EvolveKB/commits/main)
-[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+# EvolveKB
 
-**Language:** English | [简体中文](README.zh.md)
+**EvolveKB is an execution-first knowledge runtime for AI agents.**
 
-> Turn knowledge into **executable skills**.  
-> Not just storing docs—EvolveKB learns **your knowledge logic**, and evolves it under gates.
-
----
-
-## Quick links
-
-- [Vision](#vision)
-- [Use cases](#use-cases)
-- [Knowledge vs Usage](#knowledge-vs-usage)
-- [How it works](#how-it-works)
-- [Minimal runnable demo](#minimal-runnable-demo)
-- [Ingest to knowledge](#ingest-to-knowledge)
-- [Mode presets](#mode-presets)
-- [Phase 2 updates](#phase-2-updates)
-- [Phase 3 updates](#phase-3-updates)
-- [Self-iteration loop](#self-iteration-loop)
-- [Usage review](#usage-review-weekly)
-- [Roadmap](#roadmap)
-
----
-
-## TL;DR
-
-- A “knowledge sidecar” that focuses on **knowledge logic**, not storage.
-- Four modes: **reference / digest / transform / evolve**.
-- AI learns what to store, how to use it, and when to update.
-- Phase 2 adds a package runtime, typed asset registry, KB index/log, and lintable self-iteration loop.
-
----
-
-## Vision
-
-**Execution‑first**: make knowledge executable before optimizing retrieval.  
-We want AI not only to find facts, but to **organize and apply knowledge** in your preferred logic.
-
-Current status: **Concept / WIP**.
-
----
-
-## Why
-
-Traditional RAG is good at “finding”, but weak at “turning knowledge into reusable flows”:
-
-- **Shallow understanding**: fragment stitching instead of structured synthesis.
-- **Multi‑hop breaks**: chunk boundaries lose cross‑context logic.
-- **One‑size usage**: no configurable knowledge strategy per user or task.
-
----
-
-## What
-
-**EvolveKB = knowledge upgraded into skills**:
-
-- **Playbook**: intent‑level workflow
-- **Procedure**: reusable atomic step
-- **Settings**: control how knowledge participates in reasoning
-- **Gate**: quality control and evolution constraints
-- **Index / Log**: navigation and evolution memory for self-iteration
-
----
-
-## Knowledge vs Usage
-
-EvolveKB separates assets into two types:
-
-- **Knowledge**: distilled, model‑understood information (what we know)
-- **Usage**: how to apply knowledge (how we use it)
-
-Directory layout:
+It turns static documents into typed knowledge assets, binds them to reusable
+skills, validates every update with gates, and keeps an auditable evolution
+trail. The goal is not to build another vector store. The goal is to make
+knowledge operational: retrievable, executable, reviewable, and safe to evolve.
 
 ```text
-evolvekb/       # package runtime, asset registry, gates, CLI
-kb/
-  index.md     # repo-wide content index
-  log.md       # append-only evolution log
-  knowledge/   # distilled knowledge blocks
-  usage/       # playbooks / procedures / strategies
-skills/        # executable SKILL.md playbooks/procedures
-settings/      # mode presets and gate settings
-scripts/       # legacy wrappers around the package runtime
+Docs -> Knowledge Assets -> Usage Playbooks -> Skills -> Gates -> Evals -> Proposals
 ```
 
-Schema & gate rules: [kb/SCHEMA.md](kb/SCHEMA.md)
+## Why EvolveKB
 
-## Use cases
+Most RAG pipelines answer the question "can we retrieve the right fragments?"
+EvolveKB asks a more agent-native question:
 
-- **Beyond vector‑only storage**: knowledge becomes executable, not just retrievable.
-- **Continuous evolution**: gated updates with versionable proposals.
-- **Personal knowledge logic**: learn how you want to store and use knowledge.
+> Can this knowledge become a reusable behavior that an agent can reliably execute?
 
----
+That difference matters when knowledge is not just background context but part
+of a production workflow. A policy, research note, design principle, customer
+playbook, or internal engineering rule should not remain an unstructured chunk.
+It should have ownership, schema, usage rules, validation gates, and regression
+checks.
 
-## How it works
+## What It Provides
 
-1. User question / docs input
-2. Load settings (reference / digest / transform / evolve)
-3. Route to playbook by intent
-4. Execute procedures step‑by‑step
-5. Gate checks verify intermediate outputs
-6. Evolve mode writes a proposal snapshot
-
----
+| Layer | What it does | Why it matters |
+| --- | --- | --- |
+| Knowledge assets | Stores distilled concepts, summaries, evidence, and source references under a schema. | Keeps knowledge compact, inspectable, and versionable. |
+| Usage assets | Describes how knowledge should be applied for an intent. | Separates "what we know" from "how we use it". |
+| Skills | Encodes executable playbooks and procedures in `SKILL.md`. | Turns knowledge into repeatable agent behavior. |
+| Gates | Validates asset shape, references, skill contracts, and stricter production constraints. | Prevents silent drift and broken knowledge links. |
+| Eval runner | Runs retrieval and routing regression cases. | Makes knowledge changes measurable before they are accepted. |
+| Proposals | Writes reviewable change proposals before applying updates. | Keeps evolution auditable instead of automatic and opaque. |
+| CLI | Exposes validation, run, query, ingest, proposal, and eval commands. | Makes the system usable in CI and local agent workflows. |
 
 ## Architecture
 
-<img src="assets/architecture.svg" alt="architecture" width="100%" />
+<img src="assets/architecture.svg" alt="EvolveKB architecture" width="100%" />
 
----
-
-## Minimal runnable demo
-
-This repo includes a minimal end‑to‑end path (no external tools):
-
-```bash
-python -m pip install -r requirements.txt
-python scripts/run.py --intent compare_frameworks --question "Compare GraphRAG vs Execution-first" --settings settings/reference.yaml
+```mermaid
+flowchart LR
+    A["Source docs"] --> B["Ingestion compiler"]
+    B --> C["Knowledge blocks"]
+    B --> D["Claims and evidence"]
+    C --> E["Usage assets"]
+    E --> F["Skill registry"]
+    F --> G["Playbook runtime"]
+    G --> H["Gate validation"]
+    H --> I["Eval runner"]
+    I --> J["Proposal and KB log"]
+    J --> C
 ```
 
-Expected outputs: [examples/demo.md](examples/demo.md) (reference / digest / transform / evolve)
+## Capability Snapshot
 
-Package CLI:
+Last verified locally on **2026-05-07**.
+
+| Signal | Current result | Command |
+| --- | ---: | --- |
+| Unit and integration tests | `57 / 57 passed` | `python -m pytest -q` |
+| Repository validation gates | `PASS` | `python -m evolvekb.cli validate --settings settings/evolve.yaml` |
+| Retrieval eval cases | `1 / 1 passed` | `python -m evolvekb.cli eval run "evals/*.yaml"` |
+| Routing eval cases | `1 / 1 passed` | `python -m evolvekb.cli eval run "evals/*.yaml"` |
+
+The current eval set is intentionally small and should be treated as a
+regression seed, not a broad benchmark. It verifies two important paths:
+retrieving the `execution-first-kb` knowledge asset for an execution-first
+query, and routing the `answer_with_evidence` intent to the
+`answer-with-evidence` playbook.
+
+Test coverage currently exercises config loading, frontmatter parsing, typed
+models, asset registry checks, duplicate detection, reference resolution, skill
+routing, playbook execution, ingestion, proposal apply/rollback, KB linting,
+evidence query, CLI wrappers, and eval execution.
+
+## Quick Start
 
 ```bash
+git clone https://github.com/2sao7sao/EvolveKB.git
+cd EvolveKB
 python -m pip install -e ".[dev]"
-evolvekb validate --settings settings/evolve.yaml
-evolvekb run --intent compare_frameworks --question "Compare GraphRAG vs Execution-first" --settings settings/reference.yaml
-evolvekb skills list
-evolvekb kb index
-evolvekb kb lint --gate-level 2
-evolvekb query "execution-first knowledge runtime"
-evolvekb eval run "evals/*.yaml"
 ```
 
-Legacy scripts are still supported:
+Validate the repository:
 
 ```bash
-python scripts/validate.py --settings settings/evolve.yaml
-python scripts/run.py --intent compare_frameworks --question "Compare GraphRAG vs Execution-first" --settings settings/reference.yaml
-python scripts/ingest.py --doc path/to/your.md
-python scripts/review_usage.py
-```
-
----
-
-## Phase 2 updates
-
-Phase 2 turns the original deterministic demo into a package-quality runtime while keeping the minimal scripts compatible.
-
-Implemented:
-
-- **Python package runtime**: `evolvekb/` now contains config loading, asset parsing, registry logic, gate validation, skill routing, playbook execution, ingestion helpers, usage review, and packaging helpers.
-- **Installable CLI**: `pyproject.toml` adds the `evolvekb` command and `.[dev]` dependencies.
-- **Pydantic schema v2**: core models now cover source documents, chunks, claims, concepts, knowledge blocks, usage assets, skill assets, gate policies, proposals, and run traces.
-- **AssetRegistry**: loads knowledge, usage, and skill assets; computes stable hashes; resolves references; catches duplicate IDs, missing skills, unknown knowledge references, and invalid `TBD` usage at stricter gate levels.
-- **Skill runtime**: playbooks are selected by intent, procedures are executed step by step, and the old deterministic demo behavior is preserved.
-- **Schema migration**: existing `kb/knowledge`, `kb/usage`, and `skills/*/SKILL.md` assets were migrated to `schema_version: 2`.
-- **Knowledge/usage seed assets**: `execution-first-kb` was added and `compare-frameworks` now references concrete knowledge assets instead of `uses: TBD`.
-- **Settings expansion**: presets now include retrieval flags, proposal review settings, and gate thresholds for later milestones.
-- **CI and tests**: GitHub Actions installs the package, validates assets, runs legacy validation smoke, and executes pytest. The current suite covers config, frontmatter, models, registry, gates, skills, runtime, CLI, and legacy wrappers.
-
-New CLI surface:
-
-```bash
-evolvekb validate --settings settings/evolve.yaml
-evolvekb run --intent compare_frameworks --question "Compare GraphRAG vs Execution-first" --settings settings/reference.yaml
-evolvekb skills list
-evolvekb skills inspect compare-frameworks
-evolvekb kb index
-evolvekb kb lint --gate-level 2
-evolvekb kb log note "Reviewed a knowledge update"
-```
-
----
-
-## Phase 3 updates
-
-The next roadmap items are now implemented as a minimal local-first loop:
-
-- **Complete gate evolution loop**: `evolvekb evolve doc <path>` compiles a source into a proposal, runs gates, can run evals, and records the action in `kb/log.md`.
-- **Claim/evidence ingestion compiler**: `evolvekb ingest <doc>` now writes `kb/sources`, `kb/chunks`, `kb/claims`, `kb/concepts`, and a v2 knowledge asset. `--proposal` creates a reviewable proposal instead of writing canonical knowledge directly.
-- **Proposal apply / rollback workflow**: `evolvekb proposal create|list|apply|rollback` supports reviewable write-file proposals, backups, manifests, status updates, rollback, index rebuilds, and log entries.
-- **Eval harness**: `evolvekb eval run "evals/*.yaml"` runs YAML eval cases. Current categories cover retrieval and routing.
-- **Retrieval-as-evidence**: `evolvekb query <query>` runs keyword retrieval over knowledge blocks and compiled claims, returning an evidence pack with citations.
-- **More playbooks and examples**: `answer-with-evidence` adds an evidence-first playbook using `retrieve-evidence` and `compose-evidence-answer`; examples and eval cases were added under `examples/` and `evals/`.
-
-New self-iteration commands:
-
-```bash
-evolvekb ingest README.md
-evolvekb ingest README.md --proposal
-evolvekb query "execution-first knowledge runtime"
-evolvekb run --intent answer_with_evidence --question "What is execution-first knowledge?"
-evolvekb evolve doc README.md --settings settings/evolve.yaml --eval "evals/*.yaml"
-evolvekb proposal list
-evolvekb proposal apply <proposal-id-or-path>
-evolvekb proposal rollback <proposal-id>
-evolvekb eval run "evals/*.yaml"
-```
-
-Remaining future work:
-
-- HTTP API
-- richer LLM-based claim extraction
-- contradiction detection
-- semantic/vector and graph retrieval
-- human review UI for proposals
-- larger eval corpus and more domain playbooks
-
-Phase 2 established the runtime, schema, registry, and self-iteration foundation. Phase 3 turns that foundation into a working local evolution loop.
-
-## Self-iteration loop
-
-EvolveKB borrows from the LLM Wiki pattern: raw sources should stay stable, compiled markdown should accumulate model-understood synthesis, and index/log files should help the model navigate what changed.
-
-EvolveKB specializes this into an execution-first runtime:
-
-- `kb/knowledge/` stores what is known.
-- `kb/usage/` stores how knowledge should be applied.
-- `skills/` stores executable playbooks and procedures.
-- `kb/index.md` is the content-oriented navigation layer.
-- `kb/log.md` is the append-only evolution timeline.
-- Gates and proposals keep future self-updates reviewable instead of silent.
-
-Reference notes: [Karpathy LLM Wiki comparison](docs/karpathy-llm-wiki-comparison.md)
-
-### Difference from RAG
-
-Traditional RAG retrieves chunks at query time and asks the model to re-synthesize from fragments. EvolveKB's direction is different:
-
-```text
-raw sources
-  -> model-understood knowledge
-  -> explicit usage rules
-  -> executable skills
-  -> gates / logs / proposals
-  -> updated knowledge and usage
-```
-
-Retrieval can still be useful later as evidence supply, but it is not the core product. The core product is a self-updating knowledge runtime that records what the model has understood and how that understanding should be used.
-
-### Karpathy LLM Wiki reference
-
-Karpathy's LLM Wiki pattern argues for a persistent markdown wiki maintained by an LLM: immutable raw sources, an LLM-written wiki, a schema file, `index.md`, `log.md`, and periodic linting.
-
-EvolveKB adopts the useful parts:
-
-- keep compiled markdown as a persistent artifact
-- maintain a content index for navigation
-- maintain a chronological log for evolution memory
-- lint the knowledge base for broken references and orphan assets
-- let useful queries become candidate updates
-
-EvolveKB differs by adding stricter runtime boundaries:
-
-- `knowledge` and `usage` are separate assets
-- `skills` are executable playbooks/procedures
-- gates validate structure and references
-- future evolution should happen through proposals instead of silent writes
-- the system is designed for agent runtime behavior, not only human wiki browsing
-
----
-
-## Ingest to knowledge
-
-Generate a knowledge asset directly from a markdown file:
-
-Usage evolves separately based on verification and user behavior, and is stored under `kb/usage`.
-
-Auto-usage is generated after playbook runs and reviewed weekly.
-
-```bash
-python scripts/ingest.py --doc path/to/your.md
-# -> kb/knowledge/<doc_name>.md
-```
-
-You can also run the playbook directly:
-
-```bash
-python scripts/run.py --intent ingest_doc --doc path/to/your.md --settings settings/transform.yaml
-```
-
-## Mode presets
-
-Switch behavior via presets. Output verbosity is controlled by `output_template` in each preset:
-
-```bash
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/reference.yaml
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/digest.yaml
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/transform.yaml
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/evolve.yaml
-```
-
----
-
-## Mode comparison
-
-<img src="assets/mode_matrix.svg" alt="mode comparison" width="100%" />
-
-## Knowledge usage modes
-
-| Mode | Purpose | Typical usage |
-| --- | --- | --- |
-| Reference | Cite sources, avoid rewriting | Quick Q&A / conservative |
-| Digest | Summarize into structured notes | Absorb & summarize |
-| Transform | Compile into procedures/playbooks | Build reusable skills |
-| Evolve | Propose gated, versioned updates | Continuous evolution |
-
----
-
-## Versioned proposals
-
-In `evolve` mode, a proposal snapshot is written for review:
-
-```bash
-python scripts/run.py --intent compare_frameworks --question "..." --settings settings/evolve.yaml
-# -> outputs/proposals/<timestamp>_compare_frameworks.md
-```
-
----
-
-## Gate validation
-
-Run repo validation with a settings file to apply gate rules:
-
-```bash
-python scripts/validate.py --settings settings/evolve.yaml
-evolvekb validate --settings settings/evolve.yaml
-evolvekb kb lint --gate-level 2
-```
-
-## Usage review (weekly)
-
-Generate a weekly recap of usage assets and TBD patterns:
-
-```bash
-python scripts/review_usage.py
-# -> outputs/reviews/usage_review_<timestamp>.md
-```
-
-The usage index is auto‑maintained at `kb/usage/index.md`. Usage events are stored in `outputs/usage/events.log`.
-
-## Roadmap
-
-1. ✅ README / product narrative
-2. ✅ Settings presets and modes
-3. ✅ Minimal runnable demo
-4. ✅ Package runtime + CLI
-5. ✅ Schema v2 + AssetRegistry
-6. ✅ KB index/log + lintable self-iteration loop
-7. ✅ Complete gate evolution loop
-8. ✅ Claim/evidence ingestion compiler
-9. ✅ Proposal apply / rollback workflow
-10. ✅ Eval harness and retrieval-as-evidence
-11. ✅ More playbooks and examples
-12. ⏭️ HTTP API and review UI
-13. ⏭️ LLM-backed claim extraction and contradiction checks
-14. ⏭️ Hybrid retrieval: keyword + semantic + graph
-15. ⏭️ Larger eval corpus and domain playbook library
-
----
-
-## Validation
-
-Current validation target:
-
-```bash
-python -m pip install -e ".[dev]"
-pytest -q
-ruff check evolvekb tests scripts
 python -m evolvekb.cli validate --settings settings/evolve.yaml
-python scripts/validate.py --settings settings/evolve.yaml
-python -m evolvekb.cli kb lint --gate-level 2
+python -m pytest -q
 python -m evolvekb.cli eval run "evals/*.yaml"
 ```
 
----
+Run a knowledge-backed playbook:
 
-## Star history
+```bash
+python -m evolvekb.cli run \
+  --intent compare_frameworks \
+  --question "Compare GraphRAG vs Execution-first" \
+  --settings settings/reference.yaml \
+  --no-side-effects
+```
 
-![Star History](https://api.star-history.com/svg?repos=2sao7sao/EvolveKB&type=Date)
+Query evidence:
 
----
+```bash
+python -m evolvekb.cli query "execution-first knowledge runtime" --require-evidence
+```
 
-## Commit activity
+Inspect skills:
 
-![Commit Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=2sao7sao&repo=EvolveKB&theme=github-compact)
+```bash
+python -m evolvekb.cli skills list
+python -m evolvekb.cli skills inspect answer-with-evidence
+```
 
----
+## Repository Layout
+
+```text
+evolvekb/       # package runtime, CLI, gates, ingestion, retrieval, evals
+kb/             # knowledge assets, usage assets, index, and evolution log
+skills/         # executable SKILL.md playbooks and procedures
+settings/       # reference, digest, transform, and evolve mode presets
+evals/          # retrieval and routing regression cases
+examples/       # rendered demo outputs
+scripts/        # compatibility wrappers around the package runtime
+```
+
+Schema references:
+
+- [kb/SCHEMA.md](kb/SCHEMA.md): knowledge and usage asset schema.
+- [settings/SCHEMA.md](settings/SCHEMA.md): mode and gate configuration schema.
+
+## Operating Modes
+
+| Mode | Use it when | Behavior |
+| --- | --- | --- |
+| `reference` | You need grounded answers with minimal transformation. | Keeps output close to retrieved evidence. |
+| `digest` | You need compact synthesis. | Summarizes and compresses the relevant knowledge. |
+| `transform` | You need knowledge converted into another format or structure. | Applies usage rules and procedure steps. |
+| `evolve` | You want a reviewable knowledge update. | Creates proposals and runs validation before acceptance. |
+
+<img src="assets/mode_matrix.svg" alt="EvolveKB mode matrix" width="100%" />
+
+## Example Workflow
+
+1. Add or ingest a source document.
+2. Compile it into a typed knowledge asset with claims and evidence.
+3. Link the asset to a usage playbook.
+4. Run the playbook through the skill runtime.
+5. Validate references, contracts, size limits, and gate policy.
+6. Run retrieval/routing evals.
+7. Apply or roll back the proposal after review.
+
+```bash
+python -m evolvekb.cli ingest docs/example.md --proposal
+python -m evolvekb.cli proposal list
+python -m evolvekb.cli validate --settings settings/evolve.yaml
+python -m evolvekb.cli eval run "evals/*.yaml"
+```
+
+## When To Use It
+
+| Good fit | Poor fit |
+| --- | --- |
+| Agent systems that need governed knowledge updates. | Pure semantic search with no workflow layer. |
+| Internal playbooks, policies, research notes, and engineering rules. | One-off Q&A over disposable documents. |
+| Teams that want knowledge changes reviewed like code. | Systems that require fully autonomous memory writes without review. |
+| Skill-based agents where knowledge should trigger repeatable behavior. | Use cases where raw retrieved chunks are enough. |
+
+## Current Boundaries
+
+EvolveKB is a working prototype, not yet a complete enterprise knowledge
+platform. The current repository does not yet include large-scale retrieval
+benchmarks, model-graded answer quality, multi-agent orchestration tests,
+permission-aware document access, or production observability. The existing
+tests are valuable because they protect the engineering loop, but broader
+benchmarks should be added before claiming model or production superiority.
+
+## Roadmap
+
+| Area | Next direction |
+| --- | --- |
+| Evaluation | Expand retrieval, routing, evidence coverage, and playbook success cases. |
+| Skills | Add stronger skill contracts, examples, and failure-mode tests. |
+| Governance | Improve proposal review, rollback metadata, and change attribution. |
+| Retrieval | Add hybrid retrieval and larger evidence packs. |
+| Agent integration | Expose a cleaner harness for single-agent and multi-agent workflows. |
 
 ## License
 
-See `LICENSE`.
+MIT. See [LICENSE](LICENSE).
