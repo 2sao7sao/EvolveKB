@@ -22,6 +22,7 @@ from evolvekb.core.models import (
     SkillAsset,
     UsageAsset,
 )
+from evolvekb.demo import format_demo_report, run_flagship_demo
 from evolvekb.evals.runner import run_evals
 from evolvekb.evolution.proposal import apply_proposal, create_write_file_proposal, rollback_proposal
 from evolvekb.gates.engine import validate_repo
@@ -415,6 +416,18 @@ def test_eval_runner_passes_current_eval_cases() -> None:
     assert all(result.passed for result in results)
 
 
+def test_flagship_demo_metrics_are_grounded() -> None:
+    report = run_flagship_demo(REPO)
+    assert report.passed
+    assert report.metrics["claim_grounding_rate"].value == 1.0
+    assert report.metrics["playbook_success_rate"].value == 1.0
+    assert report.metrics["proposal_gate_pass_rate"].value == 1.0
+    assert report.metrics["retrieval_vs_playbook_delta"].value >= 0.6
+    rendered = format_demo_report(report)
+    assert "Product metrics" in rendered
+    assert "retrieval_vs_playbook_delta" in rendered
+
+
 def test_proposal_apply_and_rollback(tmp_path: Path) -> None:
     content = "# Demo\n"
     proposal = create_write_file_proposal(
@@ -470,6 +483,13 @@ def test_cli_validate_module() -> None:
     result = run_cmd(sys.executable, "-m", "evolvekb.cli", "validate", "--settings", "settings/evolve.yaml")
     assert result.returncode == 0
     assert "REPO VALIDATION PASSED" in result.stdout
+
+
+def test_cli_demo_module() -> None:
+    result = run_cmd(sys.executable, "-m", "evolvekb.cli", "demo")
+    assert result.returncode == 0
+    assert "EvolveKB Flagship Demo" in result.stdout
+    assert "claim_grounding_rate: 1.00" in result.stdout
 
 
 def test_cli_skills_inspect() -> None:

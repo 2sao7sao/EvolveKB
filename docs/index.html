@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>EvolveKB | Execution-first knowledge runtime</title>
+    <title>EvolveKB | Agent knowledge runtime</title>
     <style>
       :root {
         --bg: #f4efe3;
@@ -88,11 +88,12 @@
     <main>
       <header>
         <section>
-          <div class="eyebrow">Execution-first Knowledge Runtime</div>
+          <div class="eyebrow">Agent Knowledge Runtime</div>
           <h1>EvolveKB</h1>
           <p class="subtitle">
-            RAG retrieves similar fragments. EvolveKB turns knowledge into auditable
-            agent behavior: claims, usage playbooks, skills, gates, evals, and reviewable proposals.
+            Turn documents into executable, verifiable, and evolvable agent knowledge:
+            grounded claims, usage playbooks, SKILL.md procedures, gates, evals, and
+            reviewable proposals.
           </p>
           <div class="actions">
             <a class="button" href="https://github.com/2sao7sao/EvolveKB">GitHub</a>
@@ -101,35 +102,35 @@
           </div>
         </section>
         <aside class="hero-card">
-          <h2>Knowledge should evolve through practice.</h2>
+          <h2>Documents should become agent behavior.</h2>
           <div class="flow">
-            <div>1. Read source documents</div>
-            <div>2. Distill claims and evidence</div>
-            <div>3. Bind knowledge to usage playbooks</div>
-            <div>4. Execute as SKILL.md procedures</div>
+            <div>1. Ingest source documents</div>
+            <div>2. Extract claims with evidence</div>
+            <div>3. Create typed knowledge assets</div>
+            <div>4. Bind usage playbooks and skills</div>
             <div>5. Verify with gates and evals</div>
-            <div>6. Propose safe updates after failure</div>
+            <div>6. Propose reviewable updates</div>
           </div>
         </aside>
       </header>
 
       <section class="metrics">
-        <div class="metric"><span>Tests</span><strong>57 passed</strong></div>
-        <div class="metric"><span>Core loop</span><strong>Docs -> Skills</strong></div>
-        <div class="metric"><span>Governance</span><strong>PR-style</strong></div>
-        <div class="metric"><span>Best fit</span><strong>Agent KB</strong></div>
+        <div class="metric"><span>Tests</span><strong>59 passed</strong></div>
+        <div class="metric"><span>Claims grounded</span><strong>5 / 5</strong></div>
+        <div class="metric"><span>Playbook evals</span><strong>2 / 2</strong></div>
+        <div class="metric"><span>Capability delta</span><strong>+0.80</strong></div>
       </section>
 
       <section class="section grid two">
         <div class="panel">
           <h2>Why not plain RAG?</h2>
-          <p>Plain retrieval can find related paragraphs, but it does not know how a policy, runbook, design rule, or research note should be applied.</p>
-          <p>EvolveKB separates what the system knows from how the agent should use it, then validates the behavior before accepting knowledge changes.</p>
+          <p>Plain retrieval can find related paragraphs. It does not usually know how a policy, runbook, design rule, or research note should be applied.</p>
+          <p>EvolveKB separates what the system knows from how the agent should use it, then validates behavior before accepting knowledge changes.</p>
         </div>
         <div class="panel">
           <h2>Run the flagship demo</h2>
-          <p>The demo ingests a synthetic refund policy, generates a proposal, runs gates, executes evals, and keeps the current working tree untouched.</p>
-          <code>python examples/run_evolution_loop.py</code>
+          <p>The demo ingests a synthetic refund policy, generates grounded claims, creates a proposal, runs evals, and keeps the current working tree untouched.</p>
+          <code>python -m evolvekb.cli demo</code>
         </div>
       </section>
 
@@ -143,7 +144,7 @@
           <thead><tr><th>Layer</th><th>Role</th><th>Why it matters</th></tr></thead>
           <tbody>
             <tr><td>Knowledge assets</td><td>Typed claims, concepts, evidence, and source refs.</td><td>Knowledge becomes inspectable and versionable.</td></tr>
-            <tr><td>Usage assets</td><td>Intent-specific rules for applying knowledge.</td><td>The agent knows what to do with what it knows.</td></tr>
+            <tr><td>Usage assets</td><td>Intent-specific rules for applying knowledge.</td><td>The agent knows when and how to use what it knows.</td></tr>
             <tr><td>Skills</td><td>Executable SKILL.md procedures.</td><td>Knowledge becomes repeatable behavior.</td></tr>
             <tr><td>Gates + evals</td><td>Validation before updates are accepted.</td><td>Prevents silent drift and broken playbooks.</td></tr>
             <tr><td>Proposals</td><td>Reviewable knowledge changes.</td><td>Practice updates the KB without black-box writes.</td></tr>

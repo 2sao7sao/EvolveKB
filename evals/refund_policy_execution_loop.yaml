@@ -1,0 +1,16 @@
+id: eval_refund_policy_execution_loop_001
+category: capability_coverage_eval
+input:
+  doc: examples/refund_policy.md
+  settings: settings/evolve.yaml
+  eval_patterns:
+    - evals/retrieval_execution_first.yaml
+    - evals/routing_answer_with_evidence.yaml
+expected:
+  must_create_proposal: true
+  must_pass_gates: true
+  min_metrics:
+    claim_grounding_rate: 1.0
+    playbook_success_rate: 1.0
+    proposal_gate_pass_rate: 1.0
+    retrieval_vs_playbook_delta: 0.6

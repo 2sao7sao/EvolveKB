@@ -6,6 +6,12 @@ from pathlib import Path
 from typing import Sequence
 
 from evolvekb.assets.registry import AssetRegistry
+from evolvekb.demo import (
+    DEFAULT_DEMO_DOC,
+    DEFAULT_DEMO_SETTINGS,
+    format_demo_report,
+    run_flagship_demo,
+)
 from evolvekb.evals.runner import run_evals
 from evolvekb.evolution.proposal import apply_proposal, create_write_file_proposal, list_proposals, rollback_proposal
 from evolvekb.gates.engine import print_validation, validate_repo
@@ -235,6 +241,21 @@ def cmd_evolve_doc(args: argparse.Namespace) -> int:
     return 1 if failed or any(not item.passed for item in eval_results) else 0
 
 
+def cmd_demo(args: argparse.Namespace) -> int:
+    try:
+        report = run_flagship_demo(
+            _repo(),
+            doc=args.doc,
+            settings=args.settings,
+            eval_patterns=args.eval_patterns,
+        )
+    except Exception as exc:
+        print(str(exc))
+        return 1
+    print(format_demo_report(report), end="")
+    return 0 if report.passed else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="evolvekb")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -315,6 +336,12 @@ def build_parser() -> argparse.ArgumentParser:
     evolve_doc.add_argument("--settings", default=None)
     evolve_doc.add_argument("--eval", action="append")
     evolve_doc.set_defaults(func=cmd_evolve_doc)
+
+    demo = sub.add_parser("demo")
+    demo.add_argument("--doc", default=DEFAULT_DEMO_DOC)
+    demo.add_argument("--settings", default=DEFAULT_DEMO_SETTINGS)
+    demo.add_argument("--eval", dest="eval_patterns", action="append")
+    demo.set_defaults(func=cmd_demo)
 
     return parser
 

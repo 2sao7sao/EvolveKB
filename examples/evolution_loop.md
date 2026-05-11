@@ -1,59 +1,95 @@
-# EvolveKB Flagship Demo: From Static Policy to Verified Agent Skill
+# EvolveKB Flagship Demo
 
-This demo describes the product path EvolveKB should make obvious in the README.
-It is intentionally small: a user should understand the difference from plain RAG
-without reading the whole codebase.
+This is the product path the README points to. It is intentionally small and
+deterministic so a developer can inspect every artifact instead of trusting a
+black-box model run.
 
 ## Scenario
 
-A support team has a refund policy document. A normal RAG system can retrieve
-the refund paragraph. EvolveKB should turn the policy into an executable agent
-procedure and keep it safe to evolve.
+A support team has a refund policy. A retrieval-only system can find the refund
+paragraph. EvolveKB should turn the policy into a governed agent capability:
 
 ```text
-policy.md
+refund_policy.md
   -> claims with evidence
-  -> knowledge asset
-  -> usage playbook for "refund eligibility"
-  -> SKILL.md procedure
-  -> gate validation
-  -> eval cases
-  -> proposal when practice exposes a gap
+  -> knowledge proposal
+  -> validation gates
+  -> regression evals
+  -> pending review
 ```
 
-## What Good Looks Like
+The demo does not claim that keyword retrieval beats RAG. It shows the extra
+engineering surface an agent needs when knowledge must drive behavior.
 
-| Step | Expected product behavior | Why it matters |
-| --- | --- | --- |
-| Ingest | Extract policy claims, source references, eligibility rules, and exceptions. | Knowledge becomes inspectable instead of raw chunks. |
-| Organize | Link claims to a usage asset such as `support_refund_decision`. | The system knows how the knowledge is supposed to be used. |
-| Execute | Route a refund request to a procedural skill. | The agent performs a repeatable workflow, not free-form guessing. |
-| Verify | Run gates for evidence, forbidden claims, approval requirements, and eval cases. | Knowledge updates cannot silently break production behavior. |
-| Evolve | When a refund case fails, propose a reviewed knowledge/playbook update. | Practice changes the knowledge base through an auditable loop. |
+## Run It
 
-## Minimal Commands
+```bash
+python -m evolvekb.cli demo
+```
+
+or:
 
 ```bash
 python examples/run_evolution_loop.py
 ```
 
-The script copies the repository to a temporary workspace, ingests
-`examples/refund_policy.md`, runs gates and evals, and lists the generated
-proposal without changing your working tree.
+Both commands run in an isolated temporary workspace and leave the source repo
+unchanged.
 
-## Metrics to Add Next
+## Expected Output Shape
 
-| Metric | Definition |
+```text
+# EvolveKB Flagship Demo
+
+status: PASS
+source_doc: examples/refund_policy.md
+
+## 1. Ingest policy into knowledge assets
+- claims: 5
+- grounded_claims: 5
+- proposal: kb/proposals/...
+
+## 2. Run gates and regression evals
+- gates: PASS (0 blocking failures)
+- evals: 2/2 passed
+- pending_proposals: 1
+
+## 3. Product metrics
+- claim_grounding_rate: 1.00 (5/5)
+- playbook_success_rate: 1.00 (2/2)
+- proposal_gate_pass_rate: 1.00 (1/1)
+- retrieval_vs_playbook_delta: 0.80 (4/5)
+```
+
+## What Each Metric Means
+
+| Metric | Definition | Why it matters |
+| --- | --- | --- |
+| `claim_grounding_rate` | Share of extracted claims that retain source evidence. | Prevents unsourced knowledge from becoming agent behavior. |
+| `playbook_success_rate` | Share of seed evals passed by routing/retrieval runtime. | Shows the current runtime path is executable. |
+| `proposal_gate_pass_rate` | Whether proposal creation keeps gates green. | Knowledge changes should be reviewable before acceptance. |
+| `retrieval_vs_playbook_delta` | Capability coverage gained beyond retrieval-only baseline. | Makes the RAG-vs-runtime distinction explicit. |
+
+The current delta is capability coverage, not model accuracy. The retrieval-only
+baseline can retrieve relevant policy text. The execution-first path also
+extracts grounded claims, runs gates, runs evals, and creates a reviewable
+proposal.
+
+## Artifacts Created During The Demo
+
+| Artifact | Meaning |
 | --- | --- |
-| `claim_grounding_rate` | Share of extracted claims backed by source evidence. |
-| `usage_playbook_success_rate` | Share of tasks completed through the intended playbook. |
-| `hidden_dependency_discovery` | Whether cross-document constraints are discovered and linked. |
-| `proposal_acceptance_rate` | Share of generated updates that pass gates and human review. |
-| `rag_delta` | Task-success delta between plain retrieval and EvolveKB playbook execution. |
+| `kb/sources/*.json` | Source document metadata and content hash. |
+| `kb/chunks/*.jsonl` | Deterministic markdown chunks. |
+| `kb/claims/*.jsonl` | Extracted claims with source evidence quotes. |
+| `kb/concepts/*.jsonl` | Lightweight concepts linked to claims. |
+| `kb/proposals/*.md` | Pending knowledge update proposal. |
 
-## Positioning
+## What To Improve Next
 
-Plain RAG asks: "Which chunks are similar to the query?"
-
-EvolveKB asks: "What should the agent do with this knowledge, how do we verify
-that behavior, and how does practice update the knowledge safely?"
+| Area | Next step |
+| --- | --- |
+| Retrieval baseline | Add semantic and hybrid retriever baselines behind the same evidence contract. |
+| Eval breadth | Add real support, compliance, engineering, and ops knowledge tasks. |
+| Skill execution | Add domain-specific playbooks that consume the generated policy proposal. |
+| Governance | Add approval metadata and reviewer decisions to proposal lifecycle. |

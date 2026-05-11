@@ -12,96 +12,120 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.11%2B-2563eb" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/tests-57%20passed-176b54" alt="57 tests passed">
+  <img src="https://img.shields.io/badge/tests-59%20passed-176b54" alt="59 tests passed">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license">
-  <img src="https://img.shields.io/badge/status-execution--first%20KB-f59e0b" alt="Execution-first KB">
+  <img src="https://img.shields.io/badge/status-v0.3%20productized%20path-f59e0b" alt="v0.3 productized path">
 </p>
 
-# 不要再把知识当成 chunks
+# EvolveKB
 
-**EvolveKB 把文档变成 Agent 可执行、可验证、可评审、可演进的知识运行时。**
+**Agent 知识运行时：把文档变成可执行、可验证、可演进的 Agent 知识资产。**
 
-RAG 能找相似片段，但 Agent 落地需要回答更关键的问题：
+RAG 解决的是“找到相似文本”。EvolveKB 追问的是另一个更贴近 Agent 落地的问题：
 
-> 这份知识能不能变成一个 Agent 可以稳定执行、持续验证、不断修正的行为？
+> 这份文档能不能变成 Agent 可以执行、测试、评审，并在真实使用后安全更新的行为？
 
-如果你的 Agent 依赖政策、SOP、runbook、研究笔记、内部方法论或工程规范，单纯
-拼接 retrieved chunks 不够。模型需要知道知识是什么意思、什么时候该用、如何
-执行、如何验证，以及实践失败后如何安全更新。
+如果你的 Agent 依赖政策、SOP、runbook、研究笔记或工程规范，单纯把 chunk
+塞进 prompt 不够。系统需要 claims、evidence、usage playbook、skill contract、
+validation gate、regression eval，以及可评审的知识更新流程。
 
 ![EvolveKB terminal demo](docs/assets/evolvekb-demo-terminal.svg)
 
-## 30 秒理解
+## 30 秒产品路径
 
 ```text
-Docs -> Claims -> Knowledge Assets -> Usage Playbooks -> SKILL.md -> Gates -> Evals -> Proposals
+Document
+  -> grounded claims
+  -> typed knowledge asset
+  -> usage playbook
+  -> SKILL.md procedure
+  -> validation gates
+  -> regression evals
+  -> reviewable proposal
 ```
 
-EvolveKB 是一个 **execution-first knowledge runtime**：
-
-| 不是... | 而是让知识变成... |
+| 如果你有... | EvolveKB 让 Agent 得到... |
 | --- | --- |
-| 相似 chunk | 有类型、有来源、可检查的知识资产 |
-| Prompt 堆料 | 绑定到明确 usage playbook |
-| 一次性回答 | 通过 `SKILL.md` procedure 执行 |
-| 静默漂移 | 由 gates 和 evals 保护 |
-| 黑盒自动更新 | 生成可评审、可回滚的 proposal |
+| 政策文档 | 带证据的规则、例外和约束 |
+| SOP / runbook | 可复用 playbook，而不是 prompt 堆料 |
+| 内部方法论 | 什么时候用、如何用的 usage guidance |
+| 知识漂移 | gates、evals、proposals 和 rollback 路径 |
+| Agent harness | skills、evidence、governance 的运行时接口 |
 
-## 先跑 Demo
+## 5 分钟跑通 Demo
 
 ```bash
 git clone https://github.com/2sao7sao/EvolveKB.git
 cd EvolveKB
 python -m pip install -e ".[dev]"
-python examples/run_evolution_loop.py
+python -m evolvekb.cli demo
 ```
 
-这个 demo 会复制仓库到临时目录，摄取一份合成退款政策，生成可评审 proposal，
-运行 gates 和 evals，并列出待评审知识更新，不会污染你的当前工作区。
+Demo 会在临时 workspace 中运行，不污染当前仓库。它会摄取一份合成退款政策，
+抽取带证据的 claims，生成待评审 proposal，运行 gates 和 regression evals，
+最后输出产品指标。
 
-## 为什么需要它
+输出形态如下：
 
-多数知识系统优化“检索”。Agent 系统需要的是“可操作知识”。
+```text
+# EvolveKB Flagship Demo
 
-| 真实问题 | chunk retrieval 的弱点 | EvolveKB 的方向 |
+status: PASS
+
+## 1. Ingest policy into knowledge assets
+- claims: 5
+- grounded_claims: 5
+- proposal: kb/proposals/...
+
+## 3. Product metrics
+- claim_grounding_rate: 1.00 (5/5)
+- playbook_success_rate: 1.00 (2/2)
+- proposal_gate_pass_rate: 1.00 (1/1)
+- retrieval_vs_playbook_delta: 0.80 (4/5)
+```
+
+如果你更喜欢直接看脚本，可以运行 `examples/run_evolution_loop.py`，它和 CLI demo
+走同一条产品路径。
+
+## 它为什么不只是 RAG
+
+| 问题 | 纯检索知识库 | EvolveKB |
 | --- | --- | --- |
-| 政策要驱动客服流程 | 模型看到文本，但不知道流程 | 绑定 usage assets 和 skills |
-| 事故后 runbook 要更新 | 检索不管理安全变更 | 生成 proposal 并跑 gates |
-| 设计规则有例外 | 相似度隐藏跨文档依赖 | 存 claims、concepts、evidence、usage rules |
-| 知识更新可能破坏旧行为 | 向量库不做回归测试 | 接受变更前跑 evals |
+| 能否找到相关文本 | 可以 | 可以 |
+| 知识是否有 typed claims 和 evidence | 通常没有 | 有 |
+| 系统是否知道知识该如何使用 | 通常没有 | usage playbooks |
+| 工作流是否能作为可重复 skill 执行 | 不能 | `SKILL.md` procedures |
+| 更新是否能被 gate 和 review | 很少 | proposals + validation |
+| 行为回归是否能被测试 | 很少 | eval seeds + runtime checks |
 
-## 你得到什么
+> [!NOTE]
+> 当前检索后端是 deterministic keyword retrieval。EvolveKB v0.3 不声明语义检索
+> 能力优于 RAG，而是把重点放在“知识是否可操作”：可使用、可测试、可评审、可安全演进。
 
-| 层 | 作用 |
-| --- | --- |
-| `kb/knowledge` | 带摘要、概念、claims、evidence、source refs 的 typed knowledge assets。 |
-| `kb/usage` | 描述某个 intent 应该如何使用知识。 |
-| `skills/` | 把知识转成可复用行为的 `SKILL.md` procedures。 |
-| `evolvekb/gates` | 校验 schema、引用、skill contract 和生产约束。 |
-| `evolvekb/evals` | 回归测试 retrieval 与 routing 行为。 |
-| `kb/proposals` | 知识变更先进入可审计 proposal，再被接受。 |
+## 指标不是装饰
 
-## 可信信号
+Demo 指标来自实际运行产物，不是手工写在 README 里的展示数字。
 
-本地最近验证：
+| 指标 | 衡量什么 | 当前来源 |
+| --- | --- | --- |
+| `claim_grounding_rate` | 抽取出的 claims 是否保留 source evidence | `evolvekb.ingestion.compiler` |
+| `playbook_success_rate` | routing/retrieval seed eval 是否通过 | `evolvekb.evals.runner` |
+| `proposal_gate_pass_rate` | proposal 生成后仓库 gates 是否仍然通过 | `evolvekb.demo` + `evolvekb.gates` |
+| `retrieval_vs_playbook_delta` | 相比纯检索，执行式链路多覆盖了哪些能力 | `evolvekb.demo` |
 
-| 信号 | 结果 | 命令 |
-| --- | ---: | --- |
-| 单测与集成测试 | `57 / 57 passed` | `python -m pytest -q` |
-| 仓库 gates | `PASS` | `python -m evolvekb.cli validate --settings settings/evolve.yaml` |
-| Retrieval eval | `1 / 1 passed` | `python -m evolvekb.cli eval run "evals/*.yaml"` |
-| Routing eval | `1 / 1 passed` | `python -m evolvekb.cli eval run "evals/*.yaml"` |
-
-这些是 regression seed，不是完整 benchmark。它们证明运行链路可执行；如果要声明
-优于 RAG，还需要更大规模知识使用评测和 baseline 对照。
-
-## 常用命令
+直接运行 regression seed：
 
 ```bash
-# 验证仓库
+python -m evolvekb.cli eval run "evals/*.yaml"
+```
+
+## 开发者接口
+
+```bash
+# 验证 knowledge、usage assets、skills 和 gate constraints
 python -m evolvekb.cli validate --settings settings/evolve.yaml
 
-# 查询证据
+# 从 knowledge assets 和 compiled claims 查询证据
 python -m evolvekb.cli query "execution-first knowledge runtime" --require-evidence
 
 # 运行知识驱动 playbook
@@ -111,65 +135,95 @@ python -m evolvekb.cli run \
   --settings settings/reference.yaml \
   --no-side-effects
 
-# 从文档生成可演进 proposal
+# 从文档生成可评审 proposal
 python -m evolvekb.cli ingest examples/refund_policy.md --proposal
 ```
 
-## 适合什么
+最小 harness 接入示例：
 
-适合：
+```python
+from pathlib import Path
 
-| 场景 | 原因 |
-| --- | --- |
-| 内部政策 / SOP | 知识需要触发受控行为。 |
-| Agent skills / playbooks | Procedure 需要证据和回归测试。 |
-| 研究笔记 / 设计系统 | 知识存在隐藏依赖和使用规则。 |
-| Incident runbook | 实践结果应该反推知识更新。 |
+from evolvekb.skills.runtime import PlaybookRuntime
 
-不适合：
-
-| 场景 | 更适合 |
-| --- | --- |
-| 一次性文档问答 | 普通 RAG 即可。 |
-| 纯语义搜索 | 向量库或 hybrid retriever。 |
-| 完全自动记忆写入 | 需要带隐私和用户控制的 memory 系统。 |
+runtime = PlaybookRuntime(Path("."))
+result = runtime.run(
+    intent="answer_with_evidence",
+    question="What does the KB say about execution-first knowledge?",
+    settings_arg="settings/reference.yaml",
+    write_side_effects=False,
+)
+print(result.rendered)
+```
 
 ## 架构
 
 ```mermaid
 flowchart LR
   A["Source docs"] --> B["Ingestion compiler"]
-  B --> C["Knowledge assets"]
-  B --> D["Claims + evidence"]
-  C --> E["Usage playbooks"]
+  B --> C["Claims + evidence"]
+  B --> D["Knowledge assets"]
+  D --> E["Usage playbooks"]
   E --> F["SKILL.md procedures"]
   F --> G["Playbook runtime"]
   G --> H["Validation gates"]
-  H --> I["Eval runner"]
+  H --> I["Regression evals"]
   I --> J["Reviewable proposals"]
-  J --> C
+  J --> D
 ```
+
+## 稳定能力与原型边界
+
+| 层 | 当前状态 |
+| --- | --- |
+| Asset schemas | 足够支撑本地实验和示例 |
+| CLI demo、validate、query、run、ingest、eval | 当前支持的产品路径 |
+| Proposal creation / rollback | 支持本地文件 |
+| Keyword retrieval | 原型 baseline，不是最终检索策略 |
+| Procedure implementations | deterministic MVP 示例，不是完整 skill marketplace |
+| Benchmark claims | seed-level proof，不是大规模 RAG 替代 benchmark |
+
+## 适合 / 不适合
+
+适合：
+
+| 场景 | 原因 |
+| --- | --- |
+| Agent 政策和 SOP | 知识需要触发受控行为 |
+| 客服、合规、运维 playbook | 回答需要证据、路由和审批 |
+| 研究到实践的方法论 | 隐藏用法比相似 chunk 更重要 |
+| 事故后持续演进的 runbook | 实践结果应该通过 review 更新知识 |
+
+不适合：
+
+| 场景 | 更合适的方案 |
+| --- | --- |
+| 一次性文档问答 | 普通 RAG 更快 |
+| 纯语义搜索 | vector / hybrid retrieval |
+| 用户记忆和个性化 | 需要带隐私控制的 memory system |
+| 未评审的自动写入 | 先增加 human review 和 approval gates |
 
 ## 仓库结构
 
 ```text
-evolvekb/       # runtime、CLI、gates、ingestion、retrieval、evals
-kb/             # knowledge assets、usage assets、index、evolution log
-skills/         # 可执行 SKILL.md playbooks 和 procedures
-settings/       # reference、digest、transform、evolve 预设
-evals/          # retrieval 和 routing 回归样例
-examples/       # demo 输入、输出和 replay
-docs/           # 产品首页与文档
+evolvekb/       runtime、CLI、demo metrics、gates、ingestion、retrieval、evals
+kb/             knowledge assets、usage assets、index、evolution log
+skills/         可执行 SKILL.md playbooks 和 procedures
+settings/       reference、digest、transform、evolve 预设
+evals/          retrieval、routing、capability coverage seeds
+examples/       可运行 demo 输入和产品 walkthrough
+docs/           产品首页和补充说明
 ```
 
 ## Roadmap
 
 | 方向 | 下一步 |
 | --- | --- |
-| Evaluation | 增加 RAG baseline 对照和 knowledge-use success metrics。 |
-| Skills | 强化 `SKILL.md` contracts 和 failure-mode tests。 |
-| Governance | 改进 proposal review、rollback metadata 和 change attribution。 |
-| Agent integration | 增加 single-agent 与 multi-agent harness 示例。 |
+| Retrieval | 在同一 evidence contract 后面增加 semantic / hybrid retriever |
+| Evaluation | 增加 RAG baseline tasks 和更大规模 knowledge-use benchmark |
+| Skills | 强化 skill contracts、failure modes 和 harness examples |
+| Governance | 完善 proposal review metadata、approval 和 rollback report |
+| Agent integration | 增加 single-agent / multi-agent harness recipes |
 
 ## Security
 

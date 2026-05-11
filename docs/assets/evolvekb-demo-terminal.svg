@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="650" viewBox="0 0 1180 650" role="img" aria-label="EvolveKB terminal demo screenshot">
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" role="img" aria-label="EvolveKB flagship demo terminal output">
   <defs>
     <linearGradient id="termBg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#12372f"/>
-      <stop offset="100%" stop-color="#071d18"/>
+      <stop offset="100%" stop-color="#061916"/>
     </linearGradient>
     <style>
       .chrome{fill:#102821;stroke:#7ca999;stroke-width:1.2}
@@ -11,28 +11,48 @@
       .dot3{fill:#5fbf88}
       .title{font:700 18px 'Avenir Next','Trebuchet MS',sans-serif;fill:#dff5ed}
       .mono{font:500 18px 'SFMono-Regular','Menlo','Consolas',monospace;fill:#dff5ed}
+      .small{font:500 15px 'SFMono-Regular','Menlo','Consolas',monospace;fill:#dff5ed}
       .muted{fill:#95b9ad}
       .ok{fill:#8ee3b0}
       .warn{fill:#ffd083}
       .accent{fill:#f4b35f}
+      .panel{fill:#0b261f;stroke:#2d5b4f;stroke-width:1}
+      .label{font:800 13px 'Avenir Next','Trebuchet MS',sans-serif;letter-spacing:.08em;text-transform:uppercase;fill:#95b9ad}
+      .metric{font:800 28px Georgia,'Times New Roman',serif;fill:#f9f0d8}
     </style>
   </defs>
-  <rect width="1180" height="650" rx="34" fill="#f4efe3"/>
-  <rect x="42" y="42" width="1096" height="566" rx="24" fill="url(#termBg)" stroke="#93b8a9"/>
+  <rect width="1180" height="720" rx="34" fill="#f4efe3"/>
+  <rect x="42" y="42" width="1096" height="636" rx="24" fill="url(#termBg)" stroke="#93b8a9"/>
   <rect x="42" y="42" width="1096" height="58" rx="24" class="chrome"/>
   <circle cx="78" cy="71" r="8" class="dot2"/>
   <circle cx="104" cy="71" r="8" class="dot"/>
   <circle cx="130" cy="71" r="8" class="dot3"/>
-  <text x="168" y="78" class="title">EvolveKB demo: static policy -> verified agent skill</text>
-  <text x="74" y="136" class="mono accent">$ python examples/run_evolution_loop.py</text>
-  <text x="74" y="182" class="mono muted">Demo workspace: /tmp/evolvekb-demo/EvolveKB</text>
-  <text x="74" y="232" class="mono">$ python -m evolvekb.cli evolve doc examples/refund_policy.md \</text>
-  <text x="102" y="266" class="mono">  --settings settings/evolve.yaml --eval evals/*.yaml</text>
-  <text x="74" y="320" class="mono ok">[proposal] kb/proposals/prop_20260511T040118Z_d279900b.md</text>
-  <text x="74" y="354" class="mono ok">[gates] passed</text>
-  <text x="74" y="388" class="mono ok">[eval] PASS eval_retrieval_execution_first_001: retrieved 1 item</text>
-  <text x="74" y="422" class="mono ok">[eval] PASS eval_routing_answer_with_evidence_001: selected answer-with-evidence</text>
-  <text x="74" y="486" class="mono accent">$ python -m evolvekb.cli proposal list</text>
-  <text x="74" y="532" class="mono warn">pending_review  Ingest refund-policy  -> auditable knowledge update</text>
-  <text x="74" y="580" class="mono muted">RAG retrieves text. EvolveKB turns policy into a verifiable behavior loop.</text>
+  <text x="168" y="78" class="title">EvolveKB demo: document -> executable agent knowledge</text>
+
+  <text x="74" y="136" class="mono accent">$ python -m evolvekb.cli demo</text>
+  <text x="74" y="178" class="mono ok">status: PASS</text>
+  <text x="74" y="212" class="mono muted">source_doc: examples/refund_policy.md</text>
+
+  <rect x="74" y="244" width="314" height="124" rx="18" class="panel"/>
+  <text x="98" y="276" class="label">Ingest</text>
+  <text x="98" y="314" class="metric">5 / 5</text>
+  <text x="98" y="342" class="small muted">grounded claims</text>
+
+  <rect x="432" y="244" width="314" height="124" rx="18" class="panel"/>
+  <text x="456" y="276" class="label">Runtime Checks</text>
+  <text x="456" y="314" class="metric">2 / 2</text>
+  <text x="456" y="342" class="small muted">seed evals passed</text>
+
+  <rect x="790" y="244" width="274" height="124" rx="18" class="panel"/>
+  <text x="814" y="276" class="label">Proposal</text>
+  <text x="814" y="314" class="metric">ready</text>
+  <text x="814" y="342" class="small muted">pending review</text>
+
+  <text x="74" y="420" class="mono">## Product metrics</text>
+  <text x="98" y="460" class="small ok">claim_grounding_rate:       1.00  (5/5)</text>
+  <text x="98" y="492" class="small ok">playbook_success_rate:      1.00  (2/2)</text>
+  <text x="98" y="524" class="small ok">proposal_gate_pass_rate:    1.00  (1/1)</text>
+  <text x="98" y="556" class="small warn">retrieval_vs_playbook_delta: 0.80  (4/5)</text>
+
+  <text x="74" y="616" class="mono muted">Retrieval finds policy text. EvolveKB adds claims, gates, evals, and reviewable updates.</text>
 </svg>
