@@ -31,6 +31,18 @@ Agent 落地的问题：
 研究笔记、设计原则、客户处理 SOP、工程规范，都不应该只是散落的 chunk。
 它们需要所有权、schema、使用规则、验证门禁和回归测试。
 
+## 知识演进闭环
+
+EvolveKB 围绕一条实践驱动的闭环设计：
+
+```text
+阅读 -> 提炼 -> 绑定用法 -> 作为 skill 执行 -> 验证 -> 提出更新
+```
+
+真正的差异在最后一步。当 Agent 失败是因为知识不完整、过期、或者难以应用时，
+EvolveKB 不应该只是继续检索更多文本，而是生成可评审的 proposal，更新知识资产、
+usage playbook 或 skill contract，并通过 gates 与回归 eval 保护这次变化。
+
 ## 核心能力
 
 | 层级 | 做什么 | 价值 |
@@ -118,6 +130,10 @@ python -m evolvekb.cli query "execution-first knowledge runtime" --require-evide
 python -m evolvekb.cli skills list
 python -m evolvekb.cli skills inspect answer-with-evidence
 ```
+
+查看产品主 demo：
+
+- [从静态政策到可验证 Agent Skill](examples/evolution_loop.md)
 
 ## 仓库结构
 

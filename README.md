@@ -34,6 +34,20 @@ playbook, or internal engineering rule should not remain an unstructured chunk.
 It should have ownership, schema, usage rules, validation gates, and regression
 checks.
 
+## The Evolution Loop
+
+EvolveKB is designed around a practice-driven loop:
+
+```text
+Read -> Distill -> Bind to usage -> Execute as skill -> Verify -> Propose update
+```
+
+The important product distinction is the last step. When an agent fails because
+the knowledge is incomplete, stale, or hard to apply, EvolveKB should not just
+retrieve more text. It should produce a reviewable proposal that updates the
+knowledge asset, usage playbook, or skill contract and then protects the change
+with gates and regression evals.
+
 ## What It Provides
 
 | Layer | What it does | Why it matters |
@@ -124,6 +138,10 @@ Inspect skills:
 python -m evolvekb.cli skills list
 python -m evolvekb.cli skills inspect answer-with-evidence
 ```
+
+Read the flagship product demo:
+
+- [From static policy to verified agent skill](examples/evolution_loop.md)
 
 ## Repository Layout
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -40,7 +41,12 @@ def write(path: Path, text: str) -> None:
 
 
 def run_cmd(*args: str, cwd: Path = REPO) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(args, cwd=cwd, text=True, capture_output=True, check=False)
+    env = os.environ.copy()
+    existing_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = os.pathsep.join(
+        [str(REPO), existing_pythonpath] if existing_pythonpath else [str(REPO)]
+    )
+    return subprocess.run(args, cwd=cwd, env=env, text=True, capture_output=True, check=False)
 
 
 def test_settings_defaults() -> None:
