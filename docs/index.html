@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EvolveKB | Execution-first knowledge runtime</title>
+    <style>
+      :root {
+        --bg: #f4efe3;
+        --ink: #102821;
+        --muted: #60756e;
+        --panel: #fffaf0;
+        --line: #d8cdb8;
+        --green: #176b54;
+        --amber: #d8842f;
+        --dark: #09231c;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 8%, #d8eadc 0, transparent 26%),
+          radial-gradient(circle at 86% 2%, #ffe0b6 0, transparent 24%),
+          linear-gradient(135deg, #f7f0df, #eef5ea 52%, #fff8ec);
+        font: 16px/1.55 "Avenir Next", "Trebuchet MS", Verdana, sans-serif;
+      }
+      main { max-width: 1180px; margin: 0 auto; padding: 44px 22px 68px; }
+      header {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.9fr);
+        gap: 30px;
+        align-items: center;
+        min-height: 560px;
+      }
+      h1 {
+        margin: 0;
+        font: 900 clamp(48px, 8vw, 104px)/0.88 Georgia, "Times New Roman", serif;
+        letter-spacing: -0.06em;
+      }
+      h2 { margin: 0 0 14px; font: 800 28px/1.1 Georgia, "Times New Roman", serif; }
+      p { margin: 0 0 14px; }
+      code { font-family: "SFMono-Regular", Menlo, Consolas, monospace; }
+      .eyebrow { color: var(--amber); font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
+      .subtitle { max-width: 760px; margin-top: 24px; color: var(--muted); font-size: 21px; }
+      .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--green);
+        border-radius: 999px;
+        padding: 12px 17px;
+        color: var(--panel);
+        background: var(--green);
+        text-decoration: none;
+        font-weight: 800;
+      }
+      .button.secondary { color: var(--green); background: rgba(255,255,255,0.54); }
+      .hero-card, .panel, .metric {
+        border: 1px solid var(--line);
+        background: rgba(255, 250, 240, 0.88);
+        border-radius: 26px;
+        box-shadow: 0 22px 60px rgba(16, 40, 33, 0.1);
+      }
+      .hero-card { padding: 24px; }
+      .flow { display: grid; gap: 12px; }
+      .flow div { padding: 14px 16px; border: 1px solid #d9d0bd; border-radius: 16px; background: #fffdf7; font-weight: 800; }
+      .grid { display: grid; gap: 18px; }
+      .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .panel { padding: 24px; }
+      .section { padding-top: 28px; }
+      .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+      .metric { padding: 18px; }
+      .metric span { display: block; color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; }
+      .metric strong { display: block; margin-top: 8px; font-size: 26px; }
+      .screenshot { width: 100%; border-radius: 24px; border: 1px solid var(--line); background: #fff; }
+      table { width: 100%; border-collapse: collapse; }
+      td, th { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+      @media (max-width: 880px) {
+        header, .grid.two, .grid.three, .metrics { grid-template-columns: 1fr; }
+        header { min-height: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <section>
+          <div class="eyebrow">Execution-first Knowledge Runtime</div>
+          <h1>EvolveKB</h1>
+          <p class="subtitle">
+            RAG retrieves similar fragments. EvolveKB turns knowledge into auditable
+            agent behavior: claims, usage playbooks, skills, gates, evals, and reviewable proposals.
+          </p>
+          <div class="actions">
+            <a class="button" href="https://github.com/2sao7sao/EvolveKB">GitHub</a>
+            <a class="button secondary" href="https://github.com/2sao7sao/EvolveKB/blob/main/examples/evolution_loop.md">Read demo</a>
+            <a class="button secondary" href="https://github.com/2sao7sao/EvolveKB/blob/main/CONTRIBUTING.md">Contribute</a>
+          </div>
+        </section>
+        <aside class="hero-card">
+          <h2>Knowledge should evolve through practice.</h2>
+          <div class="flow">
+            <div>1. Read source documents</div>
+            <div>2. Distill claims and evidence</div>
+            <div>3. Bind knowledge to usage playbooks</div>
+            <div>4. Execute as SKILL.md procedures</div>
+            <div>5. Verify with gates and evals</div>
+            <div>6. Propose safe updates after failure</div>
+          </div>
+        </aside>
+      </header>
+
+      <section class="metrics">
+        <div class="metric"><span>Tests</span><strong>57 passed</strong></div>
+        <div class="metric"><span>Core loop</span><strong>Docs -> Skills</strong></div>
+        <div class="metric"><span>Governance</span><strong>PR-style</strong></div>
+        <div class="metric"><span>Best fit</span><strong>Agent KB</strong></div>
+      </section>
+
+      <section class="section grid two">
+        <div class="panel">
+          <h2>Why not plain RAG?</h2>
+          <p>Plain retrieval can find related paragraphs, but it does not know how a policy, runbook, design rule, or research note should be applied.</p>
+          <p>EvolveKB separates what the system knows from how the agent should use it, then validates the behavior before accepting knowledge changes.</p>
+        </div>
+        <div class="panel">
+          <h2>Run the flagship demo</h2>
+          <p>The demo ingests a synthetic refund policy, generates a proposal, runs gates, executes evals, and keeps the current working tree untouched.</p>
+          <code>python examples/run_evolution_loop.py</code>
+        </div>
+      </section>
+
+      <section class="section">
+        <img class="screenshot" src="./assets/evolvekb-demo-terminal.svg" alt="EvolveKB terminal demo screenshot" />
+      </section>
+
+      <section class="section panel">
+        <h2>What it provides</h2>
+        <table>
+          <thead><tr><th>Layer</th><th>Role</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td>Knowledge assets</td><td>Typed claims, concepts, evidence, and source refs.</td><td>Knowledge becomes inspectable and versionable.</td></tr>
+            <tr><td>Usage assets</td><td>Intent-specific rules for applying knowledge.</td><td>The agent knows what to do with what it knows.</td></tr>
+            <tr><td>Skills</td><td>Executable SKILL.md procedures.</td><td>Knowledge becomes repeatable behavior.</td></tr>
+            <tr><td>Gates + evals</td><td>Validation before updates are accepted.</td><td>Prevents silent drift and broken playbooks.</td></tr>
+            <tr><td>Proposals</td><td>Reviewable knowledge changes.</td><td>Practice updates the KB without black-box writes.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>
