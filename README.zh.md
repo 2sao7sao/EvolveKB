@@ -3,6 +3,7 @@
 <p align="center">
   <a href="./README.md"><img src="https://img.shields.io/badge/README-English-0f766e" alt="English README"></a>
   <a href="./README.zh.md"><img src="https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-b91c1c" alt="中文 README"></a>
+  <a href="./CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-guide-111827" alt="贡献指南"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
   <img src="https://img.shields.io/badge/python-3.11%2B-2563eb" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/status-execution--first%20KB%20runtime-f59e0b" alt="Project status">
@@ -134,6 +135,12 @@ python -m evolvekb.cli skills inspect answer-with-evidence
 查看产品主 demo：
 
 - [从静态政策到可验证 Agent Skill](examples/evolution_loop.md)
+
+在不修改当前工作区的情况下运行 demo：
+
+```bash
+python examples/run_evolution_loop.py
+```
 
 ## 仓库结构
 

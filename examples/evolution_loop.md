@@ -34,11 +34,12 @@ policy.md
 ## Minimal Commands
 
 ```bash
-python -m evolvekb.cli ingest docs/refund-policy.md --proposal
-python -m evolvekb.cli validate --settings settings/evolve.yaml
-python -m evolvekb.cli eval run "evals/*.yaml"
-python -m evolvekb.cli proposal list
+python examples/run_evolution_loop.py
 ```
+
+The script copies the repository to a temporary workspace, ingests
+`examples/refund_policy.md`, runs gates and evals, and lists the generated
+proposal without changing your working tree.
 
 ## Metrics to Add Next
 

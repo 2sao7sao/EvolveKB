@@ -1,0 +1,33 @@
+name: Feature request
+description: Propose a product or engineering improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What agent knowledge workflow does this improve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the expected behavior and user-facing output.
+    validations:
+      required: true
+  - type: dropdown
+    id: contribution_type
+    attributes:
+      label: Contribution type
+      options:
+        - demo
+        - eval
+        - skill
+        - gate
+        - integration
+        - documentation
+        - core runtime
+    validations:
+      required: true
