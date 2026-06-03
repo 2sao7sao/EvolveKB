@@ -1,4 +1,4 @@
-<img src="assets/banner.png" alt="EvolveKB banner" width="100%" />
+<img src="assets/readme-banner.svg" alt="EvolveKB banner" width="100%" />
 
 <p align="center">
   <a href="./README.zh.md">简体中文</a>
@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/python-3.11%2B-2563eb" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/tests-59%20passed-176b54" alt="59 tests passed">
-  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license">
-  <img src="https://img.shields.io/badge/status-v0.3%20productized%20path-f59e0b" alt="v0.3 productized path">
+  <img src="https://img.shields.io/badge/python-3.11%2B-ff5aa5" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/tests-59%20passed-b8eee4" alt="59 tests passed">
+  <img src="https://img.shields.io/badge/license-Apache--2.0-ff5aa5" alt="Apache-2.0 license">
+  <img src="https://img.shields.io/badge/status-v0.3%20productized%20path-fff4fb" alt="v0.3 productized path">
 </p>
 
 # EvolveKB
@@ -52,6 +52,17 @@ Document
 | Internal methodology | Usage guidance for when and how to apply knowledge |
 | Knowledge drift | Gates, evals, proposals, and rollback paths |
 | Agent harnesses | A runtime surface for skills, evidence, and governance |
+
+## What Ships In This Repo
+
+| Surface | What it gives you |
+| --- | --- |
+| Runtime | CLI commands for demo, validation, evidence query, playbook run, ingest, and eval. |
+| Knowledge assets | Typed Markdown claims, source evidence, usage assets, and an evolution log. |
+| Skills | Executable `SKILL.md` procedures that turn knowledge into repeatable behavior. |
+| Gates | Structure, naming, evidence, packaging, and safety checks before knowledge changes land. |
+| Evals | Seed regression cases that test retrieval, routing, evidence use, and playbook coverage. |
+| Product docs | GitHub Pages and examples that explain the execution-first knowledge model. |
 
 ## 5-Minute Demo
 
@@ -236,4 +247,4 @@ outputs containing sensitive data. See [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).
