@@ -1,4 +1,4 @@
-<img src="assets/banner.png" alt="EvolveKB banner" width="100%" />
+<img src="assets/readme-banner.svg" alt="EvolveKB banner" width="100%" />
 
 <p align="center">
   <a href="./README.md">English</a>
@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/python-3.11%2B-2563eb" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/tests-59%20passed-176b54" alt="59 tests passed">
-  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license">
-  <img src="https://img.shields.io/badge/status-v0.3%20productized%20path-f59e0b" alt="v0.3 productized path">
+  <img src="https://img.shields.io/badge/python-3.11%2B-ff5aa5" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/tests-59%20passed-b8eee4" alt="59 tests passed">
+  <img src="https://img.shields.io/badge/license-Apache--2.0-ff5aa5" alt="Apache-2.0 license">
+  <img src="https://img.shields.io/badge/status-v0.3%20productized%20path-fff4fb" alt="v0.3 productized path">
 </p>
 
 # EvolveKB
@@ -51,6 +51,17 @@ Document
 | 内部方法论 | 什么时候用、如何用的 usage guidance |
 | 知识漂移 | gates、evals、proposals 和 rollback 路径 |
 | Agent harness | skills、evidence、governance 的运行时接口 |
+
+## 这个仓库包含什么
+
+| Surface | 作用 |
+| --- | --- |
+| Runtime | demo、validate、query、run、ingest、eval 等 CLI 命令。 |
+| Knowledge assets | typed Markdown claims、source evidence、usage assets 和 evolution log。 |
+| Skills | 把知识变成可重复行为的 `SKILL.md` procedures。 |
+| Gates | 知识变更落地前的结构、命名、证据、打包和安全检查。 |
+| Evals | 覆盖 retrieval、routing、evidence use 和 playbook coverage 的回归种子。 |
+| Product docs | 解释 execution-first knowledge model 的 GitHub Pages 和示例。 |
 
 ## 5 分钟跑通 Demo
 
@@ -232,4 +243,4 @@ docs/           产品首页和补充说明
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE).
