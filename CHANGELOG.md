@@ -17,6 +17,7 @@ All notable changes to EvolveKB are documented here.
 - Demo asset provenance notes for the README terminal image.
 - `EvidencePack` contract with keyword, BM25, hybrid, and semantic retriever registry hooks.
 - `docs/RETRIEVAL.md` with retriever modes, CLI examples, settings, and eval mode selection.
+- Step-level `RunTrace` with CLI `--trace` and `--trace-out` support.
 
 ### Changed
 

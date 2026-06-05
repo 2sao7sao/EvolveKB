@@ -9,7 +9,9 @@ import re
 import yaml
 
 from evolvekb.assets.frontmatter import parse_frontmatter
+from evolvekb.assets.hashing import stable_hash
 from evolvekb.core.config import Settings, load_settings
+from evolvekb.core.models import RunTrace, StepTrace
 from evolvekb.retrieval.keyword import evidence_pack
 from evolvekb.skills.registry import SkillRegistry
 from evolvekb.wiki import append_kb_log
@@ -295,6 +297,7 @@ def render_by_mode(
 class RunResult:
     rendered: str
     settings: Settings
+    trace: RunTrace
     proposal_path: Path | None = None
 
 
@@ -322,6 +325,7 @@ class PlaybookRuntime:
             "ctx": {},
             "outputs": {},
         }
+        step_traces: list[StepTrace] = []
         for idx, step in enumerate(playbook.steps):
             call = step["call"]
             skill = self.skill_registry.assets.get(call)
@@ -329,25 +333,54 @@ class PlaybookRuntime:
                 raise SystemExit(f"Invalid step {idx}: unknown procedure skill '{call}'")
             if call not in PROC_IMPL:
                 raise SystemExit(f"No implementation for procedure '{call}'. Add to PROC_IMPL")
-            result = PROC_IMPL[call](env, eval_value(step.get("in") or {}, env))
+            step_input = eval_value(step.get("in") or {}, env)
+            started_at = datetime.now(timezone.utc)
+            try:
+                result = PROC_IMPL[call](env, step_input)
+            except Exception as exc:
+                finished_at = datetime.now(timezone.utc)
+                step_traces.append(
+                    _build_step_trace(
+                        step_index=idx,
+                        procedure=call,
+                        step_input=step_input,
+                        step_output=None,
+                        started_at=started_at,
+                        finished_at=finished_at,
+                        success=False,
+                        error=str(exc),
+                    )
+                )
+                raise
             if step.get("out"):
                 assign_path(step["out"], env, result)
+            finished_at = datetime.now(timezone.utc)
+            step_traces.append(
+                _build_step_trace(
+                    step_index=idx,
+                    procedure=call,
+                    step_input=step_input,
+                    step_output=result,
+                    started_at=started_at,
+                    finished_at=finished_at,
+                    success=True,
+                    error=None,
+                )
+            )
 
         base_md = env["outputs"].get("answer_md", "")
-        if not base_md and env["outputs"].get("skill_md"):
-            return RunResult(rendered=env["outputs"]["skill_md"], settings=settings)
-
-        norm = env.get("ctx", {}).get("norm", {})
-        matrix = env.get("ctx", {}).get("matrix", [])
-        rendered = render_by_mode(
-            settings.knowledge_mode,
-            settings.gate_level,
-            base_md,
-            norm,
-            matrix,
-            settings.output_template,
-        )
-        if not rendered:
+        if base_md:
+            norm = env.get("ctx", {}).get("norm", {})
+            matrix = env.get("ctx", {}).get("matrix", [])
+            rendered = render_by_mode(
+                settings.knowledge_mode,
+                settings.gate_level,
+                base_md,
+                norm,
+                matrix,
+                settings.output_template,
+            )
+        else:
             rendered = env["outputs"].get("skill_md", "") or env["outputs"].get("knowledge_md", "")
 
         proposal_path = None
@@ -362,7 +395,16 @@ class PlaybookRuntime:
             self._record_usage(playbook.name, intent, question, settings.knowledge_mode)
             append_kb_log(self.repo, "run", f"{intent} in {settings.knowledge_mode} mode")
 
-        return RunResult(rendered=rendered, settings=settings, proposal_path=proposal_path)
+        trace = _build_run_trace(
+            intent=intent,
+            question=question or None,
+            settings=settings,
+            selected_skill=playbook.name,
+            rendered=rendered,
+            env=env,
+            step_traces=step_traces,
+        )
+        return RunResult(rendered=rendered, settings=settings, trace=trace, proposal_path=proposal_path)
 
     def _record_usage(self, playbook_name: str, intent: str, question: str, mode: str) -> None:
         try:
@@ -387,3 +429,135 @@ def compose_knowledge_from_doc(doc: str) -> tuple[str, str]:
     knowledge_md = compose_knowledge_md(extract_outline(doc))
     name = parse_frontmatter(knowledge_md).frontmatter.get("name")
     return str(name), knowledge_md
+
+
+def _build_step_trace(
+    *,
+    step_index: int,
+    procedure: str,
+    step_input: Any,
+    step_output: Any,
+    started_at: datetime,
+    finished_at: datetime,
+    success: bool,
+    error: str | None,
+) -> StepTrace:
+    metadata_source = {"input": step_input, "output": step_output}
+    return StepTrace(
+        step_index=step_index,
+        procedure=procedure,
+        input_hash=_hash_payload(step_input),
+        output_hash=_hash_payload(step_output),
+        started_at=started_at,
+        finished_at=finished_at,
+        duration_ms=max(0, int((finished_at - started_at).total_seconds() * 1000)),
+        success=success,
+        error=error,
+        retrieved_knowledge_ids=_collect_retrieved_knowledge_ids(metadata_source),
+        evidence_ids=_collect_evidence_ids(metadata_source),
+    )
+
+
+def _build_run_trace(
+    *,
+    intent: str,
+    question: str | None,
+    settings: Settings,
+    selected_skill: str,
+    rendered: str,
+    env: dict[str, Any],
+    step_traces: list[StepTrace],
+) -> RunTrace:
+    retrieved_knowledge_ids = sorted(
+        {
+            knowledge_id
+            for trace in step_traces
+            for knowledge_id in trace.retrieved_knowledge_ids
+        }
+    )
+    return RunTrace(
+        id=_trace_id(intent, selected_skill, rendered),
+        intent=intent,
+        mode=settings.knowledge_mode,
+        question=question,
+        selected_skill=selected_skill,
+        retrieval_plan={
+            "settings": settings.retrieval,
+            "observed_modes": sorted(_collect_retrieval_modes(env)),
+            "retrieval_traces": _collect_retrieval_traces(env),
+        },
+        retrieved_knowledge_ids=retrieved_knowledge_ids,
+        step_traces=step_traces,
+        output_hash=_hash_payload(rendered),
+        created_at=datetime.now(timezone.utc),
+    )
+
+
+def _hash_payload(value: Any) -> str:
+    return f"sha256:{stable_hash(value)}"
+
+
+def _trace_id(intent: str, selected_skill: str, rendered: str) -> str:
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    digest = stable_hash({"intent": intent, "selected_skill": selected_skill, "output": rendered})[:10]
+    return f"trace_{timestamp}_{digest}"
+
+
+def _collect_evidence_dicts(value: Any) -> list[dict[str, Any]]:
+    found: list[dict[str, Any]] = []
+    if isinstance(value, dict):
+        if isinstance(value.get("items"), list) or isinstance(value.get("evidence"), list):
+            for item in value.get("items") or value.get("evidence") or []:
+                if isinstance(item, dict):
+                    found.append(item)
+        for item in value.values():
+            found.extend(_collect_evidence_dicts(item))
+    elif isinstance(value, list):
+        for item in value:
+            found.extend(_collect_evidence_dicts(item))
+    return found
+
+
+def _collect_retrieved_knowledge_ids(value: Any) -> list[str]:
+    ids = {
+        str(item.get("name") or item.get("asset_id"))
+        for item in _collect_evidence_dicts(value)
+        if item.get("asset_type") == "knowledge" and (item.get("name") or item.get("asset_id"))
+    }
+    return sorted(ids)
+
+
+def _collect_evidence_ids(value: Any) -> list[str]:
+    ids = {
+        str(item.get("asset_id"))
+        for item in _collect_evidence_dicts(value)
+        if item.get("asset_id")
+    }
+    return sorted(ids)
+
+
+def _collect_retrieval_modes(value: Any) -> set[str]:
+    modes: set[str] = set()
+    if isinstance(value, dict):
+        if isinstance(value.get("retrieval_modes"), list):
+            modes.update(str(mode) for mode in value["retrieval_modes"])
+        for item in value.values():
+            modes.update(_collect_retrieval_modes(item))
+    elif isinstance(value, list):
+        for item in value:
+            modes.update(_collect_retrieval_modes(item))
+    return modes
+
+
+def _collect_retrieval_traces(value: Any) -> list[dict[str, Any]]:
+    traces: list[dict[str, Any]] = []
+    if isinstance(value, dict):
+        trace = value.get("retrieval_trace")
+        if isinstance(trace, dict):
+            traces.append(trace)
+        for item in value.values():
+            traces.extend(_collect_retrieval_traces(item))
+    elif isinstance(value, list):
+        for item in value:
+            traces.extend(_collect_retrieval_traces(item))
+    return traces
