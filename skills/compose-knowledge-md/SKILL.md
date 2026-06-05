@@ -13,7 +13,7 @@ metadata:
     - outline must include doc_name and doc_path
   postconditions:
     - knowledge_md must include schema_version 2 frontmatter
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # compose-knowledge-md (procedure)

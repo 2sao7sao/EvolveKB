@@ -160,6 +160,25 @@ class Proposal(StrictBaseModel):
     created_at: datetime
     reviewed_at: datetime | None = None
     reviewer: str | None = None
+    impact: "ProposalImpact | None" = None
+
+
+class ProposalImpact(StrictBaseModel):
+    changed_claims: dict[str, list[str]] = Field(
+        default_factory=lambda: {
+            "added": [],
+            "modified": [],
+            "superseded": [],
+            "rejected": [],
+        }
+    )
+    impacted_knowledge_ids: list[str] = Field(default_factory=list)
+    impacted_usage_ids: list[str] = Field(default_factory=list)
+    impacted_skill_ids: list[str] = Field(default_factory=list)
+    impacted_eval_ids: list[str] = Field(default_factory=list)
+    conflicts_detected: list[dict[str, Any]] = Field(default_factory=list)
+    rollback_plan: dict[str, Any] = Field(default_factory=dict)
+    safety_assessment: dict[str, Any] = Field(default_factory=dict)
 
 
 class StepTrace(StrictBaseModel):

@@ -42,6 +42,15 @@ def test_playbook_runtime_returns_step_trace() -> None:
     assert "execution-first-kb" in trace.retrieved_knowledge_ids
     assert trace.retrieval_plan["observed_modes"] == ["keyword"]
     assert trace.retrieval_plan["retrieval_traces"][0]["retriever"] == "keyword"
+    gate_results = [gate for step in trace.step_traces for gate in step.gate_results]
+    assert any(
+        gate["gate_id"] == "skill_runtime_declared" and gate["severity"] == "info"
+        for gate in gate_results
+    )
+    assert any(
+        gate["gate_id"] == "skill_runtime_declared" and gate["severity"] == "warning"
+        for gate in gate_results
+    )
 
 
 def test_cli_run_writes_trace_json(tmp_path: Path) -> None:

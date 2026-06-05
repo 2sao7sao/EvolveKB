@@ -71,3 +71,24 @@ product path:
 They do not prove that keyword retrieval beats semantic retrieval, that the
 runtime is production-ready for every domain, or that the current eval set is a
 comprehensive benchmark.
+
+## Limitations By Metric
+
+| Metric | Limitation |
+| --- | --- |
+| `claim_grounding_rate` | Measures whether deterministic extraction retained evidence quotes, not whether every possible claim was extracted. |
+| `playbook_success_rate` | Measures current seed eval pass rate, not broad task coverage. |
+| `proposal_gate_pass_rate` | Measures whether the generated proposal keeps current gates green, not whether a human has approved it. |
+| `retrieval_vs_playbook_delta` | Measures seed-level capability coverage over a named checklist, not model accuracy or retrieval quality. |
+
+## Eval Summary JSON
+
+The eval runner can emit a machine-readable summary:
+
+```bash
+python -m evolvekb.cli eval run "evals/*.yaml" --json
+python -m evolvekb.cli eval run "evals/*.yaml" --output outputs/evals/latest.json
+```
+
+The summary includes total, passed, failed, and per-eval details such as trace ids,
+retrieved assets, capability deltas, and metric numerator/denominator pairs.

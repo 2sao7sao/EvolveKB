@@ -7,6 +7,8 @@
   ·
   <a href="./examples/evolution_loop.md">核心 Demo</a>
   ·
+  <a href="./examples/customer_support_refund_agent.md">Support Agent 示例</a>
+  ·
   <a href="./CONTRIBUTING.md">贡献指南</a>
 </p>
 
@@ -100,6 +102,12 @@ status: PASS
 如果你更喜欢直接看脚本，可以运行 `examples/run_evolution_loop.py`，它和 CLI demo
 走同一条产品路径。
 
+如果你想看更具体的客服场景，可以运行：
+
+```bash
+python examples/customer_support_refund_agent.py
+```
+
 ## 它为什么不只是 RAG
 
 | 问题 | 纯检索知识库 | EvolveKB |
@@ -112,7 +120,8 @@ status: PASS
 | 行为回归是否能被测试 | 很少 | eval seeds + runtime checks |
 
 > [!NOTE]
-> 当前检索后端是 deterministic keyword retrieval。EvolveKB v0.3 不声明语义检索
+> 默认检索后端是 deterministic keyword retrieval，同时提供 BM25、deterministic
+> semantic-lite 和 hybrid 模式用于本地实验。EvolveKB v0.3 不声明广义语义检索
 > 能力优于 RAG，而是把重点放在“知识是否可操作”：可使用、可测试、可评审、可安全演进。
 
 ## 指标不是装饰
@@ -142,7 +151,9 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 | [指标定义](docs/METRICS.md) | 解释 demo 公式和 `retrieval_vs_playbook_delta` checklist。 |
 | [Retrieval contract](docs/RETRIEVAL.md) | 说明 EvidencePack、keyword/BM25/hybrid modes 和 eval mode selection。 |
 | [Runtime trace](docs/RUNTIME_TRACE.md) | 说明 step-level RunTrace JSON 和 CLI trace output。 |
+| [Proposal review](docs/PROPOSAL_REVIEW.md) | 说明 impact metadata、rollback plan、safety assessment 和 gates。 |
 | [Skill 模板](docs/SKILL_TEMPLATE.md) | 新增 procedure/playbook 时的注释版 `SKILL.md` 起点。 |
+| [Support agent 示例](examples/customer_support_refund_agent.md) | 带 evidence IDs 和 trace id 的端到端退款政策工作流。 |
 | [Starter issues](docs/STARTER_ISSUES.md) | 适合作为第一单 PR 的小任务。 |
 | [Demo 图片来源](docs/assets/README.md) | 说明 terminal 图片如何生成和刷新。 |
 
@@ -248,7 +259,7 @@ docs/           产品首页和补充说明
 
 | Release track | Focus | Exit criteria |
 | --- | --- | --- |
-| v0.3.x | trust、docs、metrics、first contribution path | version 对齐、CI badge、METRICS.md、SKILL_TEMPLATE.md、starter issues |
+| v0.3.x | trust、docs、metrics、first contribution path | version 对齐、CI badge、METRICS.md、SKILL_TEMPLATE.md、customer support example |
 | v0.4.x | evidence contract、pluggable retrieval、runtime trace | [EvidencePack](docs/RETRIEVAL.md)、keyword/BM25 adapters、step-level RunTrace、trace CLI |
 | v0.5.x | dynamic skill execution engine | runtime entrypoints、executor registry、legacy `PROC_IMPL` fallback deprecated |
 | v0.6.x | eval matrix 与 proposal impact review | baseline comparison evals、proposal impact metadata、rollback reports |

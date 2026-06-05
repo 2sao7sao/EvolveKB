@@ -13,7 +13,7 @@ metadata:
     - outline must include doc_name or headings
   postconditions:
     - output must be valid markdown
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # compose-skill-draft (procedure)

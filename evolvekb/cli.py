@@ -13,7 +13,7 @@ from evolvekb.demo import (
     run_flagship_demo,
 )
 from evolvekb.core.config import load_settings
-from evolvekb.evals.runner import run_evals
+from evolvekb.evals.runner import eval_summary, run_evals
 from evolvekb.evolution.proposal import apply_proposal, create_write_file_proposal, list_proposals, rollback_proposal
 from evolvekb.gates.engine import print_validation, validate_repo
 from evolvekb.ingestion.compiler import compile_markdown
@@ -238,6 +238,20 @@ def cmd_proposal_rollback(args: argparse.Namespace) -> int:
 def cmd_eval_run(args: argparse.Namespace) -> int:
     results = run_evals(_repo(), args.patterns)
     failed = [result for result in results if not result.passed]
+    if args.json or args.output:
+        payload = eval_summary(results)
+        rendered = json.dumps(payload, ensure_ascii=False, indent=2)
+        if args.output:
+            output_path = Path(args.output)
+            if not output_path.is_absolute():
+                output_path = _repo() / output_path
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(rendered + "\n", encoding="utf-8")
+            if not args.json:
+                print(f"[eval-summary] {output_path}")
+        if args.json:
+            print(rendered)
+        return 1 if failed else 0
     for result in results:
         status = "PASS" if result.passed else "FAIL"
         print(f"{status}\t{result.id}\t{result.category}\t{result.message}")
@@ -353,6 +367,8 @@ def build_parser() -> argparse.ArgumentParser:
     eval_sub = eval_parser.add_subparsers(dest="eval_command", required=True)
     eval_run = eval_sub.add_parser("run")
     eval_run.add_argument("patterns", nargs="+")
+    eval_run.add_argument("--json", action="store_true")
+    eval_run.add_argument("--output", default=None)
     eval_run.set_defaults(func=cmd_eval_run)
 
     evolve = sub.add_parser("evolve")

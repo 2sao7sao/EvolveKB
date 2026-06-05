@@ -1,0 +1,6 @@
+id: eval_routing_refund_agent_001
+category: routing_eval
+input:
+  intent: refund_decision
+expected:
+  selected_playbook: refund-decision

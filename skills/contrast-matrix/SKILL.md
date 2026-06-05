@@ -14,7 +14,7 @@ metadata:
     - axes must be present
   postconditions:
     - matrix rows must include axis, A, B, and tradeoff
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # contrast-matrix (procedure)

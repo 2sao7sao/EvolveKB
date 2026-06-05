@@ -19,7 +19,7 @@ metadata:
     - doc_path must point to a readable markdown file
   postconditions:
     - outputs.knowledge_md must include knowledge frontmatter
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # ingest-doc (playbook)

@@ -6,6 +6,7 @@ from typing import Any
 from evolvekb.retrieval.base import EvidenceItem, EvidencePack, build_citations
 from evolvekb.retrieval.bm25 import BM25Retriever
 from evolvekb.retrieval.keyword import KeywordRetriever
+from evolvekb.retrieval.semantic import SemanticRetriever
 
 
 class HybridRetriever:
@@ -14,12 +15,14 @@ class HybridRetriever:
     def __init__(
         self,
         *,
-        keyword_weight: float = 0.5,
-        bm25_weight: float = 0.4,
+        keyword_weight: float = 0.35,
+        bm25_weight: float = 0.35,
+        semantic_weight: float = 0.2,
         evidence_weight: float = 0.1,
     ):
         self.keyword_weight = keyword_weight
         self.bm25_weight = bm25_weight
+        self.semantic_weight = semantic_weight
         self.evidence_weight = evidence_weight
 
     def retrieve(
@@ -33,11 +36,14 @@ class HybridRetriever:
     ) -> EvidencePack:
         keyword_pack = KeywordRetriever().retrieve(repo, query, intent=intent, limit=limit, filters=filters)
         bm25_pack = BM25Retriever().retrieve(repo, query, intent=intent, limit=limit, filters=filters)
+        semantic_pack = SemanticRetriever().retrieve(repo, query, intent=intent, limit=limit, filters=filters)
         merged = _merge_items(
             keyword_pack.items,
             bm25_pack.items,
+            semantic_pack.items,
             keyword_weight=self.keyword_weight,
             bm25_weight=self.bm25_weight,
+            semantic_weight=self.semantic_weight,
             evidence_weight=self.evidence_weight,
         )
         items = sorted(merged, key=lambda item: (-item.score, item.asset_type, item.name))[:limit]
@@ -45,7 +51,7 @@ class HybridRetriever:
         return EvidencePack(
             query=query,
             intent=intent,
-            retrieval_modes=[self.name, "keyword", "bm25"],
+            retrieval_modes=[self.name, "keyword", "bm25", "semantic"],
             items=items,
             citations=build_citations(items),
             missing_evidence=missing,
@@ -56,11 +62,13 @@ class HybridRetriever:
                 "weights": {
                     "keyword": self.keyword_weight,
                     "bm25": self.bm25_weight,
+                    "semantic": self.semantic_weight,
                     "evidence": self.evidence_weight,
                 },
                 "keyword_trace": keyword_pack.retrieval_trace,
                 "bm25_trace": bm25_pack.retrieval_trace,
-                "semantic_enabled": False,
+                "semantic_trace": semantic_pack.retrieval_trace,
+                "semantic_enabled": True,
                 "filters": filters or {},
             },
             confidence=max((item.score for item in items), default=None),
@@ -70,15 +78,18 @@ class HybridRetriever:
 def _merge_items(
     keyword_items: list[EvidenceItem],
     bm25_items: list[EvidenceItem],
+    semantic_items: list[EvidenceItem],
     *,
     keyword_weight: float,
     bm25_weight: float,
+    semantic_weight: float,
     evidence_weight: float,
 ) -> list[EvidenceItem]:
     keyword_scores = _normalized_scores(keyword_items)
     bm25_scores = _normalized_scores(bm25_items)
+    semantic_scores = _normalized_scores(semantic_items)
     by_key: dict[tuple[str, str], EvidenceItem] = {}
-    for item in keyword_items + bm25_items:
+    for item in keyword_items + bm25_items + semantic_items:
         by_key.setdefault((item.asset_type, item.asset_id), item)
 
     merged: list[EvidenceItem] = []
@@ -87,6 +98,7 @@ def _merge_items(
         score = (
             keyword_weight * keyword_scores.get(key, 0.0)
             + bm25_weight * bm25_scores.get(key, 0.0)
+            + semantic_weight * semantic_scores.get(key, 0.0)
             + evidence_weight * evidence_score
         )
         merged.append(item.model_copy(update={"score": score, "retrieval_mode": "hybrid"}))

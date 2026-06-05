@@ -25,6 +25,11 @@ def create_write_file_proposal(
     proposal_id = f"prop_{now.strftime('%Y%m%dT%H%M%SZ')}_{stable_hash({'title': title, 'path': path})[:8]}"
     target = repo / path
     before_hash = file_hash(target) if target.exists() else ""
+    impact = _build_impact(
+        path=path,
+        before_hash=before_hash,
+        evidence_ids=evidence_ids or [],
+    )
     fm = {
         "schema_version": 2,
         "id": proposal_id,
@@ -37,6 +42,7 @@ def create_write_file_proposal(
         "after_patches": [{"op": "write_file", "path": path, "content": content}],
         "evidence_ids": evidence_ids or [],
         "eval_results": {},
+        "impact": impact,
         "created_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
     body = [
@@ -50,6 +56,13 @@ def create_write_file_proposal(
         "",
         "## Rollback Plan",
         "- Restore the pre-apply backup stored under `kb/proposals/applied/`.",
+        f"- Target file: `{path}`",
+        f"- Before hash: `{before_hash or 'new_file'}`",
+        "",
+        "## Impact Summary",
+        f"- Impacted assets: `{path}`",
+        f"- Evidence ids: {len(evidence_ids or [])}",
+        "- Requires human review: true",
     ]
     out = repo / "kb" / "proposals" / f"{proposal_id}.md"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -127,9 +140,50 @@ def list_proposals(repo: Path) -> list[dict[str, Any]]:
                 "title": fm.get("title"),
                 "status": fm.get("status"),
                 "path": str(path.relative_to(repo)),
+                "impact": fm.get("impact") or {},
             }
         )
     return rows
+
+
+def _build_impact(path: str, before_hash: str, evidence_ids: list[str]) -> dict[str, Any]:
+    impacted_knowledge_ids = []
+    impacted_skill_ids = []
+    impacted_usage_ids = []
+    impacted_eval_ids = []
+    if path.startswith("kb/knowledge/"):
+        impacted_knowledge_ids.append(Path(path).stem)
+    elif path.startswith("skills/"):
+        parts = Path(path).parts
+        if len(parts) >= 2:
+            impacted_skill_ids.append(parts[1])
+    elif path.startswith("kb/usage/"):
+        impacted_usage_ids.append(Path(path).stem)
+    elif path.startswith("evals/"):
+        impacted_eval_ids.append(Path(path).stem)
+    return {
+        "changed_claims": {
+            "added": list(evidence_ids),
+            "modified": [],
+            "superseded": [],
+            "rejected": [],
+        },
+        "impacted_knowledge_ids": impacted_knowledge_ids,
+        "impacted_usage_ids": impacted_usage_ids,
+        "impacted_skill_ids": impacted_skill_ids,
+        "impacted_eval_ids": impacted_eval_ids,
+        "conflicts_detected": [],
+        "rollback_plan": {
+            "files": [path],
+            "before_hashes": {path: before_hash},
+            "restore_from": "kb/proposals/applied/",
+        },
+        "safety_assessment": {
+            "private_data": False,
+            "prompt_injection_risk": "low",
+            "requires_human_review": True,
+        },
+    }
 
 
 def _resolve_proposal(repo: Path, proposal_id_or_path: str) -> Path:

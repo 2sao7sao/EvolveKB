@@ -7,6 +7,8 @@
   ·
   <a href="./examples/evolution_loop.md">Flagship Demo</a>
   ·
+  <a href="./examples/customer_support_refund_agent.md">Support Agent Example</a>
+  ·
   <a href="./CONTRIBUTING.md">Contributing</a>
 </p>
 
@@ -102,6 +104,12 @@ benchmark claim. The exact checklist is documented in [docs/METRICS.md](docs/MET
 `examples/run_evolution_loop.py` runs the same product path for users who prefer
 an executable example script.
 
+For a concrete support workflow, run:
+
+```bash
+python examples/customer_support_refund_agent.py
+```
+
 ## Why This Is Not Just RAG
 
 | Question | Retrieval-only KB | EvolveKB |
@@ -114,9 +122,11 @@ an executable example script.
 | Can behavior regressions be tested? | Rarely | Eval seeds and runtime checks |
 
 > [!NOTE]
-> The current retrieval backend is deterministic keyword retrieval. EvolveKB is
-> not claiming semantic-search superiority. The point of this v0.3 path is to
-> make knowledge operational: usable, testable, reviewable, and safe to evolve.
+> The default retrieval backend is deterministic keyword retrieval, with BM25,
+> deterministic semantic-lite, and hybrid modes available for local experiments.
+> EvolveKB is not claiming broad semantic-search superiority. The point of this
+> v0.3 path is to make knowledge operational: usable, testable, reviewable, and
+> safe to evolve.
 
 ## Metrics That Map To Code
 
@@ -146,7 +156,9 @@ Useful contributor docs:
 | [Metric definitions](docs/METRICS.md) | Explains demo formulas and the `retrieval_vs_playbook_delta` checklist. |
 | [Retrieval contract](docs/RETRIEVAL.md) | Documents EvidencePack, keyword/BM25/hybrid modes, and eval mode selection. |
 | [Runtime trace](docs/RUNTIME_TRACE.md) | Shows step-level RunTrace JSON and CLI trace output. |
+| [Proposal review](docs/PROPOSAL_REVIEW.md) | Documents impact metadata, rollback plan, safety assessment, and gates. |
 | [Skill template](docs/SKILL_TEMPLATE.md) | Annotated `SKILL.md` starting point for new procedures or playbooks. |
+| [Support agent example](examples/customer_support_refund_agent.md) | End-to-end refund policy workflow with evidence IDs and trace id. |
 | [Starter issues](docs/STARTER_ISSUES.md) | First PR ideas that are small enough to review. |
 | [Demo asset provenance](docs/assets/README.md) | Explains how the terminal image was produced and how to refresh it. |
 
@@ -252,7 +264,7 @@ docs/           product page and supporting explanations
 
 | Release track | Focus | Exit criteria |
 | --- | --- | --- |
-| v0.3.x | Trust, docs, metrics, first contribution path | Version aligned, CI badge, METRICS.md, SKILL_TEMPLATE.md, starter issues |
+| v0.3.x | Trust, docs, metrics, first contribution path | Version aligned, CI badge, METRICS.md, SKILL_TEMPLATE.md, customer support example |
 | v0.4.x | Evidence contract, pluggable retrieval, runtime trace | [EvidencePack](docs/RETRIEVAL.md), keyword/BM25 adapters, step-level RunTrace, trace CLI |
 | v0.5.x | Dynamic skill execution engine | Runtime entrypoints, executor registry, legacy `PROC_IMPL` fallback deprecated |
 | v0.6.x | Eval matrix and proposal impact review | Baseline comparison evals, proposal impact metadata, rollback reports |

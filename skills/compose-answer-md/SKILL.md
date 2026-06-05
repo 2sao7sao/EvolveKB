@@ -14,7 +14,7 @@ metadata:
     - matrix must contain comparison rows
   postconditions:
     - answer_md must be markdown
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # compose-answer-md (procedure)

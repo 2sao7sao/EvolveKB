@@ -1,0 +1,14 @@
+id: eval_grounding_answer_with_evidence_001
+category: grounding_eval
+input:
+  source_docs:
+    - examples/customer_support_refund_policy.md
+  intent: refund_decision
+  question: "The customer opened the item and asks for a refund after 45 days. What should we do?"
+  settings: settings/reference.yaml
+expected:
+  min_evidence_ids: 1
+  must_contain:
+    - "Evidence IDs"
+    - "Source Refs"
+    - "Decision: needs_review"

@@ -13,7 +13,7 @@ metadata:
     - norm must include raw question text
   postconditions:
     - axes must be a non-empty list
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # build-comparison-axes (procedure)
