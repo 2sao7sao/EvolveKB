@@ -1,8 +1,8 @@
 # Runtime Trace
 
 EvolveKB records a `RunTrace` for every playbook run. The current v0.4 track
-trace wraps the legacy `PROC_IMPL` procedure path; it does not yet replace the
-procedure executor with dynamic entrypoints.
+supports Python `runtime.entrypoint` procedures and keeps the legacy `PROC_IMPL`
+map as a compatibility fallback.
 
 ## What Gets Traced
 
@@ -69,11 +69,47 @@ print(result.rendered)
 print(result.trace.id)
 ```
 
+## Python Procedure Entrypoints
+
+Procedure skills can declare a Python entrypoint:
+
+```yaml
+metadata:
+  kind: procedure
+  runtime:
+    type: python
+    entrypoint: evolvekb.procedures.retrieve_evidence:run
+    timeout_ms: 3000
+    side_effects: false
+```
+
+The entrypoint must be a callable with this shape:
+
+```python
+from pathlib import Path
+from typing import Any
+
+from evolvekb.core.models import SkillAsset
+
+
+def run(
+    *,
+    repo: Path,
+    skill: SkillAsset,
+    env: dict[str, Any],
+    args: dict[str, Any],
+) -> Any:
+    ...
+```
+
+If a procedure has no `runtime.entrypoint`, EvolveKB uses the legacy `PROC_IMPL`
+fallback during v0.3.x.
+
 ## Boundaries
 
 - Trace timestamps and durations are runtime observations, not deterministic
   benchmark data.
 - Input, output, and final output hashes are deterministic for deterministic
   fixtures.
-- Procedure execution still uses the legacy `PROC_IMPL` map in this milestone.
-  Dynamic runtime entrypoints belong to the next executor milestone.
+- Procedure execution supports Python `runtime.entrypoint` declarations. Skills
+  without an entrypoint still use the legacy `PROC_IMPL` fallback during v0.3.x.

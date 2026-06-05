@@ -14,6 +14,11 @@ metadata:
     - query must be a non-empty string
   postconditions:
     - evidence must include citations and retrieved evidence items
+  runtime:
+    type: python
+    entrypoint: evolvekb.procedures.retrieve_evidence:run
+    timeout_ms: 3000
+    side_effects: false
   version: 0.2.0
 ---
 

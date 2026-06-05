@@ -11,8 +11,9 @@ import yaml
 from evolvekb.assets.frontmatter import parse_frontmatter
 from evolvekb.assets.hashing import stable_hash
 from evolvekb.core.config import Settings, load_settings
-from evolvekb.core.models import RunTrace, StepTrace
+from evolvekb.core.models import RunTrace, SkillAsset, StepTrace
 from evolvekb.retrieval.keyword import evidence_pack
+from evolvekb.skills.executors.registry import get_executor
 from evolvekb.skills.registry import SkillRegistry
 from evolvekb.wiki import append_kb_log
 
@@ -331,12 +332,15 @@ class PlaybookRuntime:
             skill = self.skill_registry.assets.get(call)
             if not skill or skill.kind != "procedure":
                 raise SystemExit(f"Invalid step {idx}: unknown procedure skill '{call}'")
-            if call not in PROC_IMPL:
-                raise SystemExit(f"No implementation for procedure '{call}'. Add to PROC_IMPL")
+            if not _can_execute_procedure(skill, call):
+                raise SystemExit(
+                    f"No implementation for procedure '{call}'. Add metadata.runtime.entrypoint "
+                    "or legacy PROC_IMPL fallback"
+                )
             step_input = eval_value(step.get("in") or {}, env)
             started_at = datetime.now(timezone.utc)
             try:
-                result = PROC_IMPL[call](env, step_input)
+                result = _execute_procedure(self.repo, skill, call, env, step_input)
             except Exception as exc:
                 finished_at = datetime.now(timezone.utc)
                 step_traces.append(
@@ -429,6 +433,23 @@ def compose_knowledge_from_doc(doc: str) -> tuple[str, str]:
     knowledge_md = compose_knowledge_md(extract_outline(doc))
     name = parse_frontmatter(knowledge_md).frontmatter.get("name")
     return str(name), knowledge_md
+
+
+def _can_execute_procedure(skill: SkillAsset, call: str) -> bool:
+    return bool(skill.runtime.get("entrypoint")) or call in PROC_IMPL
+
+
+def _execute_procedure(
+    repo: Path,
+    skill: SkillAsset,
+    call: str,
+    env: dict[str, Any],
+    args: dict[str, Any],
+) -> Any:
+    if skill.runtime.get("entrypoint"):
+        executor = get_executor(str(skill.runtime.get("type") or "python"))
+        return executor.execute(repo=repo, skill=skill, env=env, args=args)
+    return PROC_IMPL[call](env, args)
 
 
 def _build_step_trace(
