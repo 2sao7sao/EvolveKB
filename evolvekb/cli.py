@@ -133,6 +133,7 @@ def cmd_skills_inspect(args: argparse.Namespace) -> int:
         "steps": skill.steps,
         "preconditions": skill.preconditions,
         "postconditions": skill.postconditions,
+        "runtime": skill.runtime,
     }
     print(json.dumps(payload, ensure_ascii=False, indent=2))
     return 0

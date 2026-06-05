@@ -113,6 +113,7 @@ def load_skill(skill_dir: Path) -> SkillAsset:
         "allowed_tools": fm.get("allowed-tools") or fm.get("allowed_tools") or [],
         "supporting_files": metadata.get("supporting_files") or [],
         "examples": metadata.get("examples") or [],
+        "runtime": metadata.get("runtime") or fm.get("runtime") or {},
         "version": str(metadata.get("version") or "0.3.0"),
         "metadata": metadata,
     }
