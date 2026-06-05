@@ -70,10 +70,11 @@ source_doc: examples/refund_policy.md
 | `proposal_gate_pass_rate` | Whether proposal creation keeps gates green. | Knowledge changes should be reviewable before acceptance. |
 | `retrieval_vs_playbook_delta` | Capability coverage gained beyond retrieval-only baseline. | Makes the RAG-vs-runtime distinction explicit. |
 
-The current delta is capability coverage, not model accuracy. The retrieval-only
-baseline can retrieve relevant policy text. The execution-first path also
-extracts grounded claims, runs gates, runs evals, and creates a reviewable
-proposal.
+The current delta is seed-level capability coverage, not model accuracy. The
+retrieval-only baseline can retrieve relevant policy text. The execution-first
+path also extracts grounded claims, routes an explicit playbook, runs repeatable
+procedure steps, and creates a reviewable proposal with gates. See
+[`docs/METRICS.md`](../docs/METRICS.md) for the exact checklist and formula.
 
 ## Artifacts Created During The Demo
 

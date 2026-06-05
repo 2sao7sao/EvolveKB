@@ -1,0 +1,57 @@
+name: Eval case
+description: Add or request a deterministic regression eval.
+title: "[Eval]: "
+labels: ["eval", "contribution"]
+body:
+  - type: dropdown
+    id: eval_category
+    attributes:
+      label: Eval category
+      options:
+        - retrieval_eval
+        - routing_eval
+        - capability_coverage_eval
+        - proposed new category
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow under test
+      description: What user or agent behavior should this eval protect?
+      placeholder: "A support policy answer should cite evidence instead of inventing an exception."
+    validations:
+      required: true
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Fixture or input
+      description: Provide the smallest public fixture, query, intent, or doc needed.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: Name the exact retrieval target, selected playbook, metric threshold, or failure condition.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Validation command
+      value: |
+        ```bash
+        python -m evolvekb.cli eval run "evals/*.yaml"
+        ```
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This is a deterministic seed eval, not a broad benchmark claim.
+          required: true
+        - label: The fixture contains no private documents, customer data, or secrets.
+          required: true

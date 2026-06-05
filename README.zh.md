@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml"><img src="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.11%2B-ff5aa5" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/tests-59%20passed-b8eee4" alt="59 tests passed">
+  <img src="https://img.shields.io/badge/version-v0.3.0-b8eee4" alt="version v0.3.0">
   <img src="https://img.shields.io/badge/license-Apache--2.0-ff5aa5" alt="Apache-2.0 license">
-  <img src="https://img.shields.io/badge/status-v0.3%20productized%20path-fff4fb" alt="v0.3 productized path">
 </p>
 
 # EvolveKB
@@ -95,6 +95,8 @@ status: PASS
 - retrieval_vs_playbook_delta: 0.80 (4/5)
 ```
 
+`retrieval_vs_playbook_delta` 是 seed-level capability coverage，不是大规模 benchmark
+结论。完整 checklist 见 [docs/METRICS.md](docs/METRICS.md)。
 如果你更喜欢直接看脚本，可以运行 `examples/run_evolution_loop.py`，它和 CLI demo
 走同一条产品路径。
 
@@ -115,14 +117,15 @@ status: PASS
 
 ## 指标不是装饰
 
-Demo 指标来自实际运行产物，不是手工写在 README 里的展示数字。
+Demo 指标来自实际运行产物，不是手工写在 README 里的展示数字。公式、分子、
+分母和当前 retrieval-only baseline 见 [docs/METRICS.md](docs/METRICS.md)。
 
 | 指标 | 衡量什么 | 当前来源 |
 | --- | --- | --- |
 | `claim_grounding_rate` | 抽取出的 claims 是否保留 source evidence | `evolvekb.ingestion.compiler` |
 | `playbook_success_rate` | routing/retrieval seed eval 是否通过 | `evolvekb.evals.runner` |
 | `proposal_gate_pass_rate` | proposal 生成后仓库 gates 是否仍然通过 | `evolvekb.demo` + `evolvekb.gates` |
-| `retrieval_vs_playbook_delta` | 相比纯检索，执行式链路多覆盖了哪些能力 | `evolvekb.demo` |
+| `retrieval_vs_playbook_delta` | 相比纯检索，执行式链路多覆盖了哪些 seed-level 能力 | `evolvekb.demo.CAPABILITY_COVERAGE_CHECKLIST` |
 
 直接运行 regression seed：
 
@@ -131,6 +134,15 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 ```
 
 ## 开发者接口
+
+贡献者常用文档：
+
+| 文档 | 用途 |
+| --- | --- |
+| [指标定义](docs/METRICS.md) | 解释 demo 公式和 `retrieval_vs_playbook_delta` checklist。 |
+| [Skill 模板](docs/SKILL_TEMPLATE.md) | 新增 procedure/playbook 时的注释版 `SKILL.md` 起点。 |
+| [Starter issues](docs/STARTER_ISSUES.md) | 适合作为第一单 PR 的小任务。 |
+| [Demo 图片来源](docs/assets/README.md) | 说明 terminal 图片如何生成和刷新。 |
 
 ```bash
 # 验证 knowledge、usage assets、skills 和 gate constraints

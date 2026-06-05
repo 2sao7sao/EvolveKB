@@ -1,0 +1,75 @@
+name: Skill contribution
+description: Propose or submit a SKILL.md procedure or playbook.
+title: "[Skill]: "
+labels: ["skill", "contribution"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use `docs/SKILL_TEMPLATE.md` before opening a skill PR.
+  - type: input
+    id: skill_name
+    attributes:
+      label: Skill name
+      description: Kebab-case name matching `skills/<name>/`.
+      placeholder: "answer-with-evidence"
+    validations:
+      required: true
+  - type: dropdown
+    id: skill_kind
+    attributes:
+      label: Skill kind
+      options:
+        - procedure
+        - playbook
+    validations:
+      required: true
+  - type: input
+    id: intent
+    attributes:
+      label: Intent
+      description: Required for playbooks, optional for procedures.
+      placeholder: "answer_with_evidence"
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Repeatable behavior
+      description: What behavior should this skill make executable?
+    validations:
+      required: true
+  - type: textarea
+    id: inputs_outputs
+    attributes:
+      label: Inputs and outputs
+      description: Describe the expected input schema and output schema.
+      value: |
+        Inputs:
+        Outputs:
+    validations:
+      required: true
+  - type: textarea
+    id: failure_modes
+    attributes:
+      label: Failure modes
+      description: What should happen when evidence, inputs, or downstream steps are missing?
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Validation plan
+      value: |
+        - [ ] `python -m evolvekb.cli validate --settings settings/evolve.yaml`
+        - [ ] `python -m pytest -q`
+        - [ ] Routing or runtime eval added if this is a playbook.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - label: The skill does not require private credentials or customer data.
+          required: true
+        - label: The skill avoids unsupported claims when evidence is missing.
+          required: true

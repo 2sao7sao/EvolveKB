@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml"><img src="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.11%2B-ff5aa5" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/tests-59%20passed-b8eee4" alt="59 tests passed">
+  <img src="https://img.shields.io/badge/version-v0.3.0-b8eee4" alt="version v0.3.0">
   <img src="https://img.shields.io/badge/license-Apache--2.0-ff5aa5" alt="Apache-2.0 license">
-  <img src="https://img.shields.io/badge/status-v0.3%20productized%20path-fff4fb" alt="v0.3 productized path">
 </p>
 
 # EvolveKB
@@ -97,6 +97,8 @@ status: PASS
 - retrieval_vs_playbook_delta: 0.80 (4/5)
 ```
 
+`retrieval_vs_playbook_delta` is seed-level capability coverage, not a broad
+benchmark claim. The exact checklist is documented in [docs/METRICS.md](docs/METRICS.md).
 `examples/run_evolution_loop.py` runs the same product path for users who prefer
 an executable example script.
 
@@ -119,14 +121,15 @@ an executable example script.
 ## Metrics That Map To Code
 
 The demo metrics are computed from runtime artifacts, not manually edited
-README numbers.
+README numbers. See [docs/METRICS.md](docs/METRICS.md) for formulas,
+numerators, denominators, and the current retrieval-only baseline.
 
 | Metric | What it measures | Current demo source |
 | --- | --- | --- |
 | `claim_grounding_rate` | Extracted claims that retain source evidence | `evolvekb.ingestion.compiler` |
 | `playbook_success_rate` | Seed routing/retrieval evals passed by the runtime | `evolvekb.evals.runner` |
 | `proposal_gate_pass_rate` | Proposal created while repository gates stay green | `evolvekb.demo` + `evolvekb.gates` |
-| `retrieval_vs_playbook_delta` | Capability coverage gained over retrieval-only baseline | `evolvekb.demo` |
+| `retrieval_vs_playbook_delta` | Seed-level capability coverage gained over retrieval-only baseline | `evolvekb.demo.CAPABILITY_COVERAGE_CHECKLIST` |
 
 Run the regression seed directly:
 
@@ -135,6 +138,15 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 ```
 
 ## Developer Surface
+
+Useful contributor docs:
+
+| Document | Purpose |
+| --- | --- |
+| [Metric definitions](docs/METRICS.md) | Explains demo formulas and the `retrieval_vs_playbook_delta` checklist. |
+| [Skill template](docs/SKILL_TEMPLATE.md) | Annotated `SKILL.md` starting point for new procedures or playbooks. |
+| [Starter issues](docs/STARTER_ISSUES.md) | First PR ideas that are small enough to review. |
+| [Demo asset provenance](docs/assets/README.md) | Explains how the terminal image was produced and how to refresh it. |
 
 ```bash
 # Validate knowledge, usage assets, skills, and gate constraints
