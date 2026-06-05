@@ -12,11 +12,12 @@ from evolvekb.demo import (
     format_demo_report,
     run_flagship_demo,
 )
+from evolvekb.core.config import load_settings
 from evolvekb.evals.runner import run_evals
 from evolvekb.evolution.proposal import apply_proposal, create_write_file_proposal, list_proposals, rollback_proposal
 from evolvekb.gates.engine import print_validation, validate_repo
 from evolvekb.ingestion.compiler import compile_markdown
-from evolvekb.retrieval.keyword import evidence_pack
+from evolvekb.retrieval.registry import available_retrievers, get_retriever
 from evolvekb.skills.registry import SkillRegistry
 from evolvekb.skills.runtime import PlaybookRuntime
 from evolvekb.wiki import append_kb_log, lint_kb, rebuild_kb_index
@@ -74,16 +75,23 @@ def cmd_ingest(args: argparse.Namespace) -> int:
 
 
 def cmd_query(args: argparse.Namespace) -> int:
-    pack = evidence_pack(_repo(), args.query, limit=args.limit)
+    try:
+        settings = load_settings(_repo(), args.settings)
+        retriever_name = args.retriever or str(settings.retrieval.get("default_mode") or "keyword")
+        pack = get_retriever(retriever_name).retrieve(_repo(), args.query, limit=args.limit)
+    except Exception as exc:
+        print(f"RETRIEVAL FAILED: {exc}")
+        return 1
     if args.json:
-        print(json.dumps(pack, ensure_ascii=False, indent=2))
+        print(json.dumps(pack.model_dump(mode="json"), ensure_ascii=False, indent=2))
         return 0
     print(f"# Evidence for: {args.query}\n")
-    if not pack["evidence"]:
+    print(f"retriever: {pack.retrieval_modes[0]}\n")
+    if not pack.items:
         print("- no evidence found")
         return 1 if args.require_evidence else 0
-    for item in pack["evidence"]:
-        print(f"- ({item['score']:.2f}) `{item['name']}` from {item['source_ref']}: {item['text']}")
+    for item in pack.items:
+        print(f"- ({item.score:.2f}) `{item.name}` from {item.source_ref}: {item.text}")
     return 0
 
 
@@ -280,6 +288,8 @@ def build_parser() -> argparse.ArgumentParser:
     query = sub.add_parser("query")
     query.add_argument("query")
     query.add_argument("--limit", type=int, default=5)
+    query.add_argument("--retriever", choices=available_retrievers(), default=None)
+    query.add_argument("--settings", default=None)
     query.add_argument("--json", action="store_true")
     query.add_argument("--require-evidence", action="store_true")
     query.set_defaults(func=cmd_query)

@@ -6,7 +6,7 @@ from typing import Any
 
 import yaml
 
-from evolvekb.retrieval.keyword import keyword_retrieve
+from evolvekb.retrieval.registry import get_retriever
 from evolvekb.skills.registry import SkillRegistry
 
 
@@ -39,15 +39,29 @@ def run_evals(repo: Path, patterns: list[str]) -> list[EvalResult]:
 
 
 def _run_retrieval_eval(repo: Path, eval_id: str, data: dict[str, Any]) -> EvalResult:
-    query = str((data.get("input") or {}).get("query") or "")
+    input_data = data.get("input") or {}
+    query = str(input_data.get("query") or "")
+    retriever_name = str(input_data.get("retriever") or "keyword")
     expected = data.get("expected") or {}
     required = set(expected.get("must_retrieve") or [])
-    items = keyword_retrieve(repo, query, limit=int(expected.get("limit") or 5))
-    names = {item.name for item in items}
+    try:
+        pack = get_retriever(retriever_name).retrieve(
+            repo,
+            query,
+            limit=int(expected.get("limit") or 5),
+        )
+    except Exception as exc:
+        return EvalResult(eval_id, "retrieval_eval", False, f"{retriever_name} failed: {exc}")
+    names = {item.name for item in pack.items}
     missing = required - names
     if missing:
-        return EvalResult(eval_id, "retrieval_eval", False, f"missing retrieval targets: {sorted(missing)}")
-    return EvalResult(eval_id, "retrieval_eval", True, f"retrieved {len(items)} item(s)")
+        return EvalResult(
+            eval_id,
+            "retrieval_eval",
+            False,
+            f"{retriever_name} missing retrieval targets: {sorted(missing)}",
+        )
+    return EvalResult(eval_id, "retrieval_eval", True, f"{retriever_name} retrieved {len(pack.items)} item(s)")
 
 
 def _run_routing_eval(repo: Path, eval_id: str, data: dict[str, Any]) -> EvalResult:

@@ -22,7 +22,7 @@ from evolvekb.core.models import (
     SkillAsset,
     UsageAsset,
 )
-from evolvekb.demo import format_demo_report, run_flagship_demo
+from evolvekb.demo import CAPABILITY_COVERAGE_CHECKLIST, format_demo_report, run_flagship_demo
 from evolvekb.evals.runner import run_evals
 from evolvekb.evolution.proposal import apply_proposal, create_write_file_proposal, rollback_proposal
 from evolvekb.gates.engine import validate_repo
@@ -162,7 +162,7 @@ def test_usage_model_rejects_invalid_pattern() -> None:
 
 def test_skill_model_valid() -> None:
     skill = SkillAsset(name="demo", description="A demo skill", kind="procedure")
-    assert skill.version == "0.2.0"
+    assert skill.version == "0.3.0"
 
 
 def test_skill_model_rejects_invalid_kind() -> None:
@@ -422,7 +422,10 @@ def test_flagship_demo_metrics_are_grounded() -> None:
     assert report.metrics["claim_grounding_rate"].value == 1.0
     assert report.metrics["playbook_success_rate"].value == 1.0
     assert report.metrics["proposal_gate_pass_rate"].value == 1.0
-    assert report.metrics["retrieval_vs_playbook_delta"].value >= 0.6
+    delta = report.metrics["retrieval_vs_playbook_delta"]
+    assert delta.numerator == 4
+    assert delta.denominator == len(CAPABILITY_COVERAGE_CHECKLIST)
+    assert delta.value == 0.8
     rendered = format_demo_report(report)
     assert "Product metrics" in rendered
     assert "retrieval_vs_playbook_delta" in rendered

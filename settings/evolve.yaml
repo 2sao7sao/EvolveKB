@@ -6,9 +6,20 @@ gate_level: 3
 auto_evolve: false
 max_skill_md_bytes: 50000
 retrieval:
-  keyword: true
-  vector: false
-  graph: false
+  default_mode: keyword
+  modes:
+    keyword:
+      enabled: true
+    bm25:
+      enabled: true
+    semantic:
+      enabled: false
+    hybrid:
+      enabled: true
+      weights:
+        keyword: 0.5
+        bm25: 0.4
+        evidence: 0.1
 proposal:
   require_human_review: true
 gates:

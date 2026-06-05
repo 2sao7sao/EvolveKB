@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "evolvekb"
-version = "0.2.0"
-description = "Execution-first knowledge runtime prototype."
+version = "0.3.0"
+description = "Execution-first knowledge runtime."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -1,8 +1,8 @@
-id: eval_retrieval_execution_first_001
+id: eval_retrieval_execution_first_bm25_001
 category: retrieval_eval
 input:
   query: "execution-first knowledge runtime"
-  retriever: keyword
+  retriever: bm25
 expected:
   must_retrieve:
     - execution-first-kb

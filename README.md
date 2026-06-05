@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml"><img src="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.11%2B-ff5aa5" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/tests-59%20passed-b8eee4" alt="59 tests passed">
+  <img src="https://img.shields.io/badge/version-v0.3.0-b8eee4" alt="version v0.3.0">
   <img src="https://img.shields.io/badge/license-Apache--2.0-ff5aa5" alt="Apache-2.0 license">
-  <img src="https://img.shields.io/badge/status-v0.3%20productized%20path-fff4fb" alt="v0.3 productized path">
 </p>
 
 # EvolveKB
@@ -97,6 +97,8 @@ status: PASS
 - retrieval_vs_playbook_delta: 0.80 (4/5)
 ```
 
+`retrieval_vs_playbook_delta` is seed-level capability coverage, not a broad
+benchmark claim. The exact checklist is documented in [docs/METRICS.md](docs/METRICS.md).
 `examples/run_evolution_loop.py` runs the same product path for users who prefer
 an executable example script.
 
@@ -119,14 +121,15 @@ an executable example script.
 ## Metrics That Map To Code
 
 The demo metrics are computed from runtime artifacts, not manually edited
-README numbers.
+README numbers. See [docs/METRICS.md](docs/METRICS.md) for formulas,
+numerators, denominators, and the current retrieval-only baseline.
 
 | Metric | What it measures | Current demo source |
 | --- | --- | --- |
 | `claim_grounding_rate` | Extracted claims that retain source evidence | `evolvekb.ingestion.compiler` |
 | `playbook_success_rate` | Seed routing/retrieval evals passed by the runtime | `evolvekb.evals.runner` |
 | `proposal_gate_pass_rate` | Proposal created while repository gates stay green | `evolvekb.demo` + `evolvekb.gates` |
-| `retrieval_vs_playbook_delta` | Capability coverage gained over retrieval-only baseline | `evolvekb.demo` |
+| `retrieval_vs_playbook_delta` | Seed-level capability coverage gained over retrieval-only baseline | `evolvekb.demo.CAPABILITY_COVERAGE_CHECKLIST` |
 
 Run the regression seed directly:
 
@@ -136,12 +139,25 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 
 ## Developer Surface
 
+Useful contributor docs:
+
+| Document | Purpose |
+| --- | --- |
+| [Metric definitions](docs/METRICS.md) | Explains demo formulas and the `retrieval_vs_playbook_delta` checklist. |
+| [Retrieval contract](docs/RETRIEVAL.md) | Documents EvidencePack, keyword/BM25/hybrid modes, and eval mode selection. |
+| [Skill template](docs/SKILL_TEMPLATE.md) | Annotated `SKILL.md` starting point for new procedures or playbooks. |
+| [Starter issues](docs/STARTER_ISSUES.md) | First PR ideas that are small enough to review. |
+| [Demo asset provenance](docs/assets/README.md) | Explains how the terminal image was produced and how to refresh it. |
+
 ```bash
 # Validate knowledge, usage assets, skills, and gate constraints
 python -m evolvekb.cli validate --settings settings/evolve.yaml
 
 # Query evidence from knowledge assets and compiled claims
-python -m evolvekb.cli query "execution-first knowledge runtime" --require-evidence
+python -m evolvekb.cli query "execution-first knowledge runtime" --retriever keyword --require-evidence
+
+# Try the local BM25 retriever behind the same EvidencePack contract
+python -m evolvekb.cli query "execution-first knowledge runtime" --retriever bm25 --require-evidence
 
 # Run a knowledge-backed playbook
 python -m evolvekb.cli run \
@@ -194,7 +210,7 @@ flowchart LR
 | Asset schemas | Stable enough for local experiments and examples |
 | CLI demo, validate, query, run, ingest, eval | Supported product path |
 | Proposal creation and rollback | Supported for local files |
-| Keyword retrieval | Prototype baseline, not the final retrieval strategy |
+| Keyword/BM25 retrieval | Local lexical baselines behind the shared [EvidencePack contract](docs/RETRIEVAL.md) |
 | Procedure implementations | Deterministic MVP examples, not a full skill marketplace |
 | Benchmark claims | Seed-level proof only, not a broad RAG replacement benchmark |
 
@@ -232,13 +248,12 @@ docs/           product page and supporting explanations
 
 ## Roadmap
 
-| Area | Next step |
-| --- | --- |
-| Retrieval | Add pluggable semantic/hybrid retrievers behind the same evidence contract |
-| Evaluation | Add RAG baseline tasks and larger knowledge-use benchmarks |
-| Skills | Strengthen skill contracts, failure modes, and harness examples |
-| Governance | Improve proposal review metadata, approvals, and rollback reports |
-| Agent integration | Add single-agent and multi-agent harness recipes |
+| Release track | Focus | Exit criteria |
+| --- | --- | --- |
+| v0.3.x | Trust, docs, metrics, first contribution path | Version aligned, CI badge, METRICS.md, SKILL_TEMPLATE.md, starter issues |
+| v0.4.x | Evidence contract, pluggable retrieval, runtime trace | [EvidencePack](docs/RETRIEVAL.md), keyword/BM25 adapters, step-level RunTrace, trace CLI |
+| v0.5.x | Dynamic skill execution engine | Runtime entrypoints, executor registry, legacy `PROC_IMPL` fallback deprecated |
+| v0.6.x | Eval matrix and proposal impact review | Baseline comparison evals, proposal impact metadata, rollback reports |
 
 ## Security
 

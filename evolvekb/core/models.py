@@ -119,7 +119,7 @@ class SkillAsset(StrictBaseModel):
     allowed_tools: list[str] = Field(default_factory=list)
     supporting_files: list[str] = Field(default_factory=list)
     examples: list[dict[str, Any]] = Field(default_factory=list)
-    version: str = "0.2.0"
+    version: str = "0.3.0"
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("description")

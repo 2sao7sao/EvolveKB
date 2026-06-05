@@ -18,6 +18,15 @@ DEFAULT_DEMO_EVALS = [
     "evals/retrieval_execution_first.yaml",
     "evals/routing_answer_with_evidence.yaml",
 ]
+CAPABILITY_COVERAGE_CHECKLIST: tuple[tuple[str, str], ...] = (
+    ("retrieve_policy_text", "Finds relevant policy text"),
+    ("extract_grounded_claims", "Produces evidence-backed claims"),
+    ("route_usage_playbook", "Routes to an explicit usage playbook"),
+    ("run_repeatable_procedure", "Runs repeatable procedure steps"),
+    ("create_reviewable_proposal_and_gates", "Creates a reviewable proposal and gates"),
+)
+_CAPABILITY_KEYS = tuple(key for key, _label in CAPABILITY_COVERAGE_CHECKLIST)
+_CAPABILITY_LABELS = dict(CAPABILITY_COVERAGE_CHECKLIST)
 
 
 @dataclass(frozen=True)
@@ -93,21 +102,26 @@ def run_flagship_demo_in_workspace(
     )
 
     grounded_claim_count = sum(1 for claim in ingest.claims if claim.evidence_quote.strip())
-    retrieval_baseline_steps = {
-        "retrieve_policy_text": bool(retrieval_items),
-        "extract_grounded_claims": False,
-        "run_validation_gates": False,
-        "run_regression_evals": False,
-        "create_reviewable_proposal": False,
-    }
-    playbook_runtime_steps = {
-        "retrieve_policy_text": bool(retrieval_items),
-        "extract_grounded_claims": grounded_claim_count == len(ingest.claims) and bool(ingest.claims),
-        "run_validation_gates": not failed_gates,
-        "run_regression_evals": bool(eval_results)
-        and all(result.passed for result in eval_results),
-        "create_reviewable_proposal": ingest.proposal_path is not None,
-    }
+    routing_eval_passed = any(
+        result.category == "routing_eval" and result.passed for result in eval_results
+    )
+    eval_seeds_passed = bool(eval_results) and all(result.passed for result in eval_results)
+    retrieval_baseline_steps = _capability_steps(
+        {
+            "retrieve_policy_text": bool(retrieval_items),
+        }
+    )
+    playbook_runtime_steps = _capability_steps(
+        {
+            "retrieve_policy_text": bool(retrieval_items),
+            "extract_grounded_claims": grounded_claim_count == len(ingest.claims)
+            and bool(ingest.claims),
+            "route_usage_playbook": routing_eval_passed,
+            "run_repeatable_procedure": eval_seeds_passed and not failed_gates,
+            "create_reviewable_proposal_and_gates": ingest.proposal_path is not None
+            and not failed_gates,
+        }
+    )
     metrics = _build_metrics(
         claim_count=len(ingest.claims),
         grounded_claim_count=grounded_claim_count,
@@ -225,7 +239,7 @@ def _build_metrics(
             key="retrieval_vs_playbook_delta",
             value=playbook_score - retrieval_score,
             numerator=sum(playbook_runtime_steps.values()) - sum(retrieval_baseline_steps.values()),
-            denominator=max(1, len(playbook_runtime_steps)),
+            denominator=len(CAPABILITY_COVERAGE_CHECKLIST),
             explanation="capability coverage gained over a retrieval-only baseline",
         ),
     }
@@ -255,6 +269,10 @@ def _coverage(steps: dict[str, bool]) -> float:
     return _ratio(sum(steps.values()), len(steps))
 
 
+def _capability_steps(enabled: dict[str, bool]) -> dict[str, bool]:
+    return {key: bool(enabled.get(key, False)) for key in _CAPABILITY_KEYS}
+
+
 def _ratio(numerator: int, denominator: int) -> float:
     if denominator <= 0:
         return 0.0
@@ -262,7 +280,10 @@ def _ratio(numerator: int, denominator: int) -> float:
 
 
 def _format_steps(steps: dict[str, bool]) -> str:
-    return "\n".join(f"- {name}: {'yes' if enabled else 'no'}" for name, enabled in steps.items())
+    return "\n".join(
+        f"- {_CAPABILITY_LABELS.get(name, name)}: {'yes' if enabled else 'no'}"
+        for name, enabled in steps.items()
+    )
 
 
 def _format_gate_status(report: FlagshipDemoReport) -> str:
