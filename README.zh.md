@@ -140,6 +140,7 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 | 文档 | 用途 |
 | --- | --- |
 | [指标定义](docs/METRICS.md) | 解释 demo 公式和 `retrieval_vs_playbook_delta` checklist。 |
+| [Retrieval contract](docs/RETRIEVAL.md) | 说明 EvidencePack、keyword/BM25/hybrid modes 和 eval mode selection。 |
 | [Skill 模板](docs/SKILL_TEMPLATE.md) | 新增 procedure/playbook 时的注释版 `SKILL.md` 起点。 |
 | [Starter issues](docs/STARTER_ISSUES.md) | 适合作为第一单 PR 的小任务。 |
 | [Demo 图片来源](docs/assets/README.md) | 说明 terminal 图片如何生成和刷新。 |
@@ -149,7 +150,10 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 python -m evolvekb.cli validate --settings settings/evolve.yaml
 
 # 从 knowledge assets 和 compiled claims 查询证据
-python -m evolvekb.cli query "execution-first knowledge runtime" --require-evidence
+python -m evolvekb.cli query "execution-first knowledge runtime" --retriever keyword --require-evidence
+
+# 使用同一个 EvidencePack contract 尝试本地 BM25 检索
+python -m evolvekb.cli query "execution-first knowledge runtime" --retriever bm25 --require-evidence
 
 # 运行知识驱动 playbook
 python -m evolvekb.cli run \
@@ -202,7 +206,7 @@ flowchart LR
 | Asset schemas | 足够支撑本地实验和示例 |
 | CLI demo、validate、query、run、ingest、eval | 当前支持的产品路径 |
 | Proposal creation / rollback | 支持本地文件 |
-| Keyword retrieval | 原型 baseline，不是最终检索策略 |
+| Keyword/BM25 retrieval | 基于共享 [EvidencePack contract](docs/RETRIEVAL.md) 的本地 lexical baseline |
 | Procedure implementations | deterministic MVP 示例，不是完整 skill marketplace |
 | Benchmark claims | seed-level proof，不是大规模 RAG 替代 benchmark |
 
@@ -240,13 +244,12 @@ docs/           产品首页和补充说明
 
 ## Roadmap
 
-| 方向 | 下一步 |
-| --- | --- |
-| Retrieval | 在同一 evidence contract 后面增加 semantic / hybrid retriever |
-| Evaluation | 增加 RAG baseline tasks 和更大规模 knowledge-use benchmark |
-| Skills | 强化 skill contracts、failure modes 和 harness examples |
-| Governance | 完善 proposal review metadata、approval 和 rollback report |
-| Agent integration | 增加 single-agent / multi-agent harness recipes |
+| Release track | Focus | Exit criteria |
+| --- | --- | --- |
+| v0.3.x | trust、docs、metrics、first contribution path | version 对齐、CI badge、METRICS.md、SKILL_TEMPLATE.md、starter issues |
+| v0.4.x | evidence contract、pluggable retrieval、runtime trace | [EvidencePack](docs/RETRIEVAL.md)、keyword/BM25 adapters、step-level RunTrace、trace CLI |
+| v0.5.x | dynamic skill execution engine | runtime entrypoints、executor registry、legacy `PROC_IMPL` fallback deprecated |
+| v0.6.x | eval matrix 与 proposal impact review | baseline comparison evals、proposal impact metadata、rollback reports |
 
 ## Security
 

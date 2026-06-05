@@ -144,6 +144,7 @@ Useful contributor docs:
 | Document | Purpose |
 | --- | --- |
 | [Metric definitions](docs/METRICS.md) | Explains demo formulas and the `retrieval_vs_playbook_delta` checklist. |
+| [Retrieval contract](docs/RETRIEVAL.md) | Documents EvidencePack, keyword/BM25/hybrid modes, and eval mode selection. |
 | [Skill template](docs/SKILL_TEMPLATE.md) | Annotated `SKILL.md` starting point for new procedures or playbooks. |
 | [Starter issues](docs/STARTER_ISSUES.md) | First PR ideas that are small enough to review. |
 | [Demo asset provenance](docs/assets/README.md) | Explains how the terminal image was produced and how to refresh it. |
@@ -153,7 +154,10 @@ Useful contributor docs:
 python -m evolvekb.cli validate --settings settings/evolve.yaml
 
 # Query evidence from knowledge assets and compiled claims
-python -m evolvekb.cli query "execution-first knowledge runtime" --require-evidence
+python -m evolvekb.cli query "execution-first knowledge runtime" --retriever keyword --require-evidence
+
+# Try the local BM25 retriever behind the same EvidencePack contract
+python -m evolvekb.cli query "execution-first knowledge runtime" --retriever bm25 --require-evidence
 
 # Run a knowledge-backed playbook
 python -m evolvekb.cli run \
@@ -206,7 +210,7 @@ flowchart LR
 | Asset schemas | Stable enough for local experiments and examples |
 | CLI demo, validate, query, run, ingest, eval | Supported product path |
 | Proposal creation and rollback | Supported for local files |
-| Keyword retrieval | Prototype baseline, not the final retrieval strategy |
+| Keyword/BM25 retrieval | Local lexical baselines behind the shared [EvidencePack contract](docs/RETRIEVAL.md) |
 | Procedure implementations | Deterministic MVP examples, not a full skill marketplace |
 | Benchmark claims | Seed-level proof only, not a broad RAG replacement benchmark |
 
@@ -244,13 +248,12 @@ docs/           product page and supporting explanations
 
 ## Roadmap
 
-| Area | Next step |
-| --- | --- |
-| Retrieval | Add pluggable semantic/hybrid retrievers behind the same evidence contract |
-| Evaluation | Add RAG baseline tasks and larger knowledge-use benchmarks |
-| Skills | Strengthen skill contracts, failure modes, and harness examples |
-| Governance | Improve proposal review metadata, approvals, and rollback reports |
-| Agent integration | Add single-agent and multi-agent harness recipes |
+| Release track | Focus | Exit criteria |
+| --- | --- | --- |
+| v0.3.x | Trust, docs, metrics, first contribution path | Version aligned, CI badge, METRICS.md, SKILL_TEMPLATE.md, starter issues |
+| v0.4.x | Evidence contract, pluggable retrieval, runtime trace | [EvidencePack](docs/RETRIEVAL.md), keyword/BM25 adapters, step-level RunTrace, trace CLI |
+| v0.5.x | Dynamic skill execution engine | Runtime entrypoints, executor registry, legacy `PROC_IMPL` fallback deprecated |
+| v0.6.x | Eval matrix and proposal impact review | Baseline comparison evals, proposal impact metadata, rollback reports |
 
 ## Security
 

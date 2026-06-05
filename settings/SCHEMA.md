@@ -53,12 +53,21 @@ Default: `50000`
 
 ### `retrieval` (mapping)
 
-Optional retrieval feature flags. Phase 2 Milestone 1+2 only stores these settings; retrieval implementations arrive in later milestones.
+Optional retrieval feature flags and default retriever selection.
 
 Supported keys:
-- `keyword`
-- `vector`
-- `graph`
+- `default_mode` — `keyword`, `bm25`, `hybrid`, or `semantic`
+- `modes.keyword.enabled`
+- `modes.bm25.enabled`
+- `modes.semantic.enabled`
+- `modes.hybrid.enabled`
+- `modes.hybrid.weights.keyword`
+- `modes.hybrid.weights.bm25`
+- `modes.hybrid.weights.evidence`
+
+Default quickstart behavior uses `keyword` so no external API key or vector
+store is required. `semantic` is an optional plugin hook and is disabled by
+default.
 
 ### `proposal` (mapping)
 
@@ -84,9 +93,20 @@ gate_level: 1
 auto_evolve: false
 max_skill_md_bytes: 50000
 retrieval:
-  keyword: true
-  vector: false
-  graph: false
+  default_mode: keyword
+  modes:
+    keyword:
+      enabled: true
+    bm25:
+      enabled: true
+    semantic:
+      enabled: false
+    hybrid:
+      enabled: true
+      weights:
+        keyword: 0.5
+        bm25: 0.4
+        evidence: 0.1
 proposal:
   require_human_review: true
 gates:
