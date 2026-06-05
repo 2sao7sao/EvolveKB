@@ -168,8 +168,11 @@ class StepTrace(StrictBaseModel):
     output_hash: str
     started_at: datetime
     finished_at: datetime
+    duration_ms: int = 0
     success: bool
     error: str | None = None
+    retrieved_knowledge_ids: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
     gate_results: list[dict[str, Any]] = Field(default_factory=list)
 
 
@@ -182,7 +185,7 @@ class RunTrace(StrictBaseModel):
     selected_skill: str | None = None
     retrieval_plan: dict[str, Any] = Field(default_factory=dict)
     retrieved_knowledge_ids: list[str] = Field(default_factory=list)
-    step_traces: list[dict[str, Any]] = Field(default_factory=list)
+    step_traces: list[StepTrace] = Field(default_factory=list)
     gate_results: list[dict[str, Any]] = Field(default_factory=list)
     output_hash: str
     created_at: datetime

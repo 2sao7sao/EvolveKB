@@ -145,6 +145,7 @@ Useful contributor docs:
 | --- | --- |
 | [Metric definitions](docs/METRICS.md) | Explains demo formulas and the `retrieval_vs_playbook_delta` checklist. |
 | [Retrieval contract](docs/RETRIEVAL.md) | Documents EvidencePack, keyword/BM25/hybrid modes, and eval mode selection. |
+| [Runtime trace](docs/RUNTIME_TRACE.md) | Shows step-level RunTrace JSON and CLI trace output. |
 | [Skill template](docs/SKILL_TEMPLATE.md) | Annotated `SKILL.md` starting point for new procedures or playbooks. |
 | [Starter issues](docs/STARTER_ISSUES.md) | First PR ideas that are small enough to review. |
 | [Demo asset provenance](docs/assets/README.md) | Explains how the terminal image was produced and how to refresh it. |
@@ -185,6 +186,7 @@ result = runtime.run(
     write_side_effects=False,
 )
 print(result.rendered)
+print(result.trace.id)
 ```
 
 ## Architecture

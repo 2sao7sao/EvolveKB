@@ -141,6 +141,7 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 | --- | --- |
 | [指标定义](docs/METRICS.md) | 解释 demo 公式和 `retrieval_vs_playbook_delta` checklist。 |
 | [Retrieval contract](docs/RETRIEVAL.md) | 说明 EvidencePack、keyword/BM25/hybrid modes 和 eval mode selection。 |
+| [Runtime trace](docs/RUNTIME_TRACE.md) | 说明 step-level RunTrace JSON 和 CLI trace output。 |
 | [Skill 模板](docs/SKILL_TEMPLATE.md) | 新增 procedure/playbook 时的注释版 `SKILL.md` 起点。 |
 | [Starter issues](docs/STARTER_ISSUES.md) | 适合作为第一单 PR 的小任务。 |
 | [Demo 图片来源](docs/assets/README.md) | 说明 terminal 图片如何生成和刷新。 |
@@ -181,6 +182,7 @@ result = runtime.run(
     write_side_effects=False,
 )
 print(result.rendered)
+print(result.trace.id)
 ```
 
 ## 架构

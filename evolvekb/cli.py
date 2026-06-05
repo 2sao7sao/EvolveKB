@@ -51,6 +51,19 @@ def cmd_run(args: argparse.Namespace) -> int:
         f"[settings] knowledge_mode={result.settings.knowledge_mode} "
         f"gate_level={result.settings.gate_level} auto_evolve={result.settings.auto_evolve}"
     )
+    if getattr(args, "trace_out", None):
+        trace_path = Path(args.trace_out)
+        if not trace_path.is_absolute():
+            trace_path = _repo() / trace_path
+        trace_path.parent.mkdir(parents=True, exist_ok=True)
+        trace_path.write_text(
+            json.dumps(result.trace.model_dump(mode="json"), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        print(f"[trace] {trace_path}")
+    if getattr(args, "trace", False):
+        print("[trace-json]")
+        print(json.dumps(result.trace.model_dump(mode="json"), ensure_ascii=False, indent=2))
     if result.proposal_path:
         print(f"[proposal] {result.proposal_path}")
     print(result.rendered)
@@ -278,6 +291,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--doc", default=None)
     run.add_argument("--settings", default=None)
     run.add_argument("--no-side-effects", action="store_true")
+    run.add_argument("--trace", action="store_true")
+    run.add_argument("--trace-out", default=None)
     run.set_defaults(func=cmd_run)
 
     ingest = sub.add_parser("ingest")
@@ -369,6 +384,8 @@ def legacy_run_main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--doc", default=None)
     parser.add_argument("--settings", default=None)
     parser.add_argument("--no-side-effects", action="store_true")
+    parser.add_argument("--trace", action="store_true")
+    parser.add_argument("--trace-out", default=None)
     return cmd_run(parser.parse_args(argv))
 
 
