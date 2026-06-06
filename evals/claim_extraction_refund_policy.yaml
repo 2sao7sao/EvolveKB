@@ -1,0 +1,7 @@
+id: eval_claim_extraction_refund_policy_001
+category: claim_extraction_eval
+input:
+  doc: examples/customer_support_refund_policy.md
+expected:
+  min_claims: 4
+  require_evidence: true

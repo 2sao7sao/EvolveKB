@@ -325,6 +325,7 @@ class PlaybookRuntime:
             "inputs": {"question": question, "doc_path": doc},
             "ctx": {},
             "outputs": {},
+            "runtime": {"write_side_effects": write_side_effects},
         }
         step_traces: list[StepTrace] = []
         for idx, step in enumerate(playbook.steps):
@@ -353,6 +354,7 @@ class PlaybookRuntime:
                         finished_at=finished_at,
                         success=False,
                         error=str(exc),
+                        gate_results=_procedure_runtime_gate_results(skill, call),
                     )
                 )
                 raise
@@ -369,6 +371,7 @@ class PlaybookRuntime:
                     finished_at=finished_at,
                     success=True,
                     error=None,
+                    gate_results=_procedure_runtime_gate_results(skill, call),
                 )
             )
 
@@ -447,9 +450,33 @@ def _execute_procedure(
     args: dict[str, Any],
 ) -> Any:
     if skill.runtime.get("entrypoint"):
+        if bool(skill.runtime.get("side_effects")) and not bool(
+            (env.get("runtime") or {}).get("write_side_effects")
+        ):
+            raise RuntimeError(f"{skill.name}: side-effect procedure blocked by --no-side-effects")
         executor = get_executor(str(skill.runtime.get("type") or "python"))
         return executor.execute(repo=repo, skill=skill, env=env, args=args)
     return PROC_IMPL[call](env, args)
+
+
+def _procedure_runtime_gate_results(skill: SkillAsset, call: str) -> list[dict[str, Any]]:
+    if skill.runtime.get("entrypoint"):
+        return [
+            {
+                "gate_id": "skill_runtime_declared",
+                "passed": True,
+                "severity": "info",
+                "message": f"{call}: runtime.entrypoint declared",
+            }
+        ]
+    return [
+        {
+            "gate_id": "skill_runtime_declared",
+            "passed": True,
+            "severity": "warning",
+            "message": f"{call}: using legacy PROC_IMPL fallback; declare metadata.runtime.entrypoint before v0.5",
+        }
+    ]
 
 
 def _build_step_trace(
@@ -462,6 +489,7 @@ def _build_step_trace(
     finished_at: datetime,
     success: bool,
     error: str | None,
+    gate_results: list[dict[str, Any]] | None = None,
 ) -> StepTrace:
     metadata_source = {"input": step_input, "output": step_output}
     return StepTrace(
@@ -476,6 +504,7 @@ def _build_step_trace(
         error=error,
         retrieved_knowledge_ids=_collect_retrieved_knowledge_ids(metadata_source),
         evidence_ids=_collect_evidence_ids(metadata_source),
+        gate_results=gate_results or [],
     )
 
 

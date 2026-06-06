@@ -32,8 +32,8 @@ source_id, chunk_ids, evidence_quote, confidence, freshness, metadata
 | --- | --- | --- |
 | `keyword` | Default deterministic baseline | No external dependencies |
 | `bm25` | Local lexical ranking adapter | No external dependencies |
-| `hybrid` | Local keyword + BM25 score merge | No external dependencies |
-| `semantic` | Optional plugin hook | Disabled until an embedding implementation is configured |
+| `semantic` | Deterministic semantic-lite ranking over token and character-ngram features | No external dependencies |
+| `hybrid` | Local keyword + BM25 + semantic-lite score merge | No external dependencies |
 
 The default quickstart remains credential-free.
 
@@ -59,12 +59,13 @@ retrieval:
     bm25:
       enabled: true
     semantic:
-      enabled: false
+      enabled: true
     hybrid:
       enabled: true
       weights:
-        keyword: 0.5
-        bm25: 0.4
+        keyword: 0.35
+        bm25: 0.35
+        semantic: 0.2
         evidence: 0.1
 ```
 
@@ -87,7 +88,8 @@ expected:
 ## Boundaries
 
 - Keyword and BM25 are lexical baselines, not semantic-search superiority claims.
-- Hybrid currently merges local lexical scores and evidence confidence; semantic
-  score merging is a future optional extension.
+- The built-in semantic mode is deterministic semantic-lite ranking, not an
+  embedding model or vector database.
+- Hybrid merges local keyword, BM25, semantic-lite, and evidence-confidence scores.
 - Retrieval scores are used for evidence ranking. They do not replace gates,
   evals, proposal review, or playbook-specific safety rules.

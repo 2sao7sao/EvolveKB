@@ -13,7 +13,7 @@ metadata:
     - question must be a string
   postconditions:
     - norm must include intent_hint, targets, constraints, and raw
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # normalize-question (procedure)

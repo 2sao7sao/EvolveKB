@@ -1,0 +1,26 @@
+id: eval_baseline_retrieval_vs_playbook_001
+category: baseline_comparison_eval
+fixture:
+  source_docs:
+    - examples/customer_support_refund_policy.md
+query: "The customer opened the item and asks for a refund after 45 days. What should we do?"
+expected:
+  required_capabilities:
+    - find_relevant_text
+    - cite_grounded_claim
+    - route_to_refund_playbook
+    - execute_policy_steps
+    - produce_reviewable_decision
+  min_delta: 0.8
+baseline:
+  retrieval_only:
+    allowed_capabilities:
+      - find_relevant_text
+runtime:
+  playbook:
+    intent: refund_decision
+    settings: settings/reference.yaml
+metrics:
+  - retrieval_recall_at_5
+  - playbook_success
+  - capability_delta

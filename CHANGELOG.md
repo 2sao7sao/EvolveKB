@@ -19,6 +19,10 @@ All notable changes to EvolveKB are documented here.
 - `docs/RETRIEVAL.md` with retriever modes, CLI examples, settings, and eval mode selection.
 - Step-level `RunTrace` with CLI `--trace` and `--trace-out` support.
 - Python procedure executor support for `metadata.runtime.entrypoint`.
+- Customer support refund agent example with refund decision playbook.
+- Eval matrix categories for claim extraction, grounding, playbook execution, baseline comparison, and evolution safety.
+- Proposal impact metadata, rollback plan, safety assessment, and proposal/claim gates.
+- Deterministic semantic-lite retriever and hybrid semantic score merge.
 
 ### Changed
 

@@ -16,7 +16,7 @@ metadata:
     - doc_path must exist
   postconditions:
     - output must include headings and source path
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # extract-outline (procedure)

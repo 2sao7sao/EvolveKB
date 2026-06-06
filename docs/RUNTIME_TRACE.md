@@ -105,6 +105,10 @@ def run(
 If a procedure has no `runtime.entrypoint`, EvolveKB uses the legacy `PROC_IMPL`
 fallback during v0.3.x.
 
+Entrypoint-backed procedures may declare `runtime.side_effects: true`. Those
+procedures are blocked when the runtime is called with `write_side_effects=False`
+or the CLI uses `--no-side-effects`, so eval and CI paths can stay read-only.
+
 ## Boundaries
 
 - Trace timestamps and durations are runtime observations, not deterministic
@@ -113,3 +117,5 @@ fallback during v0.3.x.
   fixtures.
 - Procedure execution supports Python `runtime.entrypoint` declarations. Skills
   without an entrypoint still use the legacy `PROC_IMPL` fallback during v0.3.x.
+- Legacy fallback usage is recorded as a `skill_runtime_declared` warning in
+  each affected step trace.

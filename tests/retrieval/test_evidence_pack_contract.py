@@ -6,8 +6,6 @@ from pathlib import Path
 import subprocess
 import sys
 
-import pytest
-
 from evolvekb.evals.runner import run_evals
 from evolvekb.retrieval.base import EvidencePack
 from evolvekb.retrieval.bm25 import BM25Retriever
@@ -53,14 +51,16 @@ def test_bm25_retriever_uses_same_evidence_pack_contract() -> None:
 
 def test_hybrid_retriever_merges_local_lexical_scores() -> None:
     pack = HybridRetriever().retrieve(REPO, "execution-first knowledge runtime", limit=5)
-    assert pack.retrieval_modes == ["hybrid", "keyword", "bm25"]
+    assert pack.retrieval_modes == ["hybrid", "keyword", "bm25", "semantic"]
     assert any(item.name == "execution-first-kb" for item in pack.items)
-    assert pack.retrieval_trace["semantic_enabled"] is False
+    assert pack.retrieval_trace["semantic_enabled"] is True
 
 
-def test_semantic_retriever_reports_optional_hook() -> None:
-    with pytest.raises(RuntimeError, match="optional plugin hook"):
-        SemanticRetriever().retrieve(REPO, "execution-first knowledge runtime")
+def test_semantic_retriever_uses_same_evidence_pack_contract() -> None:
+    pack = SemanticRetriever().retrieve(REPO, "execution-first knowledge runtime", limit=5)
+    assert pack.retrieval_modes == ["semantic"]
+    assert any(item.name == "execution-first-kb" for item in pack.items)
+    assert pack.retrieval_trace["external_dependencies"] == []
 
 
 def test_cli_query_can_select_bm25_json() -> None:

@@ -19,7 +19,7 @@ metadata:
     entrypoint: evolvekb.procedures.retrieve_evidence:run
     timeout_ms: 3000
     side_effects: false
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # retrieve-evidence (procedure)

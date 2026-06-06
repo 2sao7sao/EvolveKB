@@ -14,7 +14,7 @@ metadata:
     - evidence must come from retrieve-evidence
   postconditions:
     - answer_md must include evidence references
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # compose-evidence-answer (procedure)

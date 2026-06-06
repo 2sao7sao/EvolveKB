@@ -1,0 +1,17 @@
+id: eval_playbook_refund_decision_001
+category: playbook_execution_eval
+input:
+  source_docs:
+    - examples/customer_support_refund_policy.md
+  intent: refund_decision
+  question: "The customer opened the item and asks for a refund after 45 days. What should we do?"
+  settings: settings/reference.yaml
+expected:
+  selected_playbook: refund-decision
+  required_steps:
+    - retrieve-evidence
+    - decide-refund-request
+  must_contain:
+    - "Decision: needs_review"
+    - "Evidence IDs"
+    - "Source Refs"

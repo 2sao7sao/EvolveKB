@@ -353,7 +353,7 @@ def test_registry_detects_unknown_procedure_step(tmp_path: Path) -> None:
           intent: demo
           steps:
             - call: missing
-          version: 0.2.0
+          version: 0.3.0
         ---
         # Demo
         """,
@@ -473,7 +473,7 @@ def test_validate_repo_enforces_skill_size(tmp_path: Path) -> None:
             value: str
           outputs:
             value: str
-          version: 0.2.0
+          version: 0.3.0
         ---
         # Demo
         """,

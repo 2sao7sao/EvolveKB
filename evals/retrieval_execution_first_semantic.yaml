@@ -1,0 +1,9 @@
+id: eval_retrieval_execution_first_semantic_001
+category: retrieval_eval
+input:
+  query: "execution-first knowledge runtime"
+  retriever: semantic
+expected:
+  must_retrieve:
+    - execution-first-kb
+  limit: 5

@@ -29,7 +29,7 @@ metadata:
     - question must describe two or more approaches to compare
   postconditions:
     - outputs.answer_md must include a comparison table and tradeoffs
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 # compare-frameworks (playbook)

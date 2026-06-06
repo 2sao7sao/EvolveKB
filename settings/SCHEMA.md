@@ -63,11 +63,12 @@ Supported keys:
 - `modes.hybrid.enabled`
 - `modes.hybrid.weights.keyword`
 - `modes.hybrid.weights.bm25`
+- `modes.hybrid.weights.semantic`
 - `modes.hybrid.weights.evidence`
 
 Default quickstart behavior uses `keyword` so no external API key or vector
-store is required. `semantic` is an optional plugin hook and is disabled by
-default.
+store is required. `semantic` is a deterministic local semantic-lite retriever,
+not an embedding API integration.
 
 ### `proposal` (mapping)
 
@@ -100,12 +101,13 @@ retrieval:
     bm25:
       enabled: true
     semantic:
-      enabled: false
+      enabled: true
     hybrid:
       enabled: true
       weights:
-        keyword: 0.5
-        bm25: 0.4
+        keyword: 0.35
+        bm25: 0.35
+        semantic: 0.2
         evidence: 0.1
 proposal:
   require_human_review: true

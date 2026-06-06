@@ -12,12 +12,13 @@ retrieval:
     bm25:
       enabled: true
     semantic:
-      enabled: false
+      enabled: true
     hybrid:
       enabled: true
       weights:
-        keyword: 0.5
-        bm25: 0.4
+        keyword: 0.35
+        bm25: 0.35
+        semantic: 0.2
         evidence: 0.1
 proposal:
   require_human_review: true
