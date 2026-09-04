@@ -15,6 +15,7 @@ All retrievers return `evolvekb.retrieval.base.EvidencePack`.
 | `retrieval_modes` | Ordered modes used, such as `["keyword"]` or `["hybrid", "keyword", "bm25"]`. |
 | `items` | Ranked `EvidenceItem` records. |
 | `citations` | Compact citation metadata for rendered output. |
+| `conflicts` | Structured conflict records when retrievers disagree on the top evidence, e.g. a hybrid `keyword` + `bm25` + `semantic` merge that surfaces contradicting top items. Each entry is `{"mode": str, "items": [EvidenceItem], "note": str}`. Empty for retrievers that do not surface conflicts. |
 | `missing_evidence` | Explicit reasons when no evidence is found. |
 | `retrieval_trace` | Query tokens, candidate counts, limit, scoring formula, and mode-specific trace data. |
 | `confidence` | Optional pack-level confidence derived from top evidence scores. |

@@ -124,10 +124,15 @@ def validate_proposal_metadata(repo: Path) -> list[GateResult]:
 
 def print_validation(results: list[GateResult]) -> int:
     failed = [result for result in results if not result.passed]
+    total = len(results)
+    passed_count = total - len(failed)
     if failed:
-        print("REPO VALIDATION FAILED:")
+        print(f"REPO VALIDATION FAILED: {passed_count}/{total} passed, {len(failed)} failed")
         for result in failed:
             print(f"- [{result.gate_id}] {result.message}")
         return 1
-    print("REPO VALIDATION PASSED")
+    if total:
+        print(f"REPO VALIDATION PASSED: {total}/{total} passed")
+    else:
+        print("REPO VALIDATION PASSED: no gates evaluated (clean repo, no kb/claims or kb/proposals to scan)")
     return 0
