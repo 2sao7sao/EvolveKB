@@ -6,8 +6,12 @@ skill architecture (SKILL.md + strict frontmatter validation + progressive discl
 ## Core runtime model
 - Runtime is **orchestration**, not retrieval:
   - pick an entrypoint (intent) → execute steps → produce outputs.
-- No vector DB. No BM25 candidate narrowing.
-- Knowledge is modularized as **skills** under `skills/<skill-name>/SKILL.md`.
+- **MVP (pre-v0.3) position**: no vector DB, no BM25 candidate narrowing.
+- **v0.3+ position (current, see README "Why This Is Not Just RAG" + docs/RETRIEVAL.md)**:
+  retrieval is a deterministic **evidence supply** layer (keyword / BM25 / semantic-lite / hybrid
+  via `evolvekb.retrieval`), not the source of agent behavior. Playbooks still decide how
+  evidence becomes behavior. The retrieval layer is intentionally credential-free and local;
+  it is not a semantic-search superiority claim.
 
 ## Progressive disclosure (borrowed pattern)
 1) **Metadata** (SKILL.md frontmatter): always-load, small, used for routing + gating.
