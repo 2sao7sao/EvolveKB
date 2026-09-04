@@ -23,8 +23,13 @@ Each `StepTrace` includes:
 
 ```text
 step_index, procedure, input_hash, output_hash, started_at, finished_at,
-duration_ms, success, error, retrieved_knowledge_ids, evidence_ids
+duration_ms, success, error, retrieved_knowledge_ids, evidence_ids, gate_results
 ```
+
+`gate_results` is the list of gate policy results that fired during this step
+(e.g. `skill_runtime_declared` warnings when a procedure relies on the legacy
+`PROC_IMPL` fallback instead of `metadata.runtime.entrypoint`). Empty for
+entrypoint-backed steps.
 
 ## CLI
 
