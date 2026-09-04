@@ -6,9 +6,11 @@ from typing import Any
 from evolvekb.retrieval.base import EvidenceItem, EvidencePack, build_citations
 from evolvekb.retrieval.bm25 import BM25Retriever
 from evolvekb.retrieval.keyword import KeywordRetriever
+from evolvekb.retrieval.registry import register_retriever
 from evolvekb.retrieval.semantic import SemanticRetriever
 
 
+@register_retriever("hybrid")
 class HybridRetriever:
     name = "hybrid"
 

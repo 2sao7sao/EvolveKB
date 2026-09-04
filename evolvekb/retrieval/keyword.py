@@ -7,6 +7,7 @@ from typing import Any
 
 from evolvekb.assets.registry import AssetRegistry
 from evolvekb.retrieval.base import EvidenceItem, EvidencePack, build_citations
+from evolvekb.retrieval.registry import register_retriever
 
 
 TOKEN_RE = re.compile(r"[A-Za-z0-9_\-\u4e00-\u9fff]+")
@@ -20,6 +21,7 @@ def tokenize(text: str) -> set[str]:
     return set(tokenize_terms(text))
 
 
+@register_retriever("keyword")
 class KeywordRetriever:
     name = "keyword"
 

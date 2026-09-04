@@ -6,8 +6,10 @@ from typing import Any
 
 from evolvekb.retrieval.base import EvidenceItem, EvidencePack, build_citations
 from evolvekb.retrieval.keyword import build_lexical_corpus, tokenize_terms
+from evolvekb.retrieval.registry import register_retriever
 
 
+@register_retriever("semantic")
 class SemanticRetriever:
     name = "semantic"
 
