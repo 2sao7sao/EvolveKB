@@ -15,6 +15,7 @@ To plug your own adapter in a downstream project:
 """
 from __future__ import annotations
 
+from evolvekb.retrieval.contrib.regex import RegexRetriever
 from evolvekb.retrieval.contrib.tfidf import TFIDFRetriever
 
-__all__ = ["TFIDFRetriever"]
+__all__ = ["RegexRetriever", "TFIDFRetriever"]
