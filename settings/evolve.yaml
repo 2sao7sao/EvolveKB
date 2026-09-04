@@ -21,6 +21,12 @@ retrieval:
         bm25: 0.35
         semantic: 0.2
         evidence: 0.1
+    tfidf:
+      enabled: false
+      class: evolvekb.retrieval.contrib.tfidf:TFIDFRetriever
+      config:
+        sublinear_tf: true
+        min_token_length: 2
 proposal:
   require_human_review: true
 gates:

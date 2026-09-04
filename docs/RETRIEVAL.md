@@ -94,3 +94,81 @@ expected:
 - Hybrid merges local keyword, BM25, semantic-lite, and evidence-confidence scores.
 - Retrieval scores are used for evidence ranking. They do not replace gates,
   evals, proposal review, or playbook-specific safety rules.
+
+## Pluggable Adapters
+
+Retrieval modes are resolved through a runtime registry so downstream projects
+can ship additional modes without forking the core.
+
+### Register A Mode
+
+Use the `register_retriever` decorator on a class that follows the
+`Retriever` protocol (an instance attribute `name` plus a `retrieve(...)`
+method returning an `EvidencePack`):
+
+```python
+from evolvekb.retrieval.registry import register_retriever
+
+
+@register_retriever("my-mode")
+class MyRetriever:
+    name = "my-mode"
+
+    def retrieve(self, repo, query, *, intent=None, limit=5, filters=None):
+        ...
+```
+
+Or call `register_retriever_class("my-mode", MyRetriever)` at runtime
+(e.g. from a `pyproject.toml` entry point).
+
+### Built-in Modes
+
+These are registered automatically when `evolvekb.retrieval` is imported:
+
+| Mode | Source | Notes |
+| --- | --- | --- |
+| `keyword` | `evolvekb.retrieval.keyword.KeywordRetriever` | Deterministic token overlap. |
+| `bm25` | `evolvekb.retrieval.bm25.BM25Retriever` | Local BM25 with `k1` / `b` constructor kwargs. |
+| `semantic` | `evolvekb.retrieval.semantic.SemanticRetriever` | Deterministic semantic-lite over token + char-ngram features. |
+| `hybrid` | `evolvekb.retrieval.hybrid.HybridRetriever` | Weighted merge of keyword / bm25 / semantic / evidence. |
+
+### Contrib Modes
+
+Optional adapters live under `evolvekb.retrieval.contrib`. They are
+registered by importing the sub-package (already done in
+`evolvekb.retrieval.__init__`):
+
+| Mode | Source | Notes |
+| --- | --- | --- |
+| `tfidf` | `evolvekb.retrieval.contrib.tfidf.TFIDFRetriever` | Zero-dependency TF-IDF. `sublinear_tf` and `min_token_length` are forwarded as constructor kwargs from `get_retriever(..., config=...)`. |
+
+### Settings
+
+Settings files can declare an extra mode. The `class` field is advisory
+documentation for now; resolution still goes through the registry by `name`:
+
+```yaml
+retrieval:
+  default_mode: keyword
+  modes:
+    tfidf:
+      enabled: true
+      class: evolvekb.retrieval.contrib.tfidf:TFIDFRetriever
+      config:
+        sublinear_tf: true
+        min_token_length: 2
+```
+
+### CLI
+
+Once a mode is registered, it is usable everywhere a retriever name is
+expected:
+
+```bash
+python -m evolvekb.cli query "execution-first knowledge" --retriever tfidf
+python -m evolvekb.cli query "execution-first knowledge" --retriever my-mode
+```
+
+`get_retriever("bm25", config={"k1": 2.0})` forwards `config` to the
+retriever constructor, so a mode can read its own settings without the
+runtime hard-coding keys.
