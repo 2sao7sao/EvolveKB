@@ -136,6 +136,53 @@ def test_contrib_tfidf_accepts_config_kwargs():
     assert retriever.min_token_length == 3
 
 
+def test_contrib_regex_retriever_works_on_repo(repo_cwd: Path):
+    """Regex retriever matches corpus text against the query as a regex pattern."""
+
+    pack = get_retriever("regex").retrieve(repo_cwd, r"execution.first|knowledge", limit=5)
+    assert pack.retrieval_modes == ["regex"]
+    assert pack.items, "regex should match seed corpus"
+    assert all(item.retrieval_mode == "regex" for item in pack.items)
+    # The pattern stored in the trace is the same regex string the caller passed in.
+    assert pack.retrieval_trace["pattern"] == r"execution.first|knowledge"
+
+
+def test_contrib_regex_respects_case_sensitivity():
+    from evolvekb.retrieval.contrib.regex import RegexRetriever
+
+    case_sensitive = RegexRetriever(case_sensitive=True).retrieve(
+        Path("."), "Execution", limit=5
+    )
+    case_insensitive = RegexRetriever(case_sensitive=False).retrieve(
+        Path("."), "Execution", limit=5
+    )
+    assert len(case_insensitive.items) >= len(case_sensitive.items)
+
+
+def test_contrib_regex_rejects_invalid_pattern():
+    from evolvekb.retrieval.contrib.regex import RegexRetriever
+
+    retriever = RegexRetriever()
+    with pytest.raises(ValueError, match="Invalid regex"):
+        retriever.retrieve(Path("."), "(unclosed", limit=5)
+
+
+def test_contrib_regex_rejects_bad_score_normalize():
+    from evolvekb.retrieval.contrib.regex import RegexRetriever
+
+    with pytest.raises(ValueError, match="score_normalize"):
+        RegexRetriever(score_normalize="bogus")
+
+
+def test_contrib_regex_binary_score_normalize():
+    from evolvekb.retrieval.contrib.regex import RegexRetriever
+
+    pack = RegexRetriever(score_normalize="binary").retrieve(
+        Path("."), "knowledge", limit=5
+    )
+    assert all(item.score == 1.0 for item in pack.items)
+
+
 def test_contrib_tfidf_cli_query_path(monkeypatch: pytest.MonkeyPatch):
     """The CLI ``--retriever tfidf`` path must work the same as a built-in mode."""
 

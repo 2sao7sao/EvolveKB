@@ -141,6 +141,7 @@ registered by importing the sub-package (already done in
 | Mode | Source | Notes |
 | --- | --- | --- |
 | `tfidf` | `evolvekb.retrieval.contrib.tfidf.TFIDFRetriever` | Zero-dependency TF-IDF. `sublinear_tf` and `min_token_length` are forwarded as constructor kwargs from `get_retriever(..., config=...)`. |
+| `regex` | `evolvekb.retrieval.contrib.regex.RegexRetriever` | Treats the query as a regular expression. `case_sensitive`, `min_matches`, and `score_normalize` (`raw` / `per_1k_chars` / `binary`) are forwarded as constructor kwargs. Invalid patterns raise `ValueError` at query time. |
 
 ### Settings
 
@@ -157,6 +158,13 @@ retrieval:
       config:
         sublinear_tf: true
         min_token_length: 2
+    regex:
+      enabled: false
+      class: evolvekb.retrieval.contrib.regex:RegexRetriever
+      config:
+        case_sensitive: false
+        min_matches: 1
+        score_normalize: per_1k_chars
 ```
 
 ### CLI
@@ -167,6 +175,7 @@ expected:
 ```bash
 python -m evolvekb.cli query "execution-first knowledge" --retriever tfidf
 python -m evolvekb.cli query "execution-first knowledge" --retriever my-mode
+python -m evolvekb.cli query "knowledge" --retriever regex --limit 3
 ```
 
 `get_retriever("bm25", config={"k1": 2.0})` forwards `config` to the

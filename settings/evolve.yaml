@@ -27,6 +27,13 @@ retrieval:
       config:
         sublinear_tf: true
         min_token_length: 2
+    regex:
+      enabled: false
+      class: evolvekb.retrieval.contrib.regex:RegexRetriever
+      config:
+        case_sensitive: false
+        min_matches: 1
+        score_normalize: per_1k_chars
 proposal:
   require_human_review: true
 gates:
