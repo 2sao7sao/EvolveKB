@@ -115,11 +115,13 @@
       </header>
 
       <section class="metrics">
-        <div class="metric"><span>Tests</span><strong>59 passed</strong></div>
+        <div class="metric"><span>Local tests · 2026-11-16</span><strong>97 passed</strong></div>
         <div class="metric"><span>Claims grounded</span><strong>5 / 5</strong></div>
         <div class="metric"><span>Playbook evals</span><strong>2 / 2</strong></div>
-        <div class="metric"><span>Capability delta</span><strong>+0.80</strong></div>
+        <div class="metric"><span>Seed capability coverage delta</span><strong>4 / 5</strong></div>
       </section>
+
+      <p style="margin-top:16px;color:var(--muted)">Synthetic demo and local fixture checks at commit 28af622; not a production benchmark. <a href="https://github.com/2sao7sao/EvolveKB/blob/main/docs/maintenance.md">Verification scope and roadmap</a>.</p>
 
       <section class="section grid two">
         <div class="panel">
@@ -135,7 +137,7 @@
       </section>
 
       <section class="section">
-        <img class="screenshot" src="./assets/evolvekb-demo-terminal.svg" alt="EvolveKB terminal demo screenshot" />
+        <img class="screenshot" src="./assets/evolvekb-demo-terminal.svg" alt="Static illustration of EvolveKB synthetic demo output" />
       </section>
 
       <section class="section panel">
@@ -146,7 +148,7 @@
             <tr><td>Knowledge assets</td><td>Typed claims, concepts, evidence, and source refs.</td><td>Knowledge becomes inspectable and versionable.</td></tr>
             <tr><td>Usage assets</td><td>Intent-specific rules for applying knowledge.</td><td>The agent knows when and how to use what it knows.</td></tr>
             <tr><td>Skills</td><td>Executable SKILL.md procedures.</td><td>Knowledge becomes repeatable behavior.</td></tr>
-            <tr><td>Gates + evals</td><td>Validation before updates are accepted.</td><td>Prevents silent drift and broken playbooks.</td></tr>
+            <tr><td>Gates + evals</td><td>Validation before updates are accepted.</td><td>Checks known constraints and seed regressions.</td></tr>
             <tr><td>Proposals</td><td>Reviewable knowledge changes.</td><td>Practice updates the KB without black-box writes.</td></tr>
           </tbody>
         </table>
