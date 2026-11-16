@@ -1,279 +1,150 @@
-<img src="assets/readme-banner.svg" alt="EvolveKB banner" width="100%" />
+<img src="assets/readme-banner.png" alt="EvolveKB: documents, evidence, playbooks, and reviewed updates" width="100%" />
+
+# EvolveKB
+
+**Turn documents into evidence-backed playbooks that agents can execute, test, and update through review.**
 
 <p align="center">
-  <a href="./README.zh.md">简体中文</a>
-  ·
-  <a href="https://2sao7sao.github.io/EvolveKB/">Product Page</a>
-  ·
-  <a href="./examples/evolution_loop.md">Flagship Demo</a>
-  ·
-  <a href="./examples/customer_support_refund_agent.md">Support Agent Example</a>
-  ·
-  <a href="./CONTRIBUTING.md">Contributing</a>
+  <a href="./README.zh.md">简体中文</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#documentation">Docs</a> ·
+  <a href="./docs/maintenance.md">Roadmap</a>
 </p>
 
 <p align="center">
   <a href="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml"><img src="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <img src="https://img.shields.io/badge/python-3.11%2B-ff5aa5" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/version-v0.3.0-b8eee4" alt="version v0.3.0">
-  <img src="https://img.shields.io/badge/license-Apache--2.0-ff5aa5" alt="Apache-2.0 license">
+  <a href="./pyproject.toml"><img src="https://img.shields.io/badge/python-3.11%2B-b8eee4" alt="Python 3.11+"></a>
+  <a href="./pyproject.toml"><img src="https://img.shields.io/badge/package-0.3.0-b8eee4" alt="Source package version 0.3.0"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-b8eee4" alt="Apache-2.0 license"></a>
 </p>
 
-# EvolveKB
+## Why EvolveKB
 
-**Agent knowledge runtime: turn documents into executable, verifiable, and evolvable agent knowledge.**
+Use EvolveKB when a policy, SOP, or runbook needs to drive repeatable agent behavior.
+Retrieval supplies evidence; a playbook decides how to apply it. Knowledge changes
+become proposals with review metadata and rollback paths.
 
-RAG finds similar text. EvolveKB asks a stricter product question:
-
-> Can this document become a behavior an agent can execute, test, review, and safely improve after real use?
-
-If your agent depends on policies, runbooks, support procedures, research notes,
-or engineering rules, the system needs more than retrieved chunks. It needs
-claims, evidence, usage playbooks, skill contracts, validation gates, regression
-evals, and reviewable knowledge updates.
-
-![EvolveKB terminal demo](docs/assets/evolvekb-demo-terminal.svg)
-
-## 30-Second Product Path
-
-```text
-Document
-  -> grounded claims
-  -> typed knowledge asset
-  -> usage playbook
-  -> SKILL.md procedure
-  -> validation gates
-  -> regression evals
-  -> reviewable proposal
-```
-
-| If you have... | EvolveKB gives the agent... |
+| Capability | Inspect the implementation and scope |
 | --- | --- |
-| Policy documents | Evidence-backed rules and exceptions |
-| SOPs and runbooks | Repeatable playbooks instead of prompt stuffing |
-| Internal methodology | Usage guidance for when and how to apply knowledge |
-| Knowledge drift | Gates, evals, proposals, and rollback paths |
-| Agent harnesses | A runtime surface for skills, evidence, and governance |
+| Compile documents into claims with source evidence | [Refund policy demo](examples/evolution_loop.md); deterministic extraction for the supplied examples. |
+| Execute procedures and retain a step trace | [Support agent walkthrough](examples/customer_support_refund_agent.md) and [RunTrace contract](docs/RUNTIME_TRACE.md). |
+| Swap evidence retrieval behind one contract | [EvidencePack and retrievers](docs/RETRIEVAL.md): local keyword, BM25, semantic-lite, hybrid, TF-IDF, and regex. |
+| Review changes and check regressions | [Proposal impact and rollback](docs/PROPOSAL_REVIEW.md), [eval definitions](evals/), and [metric formulas](docs/METRICS.md). |
 
-## What Ships In This Repo
+This is a local prototype with deterministic examples. Use a conventional search
+stack for search-only needs; broader retrieval quality and production agent
+performance are outside the current evidence.
 
-| Surface | What it gives you |
-| --- | --- |
-| Runtime | CLI commands for demo, validation, evidence query, playbook run, ingest, and eval. |
-| Knowledge assets | Typed Markdown claims, source evidence, usage assets, and an evolution log. |
-| Skills | Executable `SKILL.md` procedures that turn knowledge into repeatable behavior. |
-| Gates | Structure, naming, evidence, packaging, and safety checks before knowledge changes land. |
-| Evals | Seed regression cases that test retrieval, routing, evidence use, and playbook coverage. |
-| Product docs | GitHub Pages and examples that explain the execution-first knowledge model. |
+## Quick start
 
-## 5-Minute Demo
+Requires Python 3.11+. The demo uses synthetic data and needs no API key.
 
 ```bash
 git clone https://github.com/2sao7sao/EvolveKB.git
 cd EvolveKB
+python -m venv .venv
+source .venv/bin/activate
 python -m pip install -e ".[dev]"
 python -m evolvekb.cli demo
 ```
 
-The demo runs in an isolated temporary workspace. It ingests a synthetic refund
-policy, extracts grounded claims, creates a pending proposal, runs gates and
-regression evals, and prints product metrics without modifying your working
-tree.
+On Windows, activate the environment with `.venv\Scripts\activate`.
+The demo runs in a temporary workspace and removes it afterward. It ingests a
+refund policy, creates a pending proposal, runs gates and evals, and prints metrics.
+For a concrete workflow, run `python examples/customer_support_refund_agent.py`.
 
-Expected shape:
-
-```text
-# EvolveKB Flagship Demo
-
-status: PASS
-
-## 1. Ingest policy into knowledge assets
-- claims: 5
-- grounded_claims: 5
-- proposal: kb/proposals/...
-
-## 3. Product metrics
-- claim_grounding_rate: 1.00 (5/5)
-- playbook_success_rate: 1.00 (2/2)
-- proposal_gate_pass_rate: 1.00 (1/1)
-- retrieval_vs_playbook_delta: 0.80 (4/5)
-```
-
-`retrieval_vs_playbook_delta` is seed-level capability coverage, not a broad
-benchmark claim. The exact checklist is documented in [docs/METRICS.md](docs/METRICS.md).
-`examples/run_evolution_loop.py` runs the same product path for users who prefer
-an executable example script.
-
-For a concrete support workflow, run:
-
-```bash
-python examples/customer_support_refund_agent.py
-```
-
-## Why This Is Not Just RAG
-
-| Question | Retrieval-only KB | EvolveKB |
-| --- | --- | --- |
-| Can the agent find relevant text? | Yes | Yes |
-| Does the knowledge have typed claims and evidence? | Usually no | Yes |
-| Does the system know how the knowledge should be used? | Usually no | Usage playbooks |
-| Can a workflow run as a repeatable skill? | No | `SKILL.md` procedures |
-| Can updates be gated and reviewed? | Rarely | Proposals + validation |
-| Can behavior regressions be tested? | Rarely | Eval seeds and runtime checks |
-
-> [!NOTE]
-> The default retrieval backend is deterministic keyword retrieval, with BM25,
-> deterministic semantic-lite, and hybrid modes available for local experiments.
-> EvolveKB is not claiming broad semantic-search superiority. The point of this
-> v0.3 path is to make knowledge operational: usable, testable, reviewable, and
-> safe to evolve.
-
-## Metrics That Map To Code
-
-The demo metrics are computed from runtime artifacts, not manually edited
-README numbers. See [docs/METRICS.md](docs/METRICS.md) for formulas,
-numerators, denominators, and the current retrieval-only baseline.
-
-| Metric | What it measures | Current demo source |
-| --- | --- | --- |
-| `claim_grounding_rate` | Extracted claims that retain source evidence | `evolvekb.ingestion.compiler` |
-| `playbook_success_rate` | Seed routing/retrieval evals passed by the runtime | `evolvekb.evals.runner` |
-| `proposal_gate_pass_rate` | Proposal created while repository gates stay green | `evolvekb.demo` + `evolvekb.gates` |
-| `retrieval_vs_playbook_delta` | Seed-level capability coverage gained over retrieval-only baseline | `evolvekb.demo.CAPABILITY_COVERAGE_CHECKLIST` |
-
-Run the regression seed directly:
-
-```bash
-python -m evolvekb.cli eval run "evals/*.yaml"
-```
-
-## Developer Surface
-
-Useful contributor docs:
-
-| Document | Purpose |
-| --- | --- |
-| [Metric definitions](docs/METRICS.md) | Explains demo formulas and the `retrieval_vs_playbook_delta` checklist. |
-| [Retrieval contract](docs/RETRIEVAL.md) | Documents EvidencePack, keyword/BM25/hybrid modes, and eval mode selection. |
-| [Runtime trace](docs/RUNTIME_TRACE.md) | Shows step-level RunTrace JSON and CLI trace output. |
-| [Proposal review](docs/PROPOSAL_REVIEW.md) | Documents impact metadata, rollback plan, safety assessment, and gates. |
-| [Skill template](docs/SKILL_TEMPLATE.md) | Annotated `SKILL.md` starting point for new procedures or playbooks. |
-| [Support agent example](examples/customer_support_refund_agent.md) | End-to-end refund policy workflow with evidence IDs and trace id. |
-| [Starter issues](docs/STARTER_ISSUES.md) | First PR ideas that are small enough to review. |
-| [Demo asset provenance](docs/assets/README.md) | Explains how the terminal image was produced and how to refresh it. |
-
-```bash
-# Validate knowledge, usage assets, skills, and gate constraints
-python -m evolvekb.cli validate --settings settings/evolve.yaml
-
-# Query evidence from knowledge assets and compiled claims
-python -m evolvekb.cli query "execution-first knowledge runtime" --retriever keyword --require-evidence
-
-# Try the local BM25 retriever behind the same EvidencePack contract
-python -m evolvekb.cli query "execution-first knowledge runtime" --retriever bm25 --require-evidence
-
-# Run a knowledge-backed playbook
-python -m evolvekb.cli run \
-  --intent compare_frameworks \
-  --question "Compare GraphRAG vs Execution-first" \
-  --settings settings/reference.yaml \
-  --no-side-effects
-
-# Compile a document into a reviewable proposal
-python -m evolvekb.cli ingest examples/refund_policy.md --proposal
-```
-
-Minimal harness integration:
-
-```python
-from pathlib import Path
-
-from evolvekb.skills.runtime import PlaybookRuntime
-
-runtime = PlaybookRuntime(Path("."))
-result = runtime.run(
-    intent="answer_with_evidence",
-    question="What does the KB say about execution-first knowledge?",
-    settings_arg="settings/reference.yaml",
-    write_side_effects=False,
-)
-print(result.rendered)
-print(result.trace.id)
-```
-
-## Architecture
+## How it works
 
 ```mermaid
 flowchart LR
-  A["Source docs"] --> B["Ingestion compiler"]
-  B --> C["Claims + evidence"]
-  B --> D["Knowledge assets"]
-  D --> E["Usage playbooks"]
-  E --> F["SKILL.md procedures"]
-  F --> G["Playbook runtime"]
-  G --> H["Validation gates"]
-  H --> I["Regression evals"]
-  I --> J["Reviewable proposals"]
-  J --> D
+  A[Source document] --> B[Claims + evidence]
+  B --> C[Usage playbook]
+  C --> D[SKILL.md procedures]
+  D --> E[Runtime + trace]
+  E --> F[Gates + evals]
+  F --> G[Reviewable proposal]
+  G --> B
 ```
 
-## What Is Stable vs Prototype
+The runtime supports Python procedure entrypoints. Legacy `PROC_IMPL` procedures
+remain as a compatibility fallback; the migration is not complete. Proposals and
+rollback currently operate on local files. See the [maintenance plan](docs/maintenance.md).
 
-| Layer | Current status |
-| --- | --- |
-| Asset schemas | Stable enough for local experiments and examples |
-| CLI demo, validate, query, run, ingest, eval | Supported product path |
-| Proposal creation and rollback | Supported for local files |
-| Keyword/BM25 retrieval | Local lexical baselines behind the shared [EvidencePack contract](docs/RETRIEVAL.md) |
-| Procedure implementations | Deterministic MVP examples, not a full skill marketplace |
-| Benchmark claims | Seed-level proof only, not a broad RAG replacement benchmark |
+## Reproduce the example
 
-## Fit / Non-Fit
+![Illustrative terminal output for the synthetic refund-policy demo](docs/assets/evolvekb-demo-terminal.svg)
 
-Good fit:
+*This static illustration summarizes CLI output; it is not a live screenshot.
+[Asset provenance and refresh instructions](docs/assets/README.md).*
 
-| Scenario | Why |
-| --- | --- |
-| Agent policies and SOPs | Knowledge must trigger governed behavior |
-| Support, compliance, or ops playbooks | Answers need evidence, routing, and approvals |
-| Research-to-practice knowledge | Hidden usage rules matter more than similar chunks |
-| Runbooks that evolve after incidents | Practice should update knowledge through review |
+The synthetic demo returned these values on 2026-11-16:
 
-Poor fit:
-
-| Scenario | Better choice |
-| --- | --- |
-| Disposable document Q&A | A simple RAG pipeline is faster |
-| Pure semantic search | Use vector or hybrid retrieval |
-| User memory and personalization | Use a memory system with privacy controls |
-| Unreviewed autonomous writes | Add human review and approval gates first |
-
-## Repository Map
-
-```text
-evolvekb/       runtime, CLI, demo metrics, gates, ingestion, retrieval, evals
-kb/             knowledge assets, usage assets, index, evolution log
-skills/         executable SKILL.md playbooks and procedures
-settings/       reference, digest, transform, evolve presets
-evals/          retrieval, routing, and capability coverage seeds
-examples/       runnable demo inputs and product walkthrough
-docs/           product page and supporting explanations
-```
-
-## Roadmap
-
-| Release track | Focus | Exit criteria |
+| Metric | Result | Meaning |
 | --- | --- | --- |
-| v0.3.x | Trust, docs, metrics, first contribution path | Version aligned, CI badge, METRICS.md, SKILL_TEMPLATE.md, customer support example |
-| v0.4.x | Evidence contract, pluggable retrieval, runtime trace | [EvidencePack](docs/RETRIEVAL.md), keyword/BM25 adapters, step-level RunTrace, trace CLI |
-| v0.5.x | Dynamic skill execution engine | Runtime entrypoints, executor registry, legacy `PROC_IMPL` fallback deprecated |
-| v0.6.x | Eval matrix and proposal impact review | Baseline comparison evals, proposal impact metadata, rollback reports |
+| Claim grounding | 5/5 | Extracted claims retain source evidence quotes. |
+| Playbook evals | 2/2 | The demo's routing and retrieval seeds pass. |
+| Proposal gate | 1/1 | The demo proposal passes its evaluated gate. |
+| Capability coverage delta | 4/5 (0.80) | Added coverage on a named five-item checklist. |
 
-## Security
+The delta measures **seed capability coverage**, not answer quality, retrieval
+superiority, or a broad benchmark score. [Definitions and denominators](docs/METRICS.md).
 
-Do not commit private documents, API keys, tokens, customer traces, or proposal
-outputs containing sensitive data. See [SECURITY.md](SECURITY.md).
+Reproduce the broader repository checks:
 
-## License
+```bash
+python -m pytest -q
+python -m evolvekb.cli validate --settings settings/evolve.yaml
+python -m evolvekb.cli eval run "evals/*.yaml"
+```
 
-Apache-2.0. See [LICENSE](LICENSE).
+On 2026-11-16, the baseline `28af622` passed **97 tests** and **12 eval seeds**
+locally on Python 3.12.6. Validation of the clean checkout reported
+`no gates evaluated`: no generated claims or proposals were present to scan.
+These results cover local fixtures; they do not establish production or external-agent acceptance.
+
+## Status and next steps
+
+The source package is version `0.3.0`; no GitHub Release was present at the
+2026-11-16 review. Several features previously listed under future v0.4–v0.6
+roadmap headings already have prototype implementations.
+
+| Area | Current state | Next acceptance step |
+| --- | --- | --- |
+| Retrieval and traces | EvidencePack, registered retrievers, and step traces implemented | Extend failure-case evals beyond the current seeds. |
+| Procedure execution | Python entrypoints implemented; legacy fallback remains | Inventory remaining callers and prove migration compatibility. |
+| Proposal review | Impact metadata, rollback plan, and local gates implemented | Add a rollback edge case and inspect its resulting artifacts. |
+| Documentation and release | Runnable examples; source version 0.3.0 | Keep entrypoints current; decide release and optional Pages publication separately. |
+
+See [dated verification and actionable roadmap](docs/maintenance.md).
+The repository walkthrough is the documentation entrypoint; a deployed GitHub
+Pages site was not available at the review.
+
+## Documentation
+
+| Start here | Purpose |
+| --- | --- |
+| [Flagship demo](examples/evolution_loop.md) / [support agent](examples/customer_support_refund_agent.md) | Follow a concrete end-to-end example. |
+| [Retrieval contract](docs/RETRIEVAL.md) / [runtime trace](docs/RUNTIME_TRACE.md) | Integrate evidence and execution tracing. |
+| [Proposal review](docs/PROPOSAL_REVIEW.md) / [metrics](docs/METRICS.md) | Understand review gates and the limits of reported results. |
+| [Skill template](docs/SKILL_TEMPLATE.md) / [starter tasks](docs/STARTER_ISSUES.md) | Add one scoped procedure, example, or eval. |
+| [Maintenance](docs/maintenance.md) / [changelog](CHANGELOG.md) | Separate implemented foundations from remaining work. |
+
+Source map: `evolvekb/` contains the runtime; `kb/` contains knowledge and usage
+assets; `skills/` contains procedures; `settings/` contains presets; `evals/` and
+`tests/` contain checks. The [retrieval guide](docs/RETRIEVAL.md) includes query
+commands, and the [support example](examples/customer_support_refund_agent.md)
+shows harness integration.
+
+## Contributing and related projects
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md), choose a scoped item from the
+[maintenance plan](docs/maintenance.md), and run the checks above. Keep private
+documents, credentials, and customer traces out of examples and artifacts;
+see [SECURITY.md](SECURITY.md).
+
+Related projects: [EvolveMemory](https://github.com/2sao7sao/EvolveMemory) for agent
+memory, [Agent Peak Bench](https://github.com/2sao7sao/agent-peak-bench) for agent
+evaluation, and [Video Analysis Skills](https://github.com/2sao7sao/video-analysis-skills)
+for video analysis workflows.
+
+Licensed under [Apache-2.0](LICENSE).
