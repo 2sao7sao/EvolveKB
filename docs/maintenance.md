@@ -81,3 +81,7 @@ external use are reviewed; they are not part of the current README sequence.
 ## Brand assets
 
 Both language editions use the same 1600 × 600 hero, shared seated penguin, and project-specific accent and symbol. [Asset inventory and provenance](../assets/brand/README.md). Existing technical figures remain separate from brand artwork.
+
+## Tracked follow-up
+
+[Next milestone / 下一阶段任务 #13](https://github.com/2sao7sao/EvolveKB/issues/13) contains the actionable checklist. The maintenance PR [hosted CI](https://github.com/2sao7sao/EvolveKB/actions/runs/43888828759) passed on 2026-11-16 at `9675a4f`; historical runtime and provider results retain their original scope.
