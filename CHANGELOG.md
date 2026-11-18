@@ -2,6 +2,37 @@
 
 All notable changes to EvolveKB are documented here.
 
+## 0.4.0 - 2026-11-18
+
+First tagged release. `0.3.0` was a source-package version; no tag or GitHub
+Release existed before this one.
+
+### Added
+
+- Pluggable retriever registry: named adapters can be registered and selected
+  from settings, with contrib TF-IDF (`evolvekb/retrieval/contrib/tfidf.py`) and
+  regex (`evolvekb/retrieval/contrib/regex.py`) retrievers alongside keyword,
+  BM25, hybrid, and semantic-lite.
+- `docs/maintenance.md` records the 2026-11-16 maintenance review, the checks it
+  ran, and their evidence boundaries.
+- Validate reports include gate counts and the conflicts field; `docs/RUNTIME_TRACE.md`
+  documents `StepTrace.gate_results`.
+
+### Changed
+
+- Package version, runtime `__version__`, and default `SkillAsset.version` align
+  on `0.4.0`.
+- README, brand assets, and issue templates refreshed in both languages; `AGENT.md`
+  aligned with the current retrieval position.
+- Pages deployment workflow is manual-only until the repository has Pages enabled.
+
+### Prototype Boundaries
+
+- Keyword, TF-IDF, and regex retrieval are deterministic baselines, not semantic
+  retrieval claims.
+- Evals are seed-level checks for the product path, not production benchmark
+  coverage; this release makes no production-quality claim.
+
 ## 0.3.0 - 2026-06-05
 
 ### Added

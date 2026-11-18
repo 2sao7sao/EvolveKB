@@ -14,7 +14,7 @@
 <p align="center">
   <a href="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml"><img src="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="./pyproject.toml"><img src="https://img.shields.io/badge/python-3.11%2B-b8eee4" alt="Python 3.11+"></a>
-  <a href="./pyproject.toml"><img src="https://img.shields.io/badge/package-0.3.0-b8eee4" alt="源码包版本 0.3.0"></a>
+  <a href="./pyproject.toml"><img src="https://img.shields.io/badge/package-0.4.0-b8eee4" alt="源码包版本 0.4.0"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-b8eee4" alt="Apache-2.0 许可证"></a>
 </p>
 
@@ -100,7 +100,7 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 
 ## 当前状态与下一步
 
-源码包版本为 `0.3.0`；2026-11-16 检查时没有 GitHub Release。
+源码包版本为 `0.4.0`，2026-11-18 发布首个 tag；2026-11-16 检查时尚无 Release 或 tag。
 旧 roadmap 中归入未来 v0.4–v0.6 的多项能力，已经有原型实现。
 
 | 方向 | 当前状态 | 下一项验收 |
@@ -108,7 +108,7 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 | 检索与 trace | 已有 EvidencePack、可注册检索器、步骤 trace | 在现有种子外增加失败场景评估。 |
 | Procedure 执行 | 已有 Python entrypoint；保留旧 fallback | 盘点剩余调用方并验证迁移兼容性。 |
 | Proposal 评审 | 已有影响信息、回滚计划和本地 gates | 增加回滚边界用例并检查生成产物。 |
-| 文档与发布 | 示例可运行；源码版本 0.3.0 | 维护可用入口，单独决定 Release 与可选 Pages 发布。 |
+| 文档与发布 | 示例可运行；已发布 tag `v0.4.0` | 维护可用入口，单独决定可选 Pages 发布。 |
 
 详见[带日期的验证记录和待办](docs/maintenance.md)。
 目前通过仓库内的 walkthrough 阅读文档；本次检查未发现可用的 GitHub Pages 站点。

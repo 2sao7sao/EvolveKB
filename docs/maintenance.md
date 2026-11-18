@@ -24,8 +24,9 @@ that all planned versions have shipped.
 | `python -m evolvekb.cli validate --settings settings/evolve.yaml` | Passed, `no gates evaluated` | A clean checkout has no generated claims/proposals to scan. |
 | Main branch CI | [Successful run](https://github.com/2sao7sao/EvolveKB/actions/runs/33849102162) on 2026-09-04 | Historical GitHub run, separate from the local checks above. |
 
-The package declares `0.3.0`. The GitHub Releases list and git tags were empty at
-the review. Treat the version badge as a source-package label.
+The package declared `0.3.0` at this review; the GitHub Releases list and git tags were empty then.
+[`v0.4.0`](https://github.com/2sao7sao/EvolveKB/releases/tag/v0.4.0) on 2026-11-18 is the first tag,
+and the version badge follows the package version.
 
 ## Implemented foundations and remaining work
 

@@ -14,7 +14,7 @@
 <p align="center">
   <a href="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml"><img src="https://github.com/2sao7sao/EvolveKB/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="./pyproject.toml"><img src="https://img.shields.io/badge/python-3.11%2B-b8eee4" alt="Python 3.11+"></a>
-  <a href="./pyproject.toml"><img src="https://img.shields.io/badge/package-0.3.0-b8eee4" alt="Source package version 0.3.0"></a>
+  <a href="./pyproject.toml"><img src="https://img.shields.io/badge/package-0.4.0-b8eee4" alt="Source package version 0.4.0"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-b8eee4" alt="Apache-2.0 license"></a>
 </p>
 
@@ -104,8 +104,8 @@ These results cover local fixtures; they do not establish production or external
 
 ## Status and next steps
 
-The source package is version `0.3.0`; no GitHub Release was present at the
-2026-11-16 review. Several features previously listed under future v0.4–v0.6
+The source package is version `0.4.0`, the first tagged release (2026-11-18); the
+2026-11-16 review found no releases or tags. Several features previously listed under future v0.4–v0.6
 roadmap headings already have prototype implementations.
 
 | Area | Current state | Next acceptance step |
@@ -113,7 +113,7 @@ roadmap headings already have prototype implementations.
 | Retrieval and traces | EvidencePack, registered retrievers, and step traces implemented | Extend failure-case evals beyond the current seeds. |
 | Procedure execution | Python entrypoints implemented; legacy fallback remains | Inventory remaining callers and prove migration compatibility. |
 | Proposal review | Impact metadata, rollback plan, and local gates implemented | Add a rollback edge case and inspect its resulting artifacts. |
-| Documentation and release | Runnable examples; source version 0.3.0 | Keep entrypoints current; decide release and optional Pages publication separately. |
+| Documentation and release | Runnable examples; tagged release `v0.4.0` | Keep entrypoints current; decide optional Pages publication separately. |
 
 See [dated verification and actionable roadmap](docs/maintenance.md).
 The repository walkthrough is the documentation entrypoint; a deployed GitHub
