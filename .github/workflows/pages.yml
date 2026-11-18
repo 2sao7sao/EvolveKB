@@ -1,17 +1,14 @@
 name: Deploy Pages
 
-# This workflow is intentionally set to manual-only until GitHub Pages is
-# enabled for the repository. configure-pages@v5 returns 404 when the repo
-# has no Pages site, which used to fail every push to main and surface as a
-# "Last deployed: ..." entry in the repo UI even though no actual deployment
-# happened. To re-enable automatic pushes:
+# Deploys docs/index.html to GitHub Pages. Pages is enabled with GitHub Actions
+# as the source, so pushes to main republish the site. The workflow stays
+# manually runnable for a redeploy without a code change.
 #
-#   1. Repo Settings -> Pages -> Build and deployment -> Source: GitHub Actions
-#   2. Re-add the `push` trigger block below.
-#
-# Until then, run this workflow manually from the Actions tab if you need to
-# publish docs/index.html (after enabling Pages).
+# History: configure-pages@v5 returned 404 while the repo had no Pages site, which
+# is why pushes were disabled between June and November 2026.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

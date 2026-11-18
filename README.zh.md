@@ -108,10 +108,10 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 | 检索与 trace | 已有 EvidencePack、可注册检索器、步骤 trace | 在现有种子外增加失败场景评估。 |
 | Procedure 执行 | 已有 Python entrypoint；保留旧 fallback | 盘点剩余调用方并验证迁移兼容性。 |
 | Proposal 评审 | 已有影响信息、回滚计划和本地 gates | 增加回滚边界用例并检查生成产物。 |
-| 文档与发布 | 示例可运行；已发布 tag `v0.4.0` | 维护可用入口，单独决定可选 Pages 发布。 |
+| 文档与发布 | 示例可运行；已发布 tag `v0.4.0`；Pages 站点已上线 | 维护可用入口；站点随 `main` 推送自动重新发布。 |
 
 详见[带日期的验证记录和待办](docs/maintenance.md)。
-目前通过仓库内的 walkthrough 阅读文档；本次检查未发现可用的 GitHub Pages 站点。
+站点已发布在 [2sao7sao.github.io/EvolveKB](https://2sao7sao.github.io/EvolveKB/)，源文件为仓库内的 `docs/index.html`，每次推送到 `main` 会重新发布。
 
 ## 文档
 
