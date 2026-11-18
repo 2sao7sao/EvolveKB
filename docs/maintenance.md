@@ -58,10 +58,11 @@ terminal image and seed metrics. These edits do not change runtime behavior.
 
 ## Pages and visual assets
 
-The Pages API returned 404 during this review. The [Pages workflow](../.github/workflows/pages.yml)
-is manual-only and documents the previous deployment failure. Repository
-walkthroughs are the current documentation entrypoint. If a hosted page becomes
-necessary, configure Pages, deploy it, verify the URL, then restore the navigation link.
+The Pages API returned 404 during the 2026-11-16 review. Pages is now enabled with
+GitHub Actions as the source, and [the workflow](../.github/workflows/pages.yml)
+republishes `docs/` on every push to `main`; the first verified deployment is
+[2sao7sao.github.io/EvolveKB](https://2sao7sao.github.io/EvolveKB/). The live site
+is the documentation entrypoint and `docs/index.html` is its source.
 
 The README banner is a project identity/flow illustration. The
 [terminal image](assets/evolvekb-demo-terminal.svg) is reconstructed CLI output;

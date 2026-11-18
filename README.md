@@ -113,11 +113,12 @@ roadmap headings already have prototype implementations.
 | Retrieval and traces | EvidencePack, registered retrievers, and step traces implemented | Extend failure-case evals beyond the current seeds. |
 | Procedure execution | Python entrypoints implemented; legacy fallback remains | Inventory remaining callers and prove migration compatibility. |
 | Proposal review | Impact metadata, rollback plan, and local gates implemented | Add a rollback edge case and inspect its resulting artifacts. |
-| Documentation and release | Runnable examples; tagged release `v0.4.0` | Keep entrypoints current; decide optional Pages publication separately. |
+| Documentation and release | Runnable examples; tagged release `v0.4.0`; Pages site live | Keep entrypoints current; the site republishes from `docs/` on every main push. |
 
 See [dated verification and actionable roadmap](docs/maintenance.md).
-The repository walkthrough is the documentation entrypoint; a deployed GitHub
-Pages site was not available at the review.
+The hosted walkthrough is available at [2sao7sao.github.io/EvolveKB](https://2sao7sao.github.io/EvolveKB/);
+the repository copy of `docs/index.html` is its source and is republished on every
+push to `main`.
 
 ## Documentation
 
