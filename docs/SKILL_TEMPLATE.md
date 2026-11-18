@@ -37,7 +37,7 @@ metadata:
     entrypoint: evolvekb.procedures.my_skill_name:run
     timeout_ms: 3000
     side_effects: false
-  version: 0.3.0
+  version: 0.4.0
 ---
 
 # My Skill Name
@@ -73,7 +73,7 @@ reviewed knowledge assets.
 | `metadata.intent` | Required for playbooks that `PlaybookRuntime` should route to. |
 | `metadata.steps` | Use existing procedure names where possible. |
 | `metadata.runtime` | Optional for procedures; `type: python` uses `module:function` entrypoints. |
-| `metadata.version` | Start new EvolveKB v0.3 skills at `0.3.0`. |
+| `metadata.version` | Start new EvolveKB v0.4 skills at `0.4.0`. |
 
 ## Quality Checks
 

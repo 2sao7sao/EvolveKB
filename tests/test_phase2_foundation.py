@@ -162,7 +162,7 @@ def test_usage_model_rejects_invalid_pattern() -> None:
 
 def test_skill_model_valid() -> None:
     skill = SkillAsset(name="demo", description="A demo skill", kind="procedure")
-    assert skill.version == "0.3.0"
+    assert skill.version == "0.4.0"
 
 
 def test_skill_model_rejects_invalid_kind() -> None:

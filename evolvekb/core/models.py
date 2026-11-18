@@ -120,7 +120,7 @@ class SkillAsset(StrictBaseModel):
     supporting_files: list[str] = Field(default_factory=list)
     examples: list[dict[str, Any]] = Field(default_factory=list)
     runtime: dict[str, Any] = Field(default_factory=dict)
-    version: str = "0.3.0"
+    version: str = "0.4.0"
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("description")
