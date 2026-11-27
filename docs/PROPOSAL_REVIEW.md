@@ -39,6 +39,7 @@ impact:
 | `proposal_has_impact_summary` | Blocks proposals without impact metadata or impacted assets. |
 | `proposal_has_rollback_plan` | Blocks proposals without rollback files and pre-change hashes. |
 | `claim_has_evidence_quote` | Blocks active claims missing an evidence quote. |
+| `claim_evidence_quote_matches_chunk` | Blocks active claims whose quote does not appear in the referenced chunk, which catches fabricated evidence. Skipped for repositories that have no `kb/chunks` store. |
 | `proposal_impacted_evals_declared` | Emits a v0.3 warning when no impacted evals are declared. |
 
 ## Reviewer Checklist

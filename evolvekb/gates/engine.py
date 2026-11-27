@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import json
+import re
 from pathlib import Path
 
 from evolvekb.assets.frontmatter import parse_frontmatter
@@ -54,17 +55,44 @@ def validate_leanness(repo: Path, max_skill_md_bytes: int) -> list[GateResult]:
     return results
 
 
+def _normalize_evidence(text: str) -> str:
+    """Compare quotes with chunk text regardless of markdown and whitespace noise."""
+    stripped = re.sub(r"[*_\x60]{1,3}", "", str(text))
+    return re.sub(r"\s+", "", stripped).lower()
+
+
+def _load_chunk_text(repo: Path) -> dict[str, str] | None:
+    """Chunk id -> normalized text, or None when the repository has no chunk store."""
+    chunks_root = repo / "kb" / "chunks"
+    if not chunks_root.exists():
+        return None
+    chunks: dict[str, str] = {}
+    for path in sorted(chunks_root.glob("*.jsonl")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            chunk_id = str(row.get("id") or "")
+            if chunk_id:
+                chunks[chunk_id] = _normalize_evidence(row.get("text") or "")
+    return chunks
+
+
 def validate_claim_evidence(repo: Path) -> list[GateResult]:
     results: list[GateResult] = []
     claims_root = repo / "kb" / "claims"
     if not claims_root.exists():
         return results
+    chunks = _load_chunk_text(repo)
     for path in sorted(claims_root.glob("*.jsonl")):
         for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
             if not line.strip():
                 continue
             row = json.loads(line)
-            if row.get("status", "active") == "active" and not str(row.get("evidence_quote") or "").strip():
+            if row.get("status", "active") != "active":
+                continue
+            quote = str(row.get("evidence_quote") or "").strip()
+            if not quote:
                 results.append(
                     GateResult(
                         gate_id="claim_has_evidence_quote",
@@ -74,6 +102,29 @@ def validate_claim_evidence(repo: Path) -> list[GateResult]:
                         details={"path": str(path.relative_to(repo)), "line": line_number},
                     )
                 )
+                continue
+            # A quote that does not appear in its own chunk is fabricated evidence.
+            if chunks is not None:
+                normalized = _normalize_evidence(quote)
+                chunk_ids = [str(cid) for cid in (row.get("chunk_ids") or [])]
+                found = any(
+                    chunk_id in chunks and normalized in chunks[chunk_id]
+                    for chunk_id in chunk_ids
+                )
+                if not found:
+                    results.append(
+                        GateResult(
+                            gate_id="claim_evidence_quote_matches_chunk",
+                            passed=False,
+                            severity="blocker",
+                            message=(
+                                f"{path.relative_to(repo)}:{line_number}: evidence_quote not found in "
+                                f"referenced chunk(s) {chunk_ids}"
+                            ),
+                            details={"path": str(path.relative_to(repo)), "line": line_number,
+                                     "chunk_ids": chunk_ids},
+                        )
+                    )
     return results
 
 
