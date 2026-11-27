@@ -1,0 +1,180 @@
+[
+  {
+    "id": "q01",
+    "type": "lookup",
+    "system": "kb_evidence",
+    "question": "在不指定 --retriever 参数时，EvolveKB 的 query 命令如何决定使用哪个检索器？",
+    "gold_docs": [
+      "docs/RETRIEVAL.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 877,
+    "answer": "不指定 `--retriever` 时，CLI 会从所选设置文件中读取 `retrieval.default_mode`；如果该配置不可用，则回退到 `keyword` [kb/claims/src_6ff06c882cc4.jsonl]。",
+    "score": 2,
+    "judge_reason": "候选回答与参考答案一致：未指定 --retriever 时读取所选 settings 文件中的 retrieval.default_mode，缺失则回退到 keyword。",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 2.15,
+    "error": null
+  },
+  {
+    "id": "q02",
+    "type": "lookup",
+    "system": "kb_evidence",
+    "question": "hybrid 检索模式的四路权重分别是多少？",
+    "gold_docs": [
+      "docs/RETRIEVAL.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 577,
+    "answer": "无法回答。证据仅说明 hybrid 会合并 local keyword、BM25、semantic-lite 和 evidence-confidence 四类分数 [kb/claims/src_6ff06c882cc4.jsonl]，但未给出这四路各自的权重数值。",
+    "score": 1,
+    "judge_reason": "judge_unparseable",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 2.89,
+    "error": null
+  },
+  {
+    "id": "q03",
+    "type": "definition",
+    "system": "kb_evidence",
+    "question": "semantic 模式使用的是 embedding 模型或向量数据库吗？它到底怎么算分？",
+    "gold_docs": [
+      "docs/RETRIEVAL.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 1090,
+    "answer": "不是。内置 semantic 模式是确定性的 semantic-lite 排序，不是 embedding 模型或向量数据库 [kb/claims/src_6ff06c882cc4.jsonl]。它基于 token 和 character-ngram 特征计算分数，且无外部依赖 [kb/claims/src_6ff06c882cc4.jsonl]。在 hybrid 模式下，semantic 分数会与 keyword、bm25、evidence 分数按权重合并 [kb/claims/src_6ff06c882cc4.jsonl]。",
+    "score": 1,
+    "judge_reason": "judge_unparseable",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 4.98,
+    "error": null
+  },
+  {
+    "id": "q04",
+    "type": "lookup",
+    "system": "kb_evidence",
+    "question": "retrieval_vs_playbook_delta 指标当前的计算结果是多少，公式是什么？",
+    "gold_docs": [
+      "docs/METRICS.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 712,
+    "answer": "公式为 `playbook_capability_coverage - retrieval_only_capability_coverage`，当前 seed 输出为 `4/5 = 0.80` [kb/claims/src_50fbdaaceefe.jsonl]。",
+    "score": 1,
+    "judge_reason": "judge_unparseable",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 3.86,
+    "error": null
+  },
+  {
+    "id": "q05",
+    "type": "lookup",
+    "system": "kb_evidence",
+    "question": "RunTrace 里每个 StepTrace 包含哪些字段？",
+    "gold_docs": [
+      "docs/RUNTIME_TRACE.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 834,
+    "answer": "Each `StepTrace` 包含以下字段：`step_index, procedure, input_hash, output_hash, started_at, finished_at, duration_ms, success, error, retrieved_knowledge_ids, evidence_ids, gate_results` [kb/claims/src_2ca3e47b7524.jsonl]。其中 `gate_results` 是该步骤中触发的 gate 策略结果列表 [kb/claims/src_2ca3e47b7524.jsonl]。",
+    "score": 1,
+    "judge_reason": "judge_unparseable",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 3.75,
+    "error": null
+  },
+  {
+    "id": "q06",
+    "type": "lookup",
+    "system": "kb_evidence",
+    "question": "与 proposal 相关的四个 gate 分别是什么，哪个只产生 warning？",
+    "gold_docs": [
+      "docs/PROPOSAL_REVIEW.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 565,
+    "answer": "无法回答。证据只列出两个 proposal 相关 gate（`proposal_has_impact_summary`、`proposal_impacted_evals_declared`），并显示后者在未声明受影响 eval 时产生 v0.3 warning [kb/claims/src_f4b5fcfbd589.jsonl]；缺少另外两个 gate 的名称及行为说明，无法完整回答“四个 gate 分别是什么”。",
+    "score": 1,
+    "judge_reason": "judge_unparseable",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 5.8,
+    "error": null
+  },
+  {
+    "id": "q07",
+    "type": "lookup",
+    "system": "kb_evidence",
+    "question": "EvolveKB 当前的源码包版本和许可证分别是什么？",
+    "gold_docs": [
+      "README.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 420,
+    "answer": "无法回答。证据中未提供 EvolveKB 的源码包版本或许可证信息，缺少相关元数据（如版本号、许可证声明）。",
+    "score": 0,
+    "judge_reason": "参考答案明确给出源码包版本为 0.4.0、许可证为 Apache-2.0，且问题在语料中有答案；候选回答却称无法回答，属于错误拒绝回答。",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 2.22,
+    "error": null
+  },
+  {
+    "id": "q08",
+    "type": "synthesis",
+    "system": "kb_evidence",
+    "question": "EvolveKB 与 Karpathy 的 LLM Wiki 模式最核心的区别是什么？",
+    "gold_docs": [
+      "docs/karpathy-llm-wiki-comparison.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 829,
+    "answer": "最核心的区别是控制权归属：Karpathy 的模式让 LLM 直接拥有 wiki 层；EvolveKB 则只让模型提出更新建议，由门控与评审控制规范内容的变更 [kb/claims/src_b34d05c9eaad.jsonl]。此外，EvolveKB 将编译产物拆分为 `knowledge`、`usage` 和 `skills`，并把演化作为受门控的运行时事项，而非自由形式的 wiki 编辑循环 [kb/claims/src_b34d05c9eaad.jsonl]。",
+    "score": 1,
+    "judge_reason": "judge_unparseable",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 4.98,
+    "error": null
+  },
+  {
+    "id": "q09",
+    "type": "procedure",
+    "system": "kb_evidence",
+    "question": "如何注册一个新的 retriever 模式？两种方式分别是什么？",
+    "gold_docs": [
+      "docs/RETRIEVAL.md"
+    ],
+    "answerable": true,
+    "evidence_chars": 506,
+    "answer": "无法回答。证据只说明检索评估可以选择 `retriever: bm25` 这样的模式 [kb/claims/src_6ff06c882cc4.jsonl]，但没有说明如何注册新的 retriever 模式，也没有说明注册的两种方式。缺少关于 retriever 注册流程及两种注册方式的文档。",
+    "score": 1,
+    "judge_reason": "judge_unparseable",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 4.06,
+    "error": null
+  },
+  {
+    "id": "q10",
+    "type": "unanswerable",
+    "system": "kb_evidence",
+    "question": "EvolveKB 的月度订阅价格是多少？",
+    "gold_docs": [],
+    "answerable": false,
+    "evidence_chars": 420,
+    "answer": "无法回答。证据仅涉及 EvolveKB 的运行命令、检索理念、运行追踪和实现位置，未包含任何订阅定价信息 [kb/claims/src_50fbdaaceefe.jsonl][kb/claims/src_6ff06c882cc4.jsonl][kb/claims/src_2ca3e47b7524.jsonl]。缺少月度订阅价格的直接证据。",
+    "score": 1,
+    "judge_reason": "judge_unparseable",
+    "fabricated": false,
+    "gold_doc_cited": false,
+    "latency_s": 4.26,
+    "error": null
+  }
+]

@@ -51,6 +51,8 @@ superiority, or performance across arbitrary agent workloads.
 | P1 | Inventory and migrate remaining `PROC_IMPL` callers | List each caller, declare its runtime entrypoint, and verify equivalent outputs and traces before removing fallback code. |
 | P1 | Extend proposal rollback coverage | Add one hash-conflict or partial-change fixture; inspect the resulting state and prove unrelated files stay intact. |
 | P2 | Decide the release and optional Pages scope | Align source version/changelog with accepted capabilities; publish only after the selected delivery path is verified. |
+| P0 | Fix metric integrity and evidence gates ([review](code-review-2026-11-27.md)) | The retrieval-vs-playbook delta and claim grounding must be measured, not tautological; claim quotes must be verifiable against chunks. |
+| P0 | Make retrieval index chunk bodies | Evidence recall@4 must reach the independent BM25 baseline on the real-corpus pilot. |
 
 Documentation work in this maintenance pass removes the unavailable Product Page
 entrypoint, aligns both READMEs with implemented foundations, and labels the static

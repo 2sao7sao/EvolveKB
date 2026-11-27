@@ -1,0 +1,29 @@
+{
+  "long_context": {
+    "questions": 0,
+    "mean_score": 0.0,
+    "exact_rate": 0.0,
+    "gold_cited_rate": 0.0,
+    "fabricated_rate": 0.0,
+    "mean_evidence_chars": 0
+  },
+  "bm25_rag": {
+    "questions": 0,
+    "mean_score": 0.0,
+    "exact_rate": 0.0,
+    "gold_cited_rate": 0.0,
+    "fabricated_rate": 0.0,
+    "mean_evidence_chars": 0
+  },
+  "kb_evidence": {
+    "questions": 10,
+    "mean_score": 1.0,
+    "exact_rate": 0.1,
+    "gold_cited_rate": 0.0,
+    "fabricated_rate": 0.0,
+    "mean_evidence_chars": 683
+  },
+  "unanswerable_refusal": {
+    "kb_evidence": "failed"
+  }
+}

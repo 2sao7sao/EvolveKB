@@ -128,6 +128,7 @@ push to `main`.
 | [Retrieval contract](docs/RETRIEVAL.md) / [runtime trace](docs/RUNTIME_TRACE.md) | Integrate evidence and execution tracing. |
 | [Proposal review](docs/PROPOSAL_REVIEW.md) / [metrics](docs/METRICS.md) | Understand review gates and the limits of reported results. |
 | [Skill template](docs/SKILL_TEMPLATE.md) / [starter tasks](docs/STARTER_ISSUES.md) | Add one scoped procedure, example, or eval. |
+| [Code review and real-corpus evaluation](docs/code-review-2026-11-27.md) | See what the runtime actually does, how it compares with 2025–2026 work, and the first measured results. |
 | [Maintenance](docs/maintenance.md) / [changelog](CHANGELOG.md) | Separate implemented foundations from remaining work. |
 
 Source map: `evolvekb/` contains the runtime; `kb/` contains knowledge and usage
