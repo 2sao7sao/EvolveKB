@@ -7,12 +7,14 @@ import shutil
 import tempfile
 
 from evolvekb.evolution.proposal import list_proposals
-from evolvekb.gates.engine import validate_repo
+from evolvekb.gates.engine import quote_matches_chunks, validate_repo
 from evolvekb.ingestion.compiler import compile_markdown
-from evolvekb.retrieval.keyword import keyword_retrieve
+from evolvekb.retrieval.keyword import keyword_retrieve, tokenize_terms
+from evolvekb.skills.runtime import PlaybookRuntime
 
 
 DEFAULT_DEMO_DOC = "examples/refund_policy.md"
+DEMO_QUESTION = "The customer opened the item and asks for a refund after 45 days. What should we do?"
 DEFAULT_DEMO_SETTINGS = "settings/evolve.yaml"
 DEFAULT_DEMO_EVALS = [
     "evals/retrieval_execution_first.yaml",
@@ -101,27 +103,43 @@ def run_flagship_demo_in_workspace(
         limit=5,
     )
 
-    grounded_claim_count = sum(1 for claim in ingest.claims if claim.evidence_quote.strip())
-    routing_eval_passed = any(
-        result.category == "routing_eval" and result.passed for result in eval_results
+    verified_claim_ids = {
+        claim.id
+        for claim in ingest.claims
+        if quote_matches_chunks(workspace, claim.chunk_ids, claim.evidence_quote)
+    }
+    grounded_claim_count = len(verified_claim_ids)
+    playbook_run = PlaybookRuntime(workspace).run(
+        intent="refund_decision",
+        question=DEMO_QUESTION,
+        settings_arg=settings,
+        write_side_effects=False,
     )
-    eval_seeds_passed = bool(eval_results) and all(result.passed for result in eval_results)
-    retrieval_baseline_steps = _capability_steps(
-        {
-            "retrieve_policy_text": bool(retrieval_items),
-        }
-    )
-    playbook_runtime_steps = _capability_steps(
-        {
-            "retrieve_policy_text": bool(retrieval_items),
-            "extract_grounded_claims": grounded_claim_count == len(ingest.claims)
-            and bool(ingest.claims),
-            "route_usage_playbook": routing_eval_passed,
-            "run_repeatable_procedure": eval_seeds_passed and not failed_gates,
-            "create_reviewable_proposal_and_gates": ingest.proposal_path is not None
-            and not failed_gates,
-        }
-    )
+    # Both arms are scored on artefacts by the same checker, so the delta can fail.
+    retrieval_artifact = {
+        "retrieved": bool(retrieval_items),
+        "claims": [
+            {"verified": bool(quote_matches_chunks(workspace, claim.chunk_ids, claim.evidence_quote))}
+            for claim in _retrieved_claims(ingest.claims, DEMO_QUESTION)
+        ],
+        "routed": False,
+        "steps": [],
+        "proposal": None,
+        "gates_green": False,
+    }
+    playbook_artifact = {
+        "retrieved": bool(
+            playbook_run.trace.retrieved_knowledge_ids
+            or any(step.evidence_ids for step in playbook_run.trace.step_traces)
+        ),
+        "claims": [{"verified": claim.id in verified_claim_ids} for claim in ingest.claims],
+        "routed": playbook_run.trace.selected_skill == "refund-decision",
+        "steps": [{"success": step.success} for step in playbook_run.trace.step_traces],
+        "proposal": ingest.proposal_path is not None,
+        "gates_green": not failed_gates,
+    }
+    retrieval_baseline_steps = _capability_steps(_evaluate_artifact(retrieval_artifact))
+    playbook_runtime_steps = _capability_steps(_evaluate_artifact(playbook_artifact))
     metrics = _build_metrics(
         claim_count=len(ingest.claims),
         grounded_claim_count=grounded_claim_count,
@@ -219,7 +237,7 @@ def _build_metrics(
             value=_ratio(grounded_claim_count, claim_count),
             numerator=grounded_claim_count,
             denominator=claim_count,
-            explanation="extracted claims that keep a source evidence quote",
+            explanation="extracted claims whose quote is found in their source chunk",
         ),
         "playbook_success_rate": ProductMetric(
             key="playbook_success_rate",
@@ -240,7 +258,7 @@ def _build_metrics(
             value=playbook_score - retrieval_score,
             numerator=sum(playbook_runtime_steps.values()) - sum(retrieval_baseline_steps.values()),
             denominator=len(CAPABILITY_COVERAGE_CHECKLIST),
-            explanation="capability coverage gained over a retrieval-only baseline",
+            explanation="capability coverage gained over a retrieval-only artefact, both scored by the same checker",
         ),
     }
 
@@ -267,6 +285,32 @@ def _copy_repo(source: Path, target: Path) -> None:
 
 def _coverage(steps: dict[str, bool]) -> float:
     return _ratio(sum(steps.values()), len(steps))
+
+
+def _retrieved_claims(claims, query: str, limit: int = 5):
+    """Claims a retrieval-only pipeline would return for the query."""
+    terms = set(tokenize_terms(query))
+    ranked = []
+    for claim in claims:
+        overlap = len(terms & set(tokenize_terms(claim.text)))
+        if overlap:
+            ranked.append((overlap, claim))
+    ranked.sort(key=lambda item: (-item[0], item[1].id))
+    return [claim for _score, claim in ranked[:limit]]
+
+
+def _evaluate_artifact(artifact: dict) -> dict[str, bool]:
+    """Score one artefact against the capability checklist; no template inspection."""
+    claims = artifact.get("claims") or []
+    steps = artifact.get("steps") or []
+    return {
+        "retrieve_policy_text": bool(artifact.get("retrieved")),
+        "extract_grounded_claims": bool(claims) and all(bool(c.get("verified")) for c in claims),
+        "route_usage_playbook": bool(artifact.get("routed")),
+        "run_repeatable_procedure": bool(steps) and all(bool(s.get("success")) for s in steps),
+        "create_reviewable_proposal_and_gates": bool(artifact.get("proposal"))
+        and bool(artifact.get("gates_green")),
+    }
 
 
 def _capability_steps(enabled: dict[str, bool]) -> dict[str, bool]:
