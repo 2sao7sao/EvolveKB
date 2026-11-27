@@ -14,10 +14,10 @@ python -m evolvekb.cli eval run "evals/*.yaml"
 
 | Metric | Formula | Current seed output |
 | --- | --- | --- |
-| `claim_grounding_rate` | `grounded_claim_count / claim_count` | `5/5 = 1.00` |
+| `claim_grounding_rate` | `grounded_claim_count / claim_count`, where grounded means the quote is found in its source chunk | `5/5 = 1.00` |
 | `playbook_success_rate` | `passed_eval_count / eval_count` | `2/2 = 1.00` |
 | `proposal_gate_pass_rate` | `1` when a proposal is created and gates pass, else `0` | `1/1 = 1.00` |
-| `retrieval_vs_playbook_delta` | `playbook_capability_coverage - retrieval_only_capability_coverage` | `4/5 = 0.80` |
+| `retrieval_vs_playbook_delta` | `playbook_capability_coverage - retrieval_only_capability_coverage`, both scored on artefacts by one checker | `3/5 = 0.60` |
 
 The CLI prints each metric with its numerator and denominator so README numbers
 can be checked against a local run.
@@ -39,12 +39,16 @@ coverage =
   passed_capabilities / total_required_capabilities
 ```
 
+Both arms produce an artefact and are scored by the same checker. The retrieval-only
+artefact can earn claims and citations, so it is not pinned to one capability; a
+degraded playbook lowers the delta (there is a test for that).
+
 Current checklist:
 
 | Capability | Retrieval-only baseline | Execution-first playbook |
 | --- | --- | --- |
 | Finds relevant policy text | yes | yes |
-| Produces evidence-backed claims | no | yes |
+| Produces evidence-backed claims | yes (retrieved claims) | yes |
 | Routes to an explicit usage playbook | no | yes |
 | Runs repeatable procedure steps | no | yes |
 | Creates a reviewable proposal and gates | no | yes |
@@ -52,9 +56,9 @@ Current checklist:
 Current seed calculation:
 
 ```text
-retrieval_only_capability_coverage = 1 / 5
+retrieval_only_capability_coverage = 2 / 5
 playbook_capability_coverage = 5 / 5
-retrieval_vs_playbook_delta = 5/5 - 1/5 = 4/5 = 0.80
+retrieval_vs_playbook_delta = 5/5 - 2/5 = 3/5 = 0.60
 ```
 
 ## Scope
@@ -76,10 +80,10 @@ comprehensive benchmark.
 
 | Metric | Limitation |
 | --- | --- |
-| `claim_grounding_rate` | Measures whether deterministic extraction retained evidence quotes, not whether every possible claim was extracted. |
+| `claim_grounding_rate` | Measures whether each quote appears in its source chunk; it does not measure whether the claim is the right interpretation of that quote. |
 | `playbook_success_rate` | Measures current seed eval pass rate, not broad task coverage. |
 | `proposal_gate_pass_rate` | Measures whether the generated proposal keeps current gates green, not whether a human has approved it. |
-| `retrieval_vs_playbook_delta` | Measures seed-level capability coverage over a named checklist, not model accuracy or retrieval quality. |
+| `retrieval_vs_playbook_delta` | Measures artefact-level capability coverage over a named checklist on one seed document; it is not a benchmark of model accuracy or retrieval quality across domains. |
 
 ## Eval Summary JSON
 

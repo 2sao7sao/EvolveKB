@@ -78,6 +78,15 @@ def _load_chunk_text(repo: Path) -> dict[str, str] | None:
     return chunks
 
 
+def quote_matches_chunks(repo: Path, chunk_ids: list[str] | tuple[str, ...], quote: str) -> bool | None:
+    """Whether a quote appears in one of its chunks; None when no chunk store exists."""
+    chunks = _load_chunk_text(repo)
+    if chunks is None:
+        return None
+    normalized = _normalize_evidence(quote)
+    return any(str(chunk_id) in chunks and normalized in chunks[str(chunk_id)] for chunk_id in chunk_ids)
+
+
 def validate_claim_evidence(repo: Path) -> list[GateResult]:
     results: list[GateResult] = []
     claims_root = repo / "kb" / "claims"

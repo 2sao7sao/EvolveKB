@@ -423,12 +423,46 @@ def test_flagship_demo_metrics_are_grounded() -> None:
     assert report.metrics["playbook_success_rate"].value == 1.0
     assert report.metrics["proposal_gate_pass_rate"].value == 1.0
     delta = report.metrics["retrieval_vs_playbook_delta"]
-    assert delta.numerator == 4
+    # The retrieval-only arm is scored on an artefact, so it can earn more than one capability.
+    assert report.retrieval_baseline_steps["retrieve_policy_text"] is True
+    assert report.retrieval_baseline_steps["extract_grounded_claims"] is True
+    assert delta.numerator == 3
     assert delta.denominator == len(CAPABILITY_COVERAGE_CHECKLIST)
-    assert delta.value == 0.8
+    assert delta.value == 0.6
     rendered = format_demo_report(report)
     assert "Product metrics" in rendered
     assert "retrieval_vs_playbook_delta" in rendered
+
+
+def test_capability_delta_can_fall_when_the_playbook_degrades() -> None:
+    from evolvekb.demo import _capability_steps, _coverage, _evaluate_artifact
+
+    healthy = {
+        "retrieved": True,
+        "claims": [{"verified": True}],
+        "routed": True,
+        "steps": [{"success": True}, {"success": True}],
+        "proposal": True,
+        "gates_green": True,
+    }
+    degraded = {**healthy, "proposal": False, "steps": [{"success": True}, {"success": False}]}
+
+    healthy_score = _coverage(_capability_steps(_evaluate_artifact(healthy)))
+    degraded_score = _coverage(_capability_steps(_evaluate_artifact(degraded)))
+
+    assert healthy_score == 1.0
+    assert degraded_score == 0.6
+    assert healthy_score > degraded_score
+
+
+def test_fabricated_quote_lowers_grounding() -> None:
+    from evolvekb.demo import _capability_steps, _evaluate_artifact
+
+    artifact = {"retrieved": True, "claims": [{"verified": True}, {"verified": False}]}
+
+    steps = _capability_steps(_evaluate_artifact(artifact))
+
+    assert steps["extract_grounded_claims"] is False
 
 
 def test_proposal_apply_and_rollback(tmp_path: Path) -> None:
