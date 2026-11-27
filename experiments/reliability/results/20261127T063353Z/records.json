@@ -1,0 +1,802 @@
+[
+  {
+    "id": "q01",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 1,
+    "answer": "未指定 `--retriever` 时，CLI 会从所选 settings 文件中读取 `retrieval.default_mode`；若该项不可用，则回退到 `keyword` [docs/RETRIEVAL.md#28]。",
+    "latency_s": 2.89
+  },
+  {
+    "id": "q01",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 1,
+    "answer": "未指定 `--retriever` 时，CLI 会从所选设置文件中读取 `retrieval.default_mode`；如果该项不可用，则回退到 `keyword` [docs/RETRIEVAL.md#28]。",
+    "latency_s": 2.73
+  },
+  {
+    "id": "q01",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 1,
+    "answer": "省略 `--retriever` 时，CLI 会从所选 settings 文件中读取 `retrieval.default_mode`，若该配置缺失则回退到 `keyword` [docs/RETRIEVAL.md#28]。",
+    "latency_s": 3.11
+  },
+  {
+    "id": "q01",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 1,
+    "answer": "不指定 `--retriever` 时，CLI 会从所选设置文件中读取 `retrieval.default_mode`，若无法获取则回退为 `keyword` [docs/RETRIEVAL.md#28]。",
+    "latency_s": 2.83
+  },
+  {
+    "id": "q01",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 1,
+    "answer": "会从所选设置文件中读取 `retrieval.default_mode`，并回退到 `keyword` [docs/RETRIEVAL.md#28]。",
+    "latency_s": 3.19
+  },
+  {
+    "id": "q01",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 2,
+    "answer": "不指定 `--retriever` 时，CLI 会从所选 settings 文件读取 `retrieval.default_mode`，若未配置则回退到 `keyword` [kb/claims/src_63bb2f482779.jsonl]。",
+    "latency_s": 3.03
+  },
+  {
+    "id": "q01",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 2,
+    "answer": "未指定 `--retriever` 时，CLI 会从所选设置文件中读取 `retrieval.default_mode`，并回退到 `keyword` [kb/claims/src_63bb2f482779.jsonl]。",
+    "latency_s": 1.9
+  },
+  {
+    "id": "q01",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 2,
+    "answer": "若省略 `--retriever`，CLI 会从所选设置文件中读取 `retrieval.default_mode`，如果该值不存在，则回退使用 `keyword`。 [kb/claims/src_63bb2f482779.jsonl]",
+    "latency_s": 3.54
+  },
+  {
+    "id": "q01",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 1,
+    "answer": "省略 `--retriever` 时，CLI 会从所选配置文件中读取 `retrieval.default_mode`；如果无法获得该配置，则回退到 `keyword`。[kb/claims/src_63bb2f482779.jsonl]",
+    "latency_s": 3.21
+  },
+  {
+    "id": "q01",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 1,
+    "answer": "省略 `--retriever` 时，CLI 会从所选设置文件中读取 `retrieval.default_mode`，并回退到 `keyword` [kb/claims/src_63bb2f482779.jsonl]。",
+    "latency_s": 3.43
+  },
+  {
+    "id": "q02",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 2,
+    "answer": "hybrid 模式的四路权重为：keyword 0.35、bm25 0.35、semantic 0.2、evidence 0.1 [docs/RETRIEVAL.md#29]。",
+    "latency_s": 2.56
+  },
+  {
+    "id": "q02",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 2,
+    "answer": "hybrid 模式的四路权重为：keyword 0.35、bm25 0.35、semantic 0.2、evidence 0.1 [docs/RETRIEVAL.md#29]。",
+    "latency_s": 2.34
+  },
+  {
+    "id": "q02",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 2,
+    "answer": "`hybrid` 权重为：keyword 0.35、bm25 0.35、semantic 0.2、evidence 0.1 [docs/RETRIEVAL.md#29]。",
+    "latency_s": 2.06
+  },
+  {
+    "id": "q02",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 2,
+    "answer": "hybrid 模式的四路权重为：keyword 0.35、bm25 0.35、semantic 0.2、evidence 0.1。[docs/RETRIEVAL.md#29]",
+    "latency_s": 1.29
+  },
+  {
+    "id": "q02",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 1,
+    "answer": "hybrid 模式四路权重为：keyword 0.35、bm25 0.35、semantic 0.2、evidence 0.1 [docs/RETRIEVAL.md#29]。",
+    "latency_s": 4.22
+  },
+  {
+    "id": "q02",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 1,
+    "answer": "无法回答。证据仅说明 hybrid 会合并 local keyword、BM25、semantic-lite 与 evidence-confidence 四类分数 [kb/claims/src_63bb2f482779.jsonl]，但未给出各路的具体权重数值；缺少权重配置或相关文档说明。",
+    "latency_s": 2.86
+  },
+  {
+    "id": "q02",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 1,
+    "answer": "无法回答：证据仅说明 hybrid 合并了 local keyword、BM25、semantic-lite 和 evidence-confidence 四类分数 [kb/claims/src_63bb2f482779.jsonl]，但未给出四路权重数值。缺少 hybrid 检索模式的具体权重配置。",
+    "latency_s": 3.27
+  },
+  {
+    "id": "q02",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 0,
+    "answer": "无法回答。现有证据只说明 hybrid 会合并关键词、BM25、semantic-lite 和 evidence-confidence 四类分数 [kb/claims/src_63bb2f482779.jsonl]，但没有给出这四路各自的权重数值。",
+    "latency_s": 1.88
+  },
+  {
+    "id": "q02",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 0,
+    "answer": "无法回答。证据仅说明 hybrid 会合并 local keyword、BM25、semantic-lite 和 evidence-confidence 四路分数 [kb/claims/src_63bb2f482779.jsonl]，但未给出各路的具体权重数值。",
+    "latency_s": 2.62
+  },
+  {
+    "id": "q02",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 1,
+    "answer": "无法回答。证据仅说明 hybrid 合并了 local keyword、BM25、semantic-lite 和 evidence-confidence 四类分数 [kb/claims/src_63bb2f482779.jsonl]，但未提供四路权重的具体数值。",
+    "latency_s": 3.24
+  },
+  {
+    "id": "q03",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 1,
+    "answer": "不是。内置 semantic 模式是确定性的 semantic-lite 排序，明确“不是 embedding 模型或向量数据库” [docs/RETRIEVAL.md#31]；它基于 token 和字符 n-gram 特征计算，且无外部依赖 [docs/RETRIEVAL.md#27][docs/RETRIEVAL.md#34]。\n\n至于具体算分公式，证据只说明其特征来源和“确定性”性质，未给出语义打分的具体计算方式；这部分无法回答。补充：在 hybrid 中 semantic 的合并权重为 0.2，但这是混合检索的权重，不是 semantic 自身的算法 [docs/RETRIEVAL.md#29]。",
+    "latency_s": 3.88
+  },
+  {
+    "id": "q03",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 1,
+    "answer": "不是。内置 semantic 模式是确定性的 semantic-lite 排序，明确不是 embedding 模型或向量数据库 [docs/RETRIEVAL.md#31]，其排序基于 token 与字符 n-gram 特征 [docs/RETRIEVAL.md#34][docs/RETRIEVAL.md#27]。\n\n具体算分公式证据未提供，无法说明其逐步计算方式；只知道它不依赖外部组件，且 hybrid 中 semantic 分数默认权重为 0.2 [docs/RETRIEVAL.md#27][docs/RETRIEVAL.md#29]。",
+    "latency_s": 3.54
+  },
+  {
+    "id": "q03",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 1,
+    "answer": "不使用 embedding 模型或向量数据库；内置 semantic 模式是确定性的 semantic-lite 排序 [docs/RETRIEVAL.md#31]。它基于 token 与字符 n-gram 特征进行排序 [docs/RETRIEVAL.md#34][docs/RETRIEVAL.md#27]。在 hybrid 中会合并 keyword、BM25、semantic-lite 和 evidence-confidence 分数 [docs/RETRIEVAL.md#31]，示例配置中 semantic 权重为 0.2 [docs/RETRIEVAL.md#29]。\n\n具体算分公式：证据未提供，无法回答。",
+    "latency_s": 4.27
+  },
+  {
+    "id": "q03",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 1,
+    "answer": "不是。内置 semantic 模式是确定性的 semantic-lite 排序，明确“不是 embedding 模型或向量数据库” [docs/RETRIEVAL.md#31]；其实现为基于 token 和字符 n-gram 特征的确定性排序 [docs/RETRIEVAL.md#34][docs/RETRIEVAL.md#27]，且无外部依赖 [docs/RETRIEVAL.md#27]。\n\n具体算分公式（如 token 与 char-ngram 特征如何加权、归一化）证据未给出，无法回答该部分。",
+    "latency_s": 3.31
+  },
+  {
+    "id": "q03",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 1,
+    "answer": "不是。内置 semantic 模式是确定性的 semantic-lite 排序，并非 embedding 模型或向量数据库 [docs/RETRIEVAL.md#31]；它基于 token 与字符 n-gram 特征计算，且无外部依赖 [docs/RETRIEVAL.md#27][docs/RETRIEVAL.md#34]。Hybrid 模式则把 keyword、BM25、semantic-lite 和 evidence-confidence 分数加权合并 [docs/RETRIEVAL.md#31][docs/RETRIEVAL.md#29]。\n\n具体打分公式（如何由 token/字符 n-gram 特征得到分数）证据未说明，无法进一步回答。",
+    "latency_s": 4.11
+  },
+  {
+    "id": "q03",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 1,
+    "answer": "不是。内置 semantic 模式是确定性的 semantic-lite 排序，并非 embedding 模型或向量数据库 [kb/claims/src_63bb2f482779.jsonl]。它的打分基于 token 和字符 n-gram 特征进行确定性排序，且无外部依赖 [kb/claims/src_63bb2f482779.jsonl]。",
+    "latency_s": 3.44
+  },
+  {
+    "id": "q03",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 1,
+    "answer": "不是。内置 `semantic` 模式是 deterministic semantic-lite ranking，不是 embedding 模型或向量数据库 [kb/claims/src_63bb2f482779.jsonl]。\n\n它基于 token 和 character-ngram 特征做确定性语义轻量排序，且无外部依赖 [kb/claims/src_63bb2f482779.jsonl]。证据只说明到这一层，未给出具体打分公式；`hybrid` 配置中 `semantic: 0.2` 是混合合并权重，不是 `semantic` 单独算分公式 [kb/claims/src_63bb2f482779.jsonl]。因此无法说明其精确算分细节。",
+    "latency_s": 5.18
+  },
+  {
+    "id": "q03",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 1,
+    "answer": "不是。内置 semantic 模式是确定性的 semantic-lite 排序，不使用 embedding 模型或向量数据库 [kb/claims/src_63bb2f482779.jsonl]。它的评分基于 token 和字符 n-gram 特征 [kb/claims/src_63bb2f482779.jsonl]，且无外部依赖、无需凭证 [kb/claims/src_63bb2f482779.jsonl]。",
+    "latency_s": 4.24
+  },
+  {
+    "id": "q03",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 1,
+    "answer": "不是。内置 semantic 模式是确定性的 semantic-lite 排序，不使用 embedding 模型或向量数据库。[kb/claims/src_63bb2f482779.jsonl#1]\n\n它基于 token 和字符 n-gram 特征计算排序分数，且无外部依赖。[kb/claims/src_63bb2f482779.jsonl#4]\n\n具体打分公式未在证据中给出，无法进一步说明。",
+    "latency_s": 4.22
+  },
+  {
+    "id": "q03",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 1,
+    "answer": "semantic 模式不使用 embedding 模型或向量数据库，而是确定性的 semantic-lite 排序 [kb/claims/src_63bb2f482779.jsonl]。它基于 token 与 character-ngram 特征进行排序，且无外部依赖 [kb/claims/src_63bb2f482779.jsonl]。它在 hybrid 中可与 keyword、bm25 合并计分，例如 semantic 权重为 0.2 [kb/claims/src_63bb2f482779.jsonl]。\n\n具体评分公式：证据未提供，无法回答。",
+    "latency_s": 3.51
+  },
+  {
+    "id": "q04",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 1,
+    "answer": "`retrieval_vs_playbook_delta` 当前计算结果为 **4/5 = 0.80** [docs/METRICS.md#14]。\n\n公式为：`playbook_capability_coverage - retrieval_only_capability_coverage` [docs/METRICS.md#14]，即 `5/5 - 1/5 = 4/5 = 0.80` [docs/METRICS.md#16]。",
+    "latency_s": 3.64
+  },
+  {
+    "id": "q04",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 1,
+    "answer": "当前计算结果为 **0.80（4/5）**，计算展开为 `5/5 - 1/5 = 4/5 = 0.80` [docs/METRICS.md#16]。\n\n公式为：`playbook_capability_coverage - retrieval_only_capability_coverage` [docs/METRICS.md#14]。",
+    "latency_s": 3.17
+  },
+  {
+    "id": "q04",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 1,
+    "answer": "当前计算结果为 **0.80（4/5）** [docs/METRICS.md#14]。公式为 `playbook_capability_coverage - retrieval_only_capability_coverage`，即 `5/5 - 1/5 = 4/5 = 0.80` [docs/METRICS.md#14][docs/METRICS.md#16]。",
+    "latency_s": 3.54
+  },
+  {
+    "id": "q04",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 1,
+    "answer": "当前结果为 **0.80（4/5）**，公式是 `playbook_capability_coverage - retrieval_only_capability_coverage` [docs/METRICS.md#14]。计算展开为 `5/5 - 1/5 = 4/5 = 0.80` [docs/METRICS.md#16]。",
+    "latency_s": 3.25
+  },
+  {
+    "id": "q04",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 2,
+    "answer": "当前计算结果为 `0.80`（即 `4/5`）[docs/METRICS.md#14][docs/METRICS.md#16]。\n\n公式为：`playbook_capability_coverage - retrieval_only_capability_coverage` [docs/METRICS.md#14]，计算示例：`5/5 - 1/5 = 4/5 = 0.80` [docs/METRICS.md#16]。",
+    "latency_s": 3.07
+  },
+  {
+    "id": "q04",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 2,
+    "answer": "`retrieval_vs_playbook_delta` 当前计算结果为 `4/5 = 0.80`，公式为 `playbook_capability_coverage - retrieval_only_capability_coverage` [kb/claims/src_cb4a544a91ae.jsonl]。",
+    "latency_s": 2.71
+  },
+  {
+    "id": "q04",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 1,
+    "answer": "公式：`playbook_capability_coverage - retrieval_only_capability_coverage`；当前 seed 输出为 `4/5 = 0.80` [kb/claims/src_cb4a544a91ae.jsonl]。该指标衡量对指定清单的 seed 级能力覆盖，不代表模型准确率或检索质量 [kb/claims/src_cb4a544a91ae.jsonl]。",
+    "latency_s": 3.1
+  },
+  {
+    "id": "q04",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 1,
+    "answer": "当前计算结果为 `4/5 = 0.80`；公式为 `playbook_capability_coverage - retrieval_only_capability_coverage` [kb/claims/src_cb4a544a91ae.jsonl]。该指标衡量的是针对指定清单的种子级能力覆盖率，而非模型准确率或检索质量 [kb/claims/src_cb4a544a91ae.jsonl]。",
+    "latency_s": 3.18
+  },
+  {
+    "id": "q04",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 1,
+    "answer": "当前计算结果为 `4/5 = 0.80`，公式为 `playbook_capability_coverage - retrieval_only_capability_coverage` [kb/claims/src_cb4a544a91ae.jsonl]。",
+    "latency_s": 2.9
+  },
+  {
+    "id": "q04",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 1,
+    "answer": "当前计算结果为 `4/5 = 0.80`；公式为 `playbook_capability_coverage - retrieval_only_capability_coverage` [kb/claims/src_cb4a544a91ae.jsonl]。",
+    "latency_s": 4.27
+  },
+  {
+    "id": "q05",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 2,
+    "answer": "每个 `StepTrace` 包含：`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results` [docs/RUNTIME_TRACE.md#39]。",
+    "latency_s": 3.0
+  },
+  {
+    "id": "q05",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 2,
+    "answer": "每个 `StepTrace` 包含以下字段：\n\n`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results` [docs/RUNTIME_TRACE.md#39]",
+    "latency_s": 2.85
+  },
+  {
+    "id": "q05",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 2,
+    "answer": "每个 `StepTrace` 包含以下字段：`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results`。[docs/RUNTIME_TRACE.md#39]",
+    "latency_s": 2.53
+  },
+  {
+    "id": "q05",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 2,
+    "answer": "每个 `StepTrace` 包含以下字段：`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results` [docs/RUNTIME_TRACE.md#38]。",
+    "latency_s": 2.19
+  },
+  {
+    "id": "q05",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 2,
+    "answer": "每个 `StepTrace` 包含字段：`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results` [docs/RUNTIME_TRACE.md#39]。",
+    "latency_s": 2.94
+  },
+  {
+    "id": "q05",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 1,
+    "answer": "每个 `StepTrace` 包含以下字段 [kb/claims/src_5a9306a8ee6d.jsonl]：\n\n`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results`。\n\n其中 `gate_results` 是该步骤执行期间触发的 gate 策略结果列表 [kb/claims/src_5a9306a8ee6d.jsonl]。",
+    "latency_s": 4.28
+  },
+  {
+    "id": "q05",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 1,
+    "answer": "每个 `StepTrace` 包含：`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results` [kb/claims/src_5a9306a8ee6d.jsonl]。其中 `gate_results` 是该步骤期间触发的 gate 策略结果列表 [kb/claims/src_5a9306a8ee6d.jsonl]。",
+    "latency_s": 4.37
+  },
+  {
+    "id": "q05",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 1,
+    "answer": "每个 `StepTrace` 包含字段：`step_index, procedure, input_hash, output_hash, started_at, finished_at, duration_ms, success, error, retrieved_knowledge_ids, evidence_ids, gate_results` [kb/claims/src_5a9306a8ee6d.jsonl]。其中 `gate_results` 是该步骤期间触发的 gate 策略结果列表 [kb/claims/src_5a9306a8ee6d.jsonl]。",
+    "latency_s": 4.27
+  },
+  {
+    "id": "q05",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 1,
+    "answer": "每个 `StepTrace` 包含字段：`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results`；其中 `gate_results` 是该步骤期间触发的 gate 策略结果列表 [kb/claims/src_5a9306a8ee6d.jsonl]。",
+    "latency_s": 4.02
+  },
+  {
+    "id": "q05",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 1,
+    "answer": "每个 `StepTrace` 包含以下字段：`step_index`、`procedure`、`input_hash`、`output_hash`、`started_at`、`finished_at`、`duration_ms`、`success`、`error`、`retrieved_knowledge_ids`、`evidence_ids`、`gate_results`。其中 `gate_results` 是该步骤执行期间触发的 gate 策略结果列表 [kb/claims/src_5a9306a8ee6d.jsonl]。",
+    "latency_s": 3.63
+  },
+  {
+    "id": "q06",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 0,
+    "answer": "",
+    "latency_s": 5.74
+  },
+  {
+    "id": "q06",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 1,
+    "answer": "证据中的 Gates 表列出五个 gate，其中四个为阻断型：`proposal_has_impact_summary`、`proposal_has_rollback_plan`、`claim_has_evidence_quote`、`claim_evidence_quote_matches_chunk` [docs/PROPOSAL_REVIEW.md#22]。只产生 warning 的是 `proposal_impacted_evals_declared`，在",
+    "latency_s": 5.82
+  },
+  {
+    "id": "q06",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 1,
+    "answer": "无法回答：证据中的 Gates 表共有 5 个 gate，未说明“与 proposal 相关的四个 gate”具体指哪四个子集 [docs/PROPOSAL_REVIEW.md#22]。可确定的是，只产生 warning 的是 `proposal_impacted_evals_declared` [docs/PROPOSAL_REVIEW.md#22]。",
+    "latency_s": 5.55
+  },
+  {
+    "id": "q06",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 1,
+    "answer": "四个阻断型 gate 是：`proposal_has_impact_summary`、`proposal_has_rollback_plan`、`claim_has_evidence_quote`、`claim_evidence_quote_matches_chunk` [docs/PROPOSAL_REVIEW.md#22]。\n\n只产生 warning 的是 `proposal_impacted_evals_declared`：未声明 impacted evals 时发出 v0.3 warning [docs/PROPOSAL_REVIEW.md#22]。",
+    "latency_s": 6.23
+  },
+  {
+    "id": "q06",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 1,
+    "answer": "无法回答：证据中没有“与 proposal 相关的四个 gate”这一分组或筛选标准。[docs/PROPOSAL_REVIEW.md#22] 实际列出了五个 gate：`proposal_has_impact_summary`、`proposal_has_rollback_plan`、`claim_has_evidence_quote`、`claim_evidence_quote_matches_chunk`、`proposal_impacted_evals_declared`；其中仅 `proposal_impacted_evals_declared` 会发出 v0.3 warning。[docs/PROPOSAL_REVIEW.md#22] 缺少的是“四个”具体指哪四个的依据。",
+    "latency_s": 5.88
+  },
+  {
+    "id": "q06",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 1,
+    "answer": "无法完整回答：证据只列出两个与 proposal 相关的 gate，缺少另外两个 gate 的名称与行为。\n\n已知：\n- `proposal_has_impact_summary`：阻止缺少 impact metadata 或 impacted assets 的 proposal [kb/claims/src_d38ac5082166.jsonl]\n- `proposal_impacted_evals_declared`：当未声明 impacted evals 时发出 v0.3 warning [kb/claims/src_d38ac5082166.jsonl]\n\n因此，只产生 warning 的是 `proposal_impacted_evals_declared` [kb/claims/src_d38ac5082166.jsonl]。要回答“四个 gate”，还需补充其余两个 gate 的证据。",
+    "latency_s": 3.73
+  },
+  {
+    "id": "q06",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 1,
+    "answer": "无法回答：证据只显示了两个 proposal 相关 gate：`proposal_has_impact_summary`（阻止缺少影响元数据或受影响资产的 proposal）和 `proposal_impacted_evals_declared`（未声明受影响 eval 时发出 v0.3 warning）[kb/claims/src_d38ac5082166.jsonl]。缺少另外两个 gate 的名称及其行为说明，因此无法完整列出四个 gate；仅能确认只产生 warning 的是 `proposal_impacted_evals_declared` [kb/claims/src_d38ac5082166.jsonl]。",
+    "latency_s": 4.17
+  },
+  {
+    "id": "q06",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 1,
+    "answer": "无法回答：证据只列出两个 proposal 相关 gate——`proposal_has_impact_summary` 会阻止缺少影响元数据或受影响资产的 proposal [kb/claims/src_d38ac5082166.jsonl]，以及 `proposal_impacted_evals_declared` 在未声明受影响 evals 时发出 v0.3 warning [kb/claims/src_d38ac5082166.jsonl]；缺少另外两个 gate 的名称。仅能确定 `proposal_impacted_evals_declared` 只产生 warning。",
+    "latency_s": 3.97
+  },
+  {
+    "id": "q06",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 1,
+    "answer": "无法回答：证据仅列出两个 proposal 相关 gate：`proposal_has_impact_summary`（阻断）和 `proposal_impacted_evals_declared`（产生 v0.3 warning）[kb/claims/src_d38ac5082166.jsonl]，缺少另外两个 gate 的名称及行为，无法完整回答“四个 gate”分别是什么。",
+    "latency_s": 4.5
+  },
+  {
+    "id": "q06",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 1,
+    "answer": "无法回答。证据中只出现两个与 proposal 相关的 gate：`proposal_has_impact_summary`（阻断缺少 impact 元数据的 proposal）和 `proposal_impacted_evals_declared`（未声明受影响 eval 时产生 v0.3 warning，即只产生 warning 的那个）[kb/claims/src_d38ac5082166.jsonl]。缺少另外两个 gate 的名称与行为说明，也没有证据表明 proposal 相关 gate 共为四个。",
+    "latency_s": 4.9
+  },
+  {
+    "id": "q07",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 0,
+    "answer": "无法回答。证据中没有提供 EvolveKB 的源码包版本号或许可证信息，缺少发布元数据或项目清单（如版本号、LICENSE 说明）相关内容。",
+    "latency_s": 1.82
+  },
+  {
+    "id": "q07",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 0,
+    "answer": "无法回答。证据中没有提供 EvolveKB 的源码包版本号或许可证信息，缺少发布元数据（如版本字段、许可证声明）。",
+    "latency_s": 3.41
+  },
+  {
+    "id": "q07",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 1,
+    "answer": "无法回答。证据未提供源码包版本号或许可证信息，缺少 `pyproject.toml`/`setup.py` 及 `LICENSE` 等包元数据证据。",
+    "latency_s": 3.01
+  },
+  {
+    "id": "q07",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 0,
+    "answer": "无法回答。现有证据未包含 EvolveKB 的源码包版本号或许可证信息；缺少发布元数据（如打包配置、发布说明或许可证文件）相关内容。",
+    "latency_s": 2.56
+  },
+  {
+    "id": "q07",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 1,
+    "answer": "无法回答。现有证据未包含 EvolveKB 的源码包版本号或许可证信息；[docs/maintenance.md#88] 仅说明维护状态，[docs/RETRIEVAL.md#34]、[docs/METRICS.md#13] 和 [docs/SKILL_TEMPLATE.md#52] 也未提及版本或许可证。需要补充发布元数据（如包配置文件或发布说明）才能回答。",
+    "latency_s": 3.27
+  },
+  {
+    "id": "q07",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 0,
+    "answer": "无法回答。现有证据未包含 EvolveKB 的源码包版本或许可证信息，缺少对应的版本声明和许可证声明。",
+    "latency_s": 1.63
+  },
+  {
+    "id": "q07",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 0,
+    "answer": "无法回答。证据中没有提供 EvolveKB 源码包的版本号或许可证信息；现有内容仅涉及 CLI 用法、检索证据包和 RunTrace 等，缺少回答该问题所需的版本与许可证字段。",
+    "latency_s": 2.47
+  },
+  {
+    "id": "q07",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 0,
+    "answer": "无法回答。现有证据未包含 EvolveKB 的源码包版本号或许可证信息，因此无法确定这两项内容。",
+    "latency_s": 2.43
+  },
+  {
+    "id": "q07",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 0,
+    "answer": "无法回答。证据中没有提供 EvolveKB 的源码包版本或许可证信息，缺少版本号与许可证声明。",
+    "latency_s": 1.74
+  },
+  {
+    "id": "q07",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 0,
+    "answer": "无法回答。证据未提供 EvolveKB 的源码包版本或许可证信息，缺少对应的版本元数据与许可证声明（如项目打包配置、LICENSE 文件或发布说明）。",
+    "latency_s": 1.96
+  },
+  {
+    "id": "q08",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 1,
+    "answer": "最核心的区别是：Karpathy 的模式是 **wiki-first**，以页面、wikilink、索引、日志和人工浏览为中心接口；EvolveKB 是 **runtime-first**，以知识块、usage 资产、skills、设置、门控和提案为中心接口 [docs/karpathy-llm-wiki-comparison.md#75]。\n\n进一步说，两者都反对仅查询时 RAG，但 EvolveKB 把编译产物拆成 `knowledge`、`usage`、`skills`，并将演化作为**受门控的运行时关注点**，而不是自由形式的 wiki 编辑循环；模型只提议更新，规范变更由门控和审查控制 [docs/karpathy-llm-wiki-comparison.md#74][docs/karpathy-llm-wiki-comparison.md#75]。",
+    "latency_s": 4.68
+  },
+  {
+    "id": "q08",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 1,
+    "answer": "两者共享同一立场：都反对仅在查询时做 RAG，主张知识应先编译维护、再复用 [docs/karpathy-llm-wiki-comparison.md#74]。\n\n最核心的区别在于编译产物的组织方式与演进机制：\n\n- EvolveKB 把编译产物拆分为 `knowledge`、`usage`、`skills` 三部分，并将「演进」视为受门禁（gated）约束的运行时关注点，而非自由式的 wiki 编辑循环 [docs/karpathy-llm-wiki-comparison.md#74]。\n- Karpathy 的模式是 wiki 优先：以页面、wikilink、index、log 和人工浏览为核心界面，由 LLM 直接拥有 wiki 层；EvolveKB 则是运行时优先，以知识块、usage 资产、skills、settings、门禁与提案为核心界面，模型只提出更新建议，规范变更由门禁与评审控制 [docs/karpathy-llm-wiki-comparison.md#75]。\n\n补充一点：外部对比也指出该模式「无门禁、无回滚协议」，因此「不是 RAG」已不再构成差异点，只能作为共同基础来引用 [docs/code-review-2026-11-27.md#64]。",
+    "latency_s": 5.31
+  },
+  {
+    "id": "q08",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 1,
+    "answer": "最核心的区别在于：EvolveKB 把编译产物明确拆分为 `knowledge`、`usage`、`skills` 三类，并把演化（evolution）当作受门禁控制的运行时事项，而不是开放的 wiki 自由编辑循环 [docs/karpathy-llm-wiki-comparison.md#74]。\n\n进一步说，Karpathy 的模式是 wiki-first（页面、wikilink、索引、日志、人类浏览为核心界面），EvolveKB 是 runtime-first（知识块、usage 资产、skills、设置、门禁、提案为核心界面）[docs/karpathy-llm-wiki-comparison.md#75]。在更新机制上，EvolveKB 让模型提出更新，由门禁与评审控制正式变更，而非让 LLM 直接拥有 wiki 层 [docs/karpathy-llm-wiki-comparison.md#75]。",
+    "latency_s": 3.97
+  },
+  {
+    "id": "q08",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 1,
+    "answer": "最核心的区别在于：EvolveKB 把编译产物拆分为 `knowledge`、`usage`、`skills` 三类，并把“演化”视为受门控的运行时关注点，而不是 Karpathy 模式中自由形式的 wiki 编辑循环 [docs/karpathy-llm-wiki-comparison.md#74]。\n\n两者的共同点是都反对仅在查询时使用 RAG，主张知识应先编译维护、再复用 [docs/karpathy-llm-wiki-comparison.md#74]。进一步说，Karpathy 的模式以 wiki 页面、wikilink、index/log 和人工浏览为中心，并允许 LLM 直接拥有 wiki 层；EvolveKB 则以运行时资产和门控为中心，由模型提出更新、门控与评审控制规范变更 [docs/karpathy-llm-wiki-comparison.md#75]。",
+    "latency_s": 5.72
+  },
+  {
+    "id": "q08",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 1,
+    "answer": "最核心的区别是：EvolveKB 把编译产物拆分为 `knowledge`、`usage`、`skills`，并把“演化”当作受门控（gated）约束的运行时问题，而不是自由的 wiki 编辑循环 [docs/karpathy-llm-wiki-comparison.md#74]。对应到交互层面，Karpathy 模式是 wiki-first（页面、wikilink、index、log 和人工浏览是核心界面），EvolveKB 是 runtime-first（知识块、usage 资产、skills、settings、gates 和 proposals 是核心界面），且由模型提议更新、门控与评审控制权威变更 [docs/karpathy-llm-wiki-comparison.md#75]。",
+    "latency_s": 5.57
+  },
+  {
+    "id": "q08",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 1,
+    "answer": "核心区别在于控制权与产物结构：Karpathy 模式让 LLM 直接拥有 wiki 层，而 EvolveKB 只让模型提出更新建议，由门控和评审控制规范内容的变更 [kb/claims/src_9eb8394fb61a.jsonl]。此外，EvolveKB 将编译产物拆分为 `knowledge`、`usage`、`skills`，并把演进视为受门控的运行时事项，而非自由形式的 wiki 编辑循环 [kb/claims/src_9eb8394fb61a.jsonl]。",
+    "latency_s": 3.88
+  },
+  {
+    "id": "q08",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 1,
+    "answer": "最核心区别在于：Karpathy 的模式让 LLM 直接拥有并编辑 wiki 层；EvolveKB 则只让模型**提议**更新，由门控与评审控制规范化变更 [kb/claims/src_9eb8394fb61a.jsonl]。此外，EvolveKB 把编译产物拆分为 `knowledge`、`usage` 和 `skills`，并将演进视为受门控的运行时事项，而非自由的 wiki 编辑循环 [kb/claims/src_9eb8394fb61a.jsonl]。",
+    "latency_s": 4.72
+  },
+  {
+    "id": "q08",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 1,
+    "answer": "最核心的区别在于控制权与演化机制：Karpathy 的模式让 LLM 直接拥有并维护 wiki 层；EvolveKB 则只让模型“提议”更新，由门控与评审控制规范内容的实际变更 [kb/claims/src_9eb8394fb61a.jsonl]。此外，EvolveKB 把编译产物拆分为 `knowledge`、`usage`、`skills`，并将演化视为受门控的运行时事项，而非自由的 wiki 编辑循环 [kb/claims/src_9eb8394fb61a.jsonl]。",
+    "latency_s": 4.81
+  },
+  {
+    "id": "q08",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 1,
+    "answer": "最核心区别在于：Karpathy 模式让 LLM 直接拥有并自由编辑 wiki 层；EvolveKB 只让模型提出更新，由 gates 和 review 控制规范化变更 [kb/claims/src_9eb8394fb61a.jsonl]。此外，EvolveKB 将编译产物分为 `knowledge`、`usage`、`skills`，并把演化作为受门控的运行时事项，而非自由形式的 wiki 编辑循环 [kb/claims/src_9eb8394fb61a.jsonl]。",
+    "latency_s": 5.28
+  },
+  {
+    "id": "q08",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 1,
+    "answer": "最核心的区别在于对“谁控制知识库正式变更”的界定：Karpathy 的模式让 LLM 直接拥有 wiki 层；EvolveKB 则只让模型“提议更新”，正式的 canonical mutation 要经过门控与评审 [kb/claims/src_9eb8394fb61a.jsonl]。\n\n此外，EvolveKB 将编译产物拆分为 `knowledge`、`usage` 和 `skills`，并把演化视为受门控的运行时事项，而不是自由形式的 wiki 编辑循环 [kb/claims/src_9eb8394fb61a.jsonl]。Karpathy 模式则是由 LLM 维护 Markdown wiki、原始来源保持不变，并用 schema 文件指导摄取、查询、lint、索引和更新日志 [kb/claims/src_9eb8394fb61a.jsonl]。",
+    "latency_s": 5.5
+  },
+  {
+    "id": "q09",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 1,
+    "answer": "用 `register_retriever` 装饰器注册一个符合 `Retriever` 协议的类（实例属性 `name` + 返回 `EvidencePack` 的 `retrieve(...)` 方法）[docs/RETRIEVAL.md#33]。\n\n两种方式：\n1. 在类上使用 `@register_retriever(\"my-mode\")` 装饰器 [docs/RETRIEVAL.md#33]。\n2. 运行时调用 `register_retriever_class(\"my-mode\", MyRetriever)`（例如从 `pyproject.toml` 的入口点调用）[docs/RETRIEVAL.md#33]。",
+    "latency_s": 5.53
+  },
+  {
+    "id": "q09",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 2,
+    "answer": "注册新 retriever 模式需使用符合 `Retriever` 协议的类：包含 `name` 实例属性和返回 `EvidencePack` 的 `retrieve(...)` 方法 [docs/RETRIEVAL.md#33]。\n\n两种方式：\n1. 用 `@register_retriever(\"my-mode\")` 装饰该类 [docs/RETRIEVAL.md#33]。\n2. 运行时调用 `register_retriever_class(\"my-mode\", MyRetriever)`，例如从 `pyproject.toml` 入口点注册 [docs/RETRIEVAL.md#33]。",
+    "latency_s": 3.65
+  },
+  {
+    "id": "q09",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 1,
+    "answer": "注册新的 retriever 模式需让类符合 `Retriever` 协议：包含实例属性 `name` 和返回 `EvidencePack` 的 `retrieve(...)` 方法 [docs/RETRIEVAL.md#33]。两种方式：\n\n1. **装饰器方式**：用 `@register_retriever(\"my-mode\")` 装饰该 retriever 类 [docs/RETRIEVAL.md#33]。\n2. **运行时注册**：调用 `register_retriever_class(\"my-mode\", MyRetriever)`，例如从 `pyproject.toml` 的 entry point 中执行 [docs/RETRIEVAL.md#33]。\n\n注册后即可在所有期望 retriever 名称的地方使用该模式 [docs/RETRIEVAL.md#37]。",
+    "latency_s": 3.55
+  },
+  {
+    "id": "q09",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 2,
+    "answer": "使用遵循 `Retriever` 协议的类（具有实例属性 `name` 和返回 `EvidencePack` 的 `retrieve(...)` 方法）注册新模式，有两种方式 [docs/RETRIEVAL.md#33]：\n\n1. 用 `register_retriever` 装饰器装饰该类，如 `@register_retriever(\"my-mode\")` [docs/RETRIEVAL.md#33]。\n2. 在运行时调用 `register_retriever_class(\"my-mode\", MyRetriever)`（例如从 `pyproject.toml` entry point 中）[docs/RETRIEVAL.md#33]。",
+    "latency_s": 3.5
+  },
+  {
+    "id": "q09",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 1,
+    "answer": "两种方式（[docs/RETRIEVAL.md#33]）：\n\n1. **装饰器**：在符合 `Retriever` 协议的类上使用 `@register_retriever(\"my-mode\")`。该类需有 `name` 实例属性和返回 `EvidencePack` 的 `retrieve(...)` 方法。\n2. **运行时注册**：调用 `register_retriever_class(\"my-mode\", MyRetriever)`，例如从 `pyproject.toml` entry point 中调用。\n\n注册后即可在需要 retriever 名称的地方使用（如 CLI `--retriever my-mode`）[docs/RETRIEVAL.md#37]。",
+    "latency_s": 3.65
+  },
+  {
+    "id": "q09",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 0,
+    "answer": "无法回答。证据中没有说明如何注册新的 retriever 模式，也没有提到两种注册方式。[kb/claims/src_63bb2f482779.jsonl] 仅展示了 retrieval eval 中指定 `retriever: bm25` 的示例，[kb/knowledge/retrieval.md] 只说明检索作为证据供给的定位。缺少 retriever 模式注册流程或配置机制的相关内容。",
+    "latency_s": 3.01
+  },
+  {
+    "id": "q09",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 0,
+    "answer": "无法回答。证据只说明检索评测可以通过 `retriever: bm25` 字段选择模式 [kb/claims/src_63bb2f482779.jsonl]，以及检索在 EvolveKB 中作为证据供给的定位 [kb/knowledge/retrieval.md]，但没有说明「如何注册新的 retriever 模式」及其两种方式。缺少 retriever 注册流程/接口相关的文档内容。",
+    "latency_s": 3.08
+  },
+  {
+    "id": "q09",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 1,
+    "answer": "无法回答。证据中只提到检索评估可通过 `retriever: bm25` 选择模式，未说明如何注册新的 retriever 模式，也没有列出两种注册方式；缺少相关文档或操作说明。",
+    "latency_s": 3.23
+  },
+  {
+    "id": "q09",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 1,
+    "answer": "无法回答。现有证据只说明了检索评估可以指定 `retriever: bm25` 这一模式 [kb/claims/src_63bb2f482779.jsonl]，以及 EvolveKB 将检索视为证据供给的总体描述 [kb/knowledge/retrieval.md]；没有提供“注册新的 retriever 模式”的步骤，也没有说明两种注册方式。",
+    "latency_s": 3.39
+  },
+  {
+    "id": "q09",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 0,
+    "answer": "无法回答。现有证据只说明 retrieval eval 可通过 `retriever: bm25` 选择模式 [kb/claims/src_63bb2f482779.jsonl]，以及 EvolveKB 将检索视为证据供给 [kb/knowledge/retrieval.md]，但没有说明如何注册新的 retriever 模式，也未提及两种注册方式。缺少 retriever 注册机制及相关配置/接口的文档。",
+    "latency_s": 2.98
+  },
+  {
+    "id": "q10",
+    "system": "bm25_rag",
+    "sample": 0,
+    "score": 2,
+    "answer": "无法回答。证据只涉及检索模式、指标与质量检查命令，没有任何关于 EvolveKB 订阅或定价的信息，缺少价格文档或订阅条款。",
+    "latency_s": 2.04
+  },
+  {
+    "id": "q10",
+    "system": "bm25_rag",
+    "sample": 1,
+    "score": 1,
+    "answer": "无法回答：证据中没有任何关于 EvolveKB 订阅或价格的内容（仅涉及检索模式、指标与技能校验等文档）[docs/RETRIEVAL.md#34][docs/METRICS.md#13]，缺少定价/套餐相关的证据。",
+    "latency_s": 3.64
+  },
+  {
+    "id": "q10",
+    "system": "bm25_rag",
+    "sample": 2,
+    "score": 2,
+    "answer": "无法回答：证据中没有关于 EvolveKB 订阅或定价的任何信息，缺少价格相关文档。",
+    "latency_s": 2.28
+  },
+  {
+    "id": "q10",
+    "system": "bm25_rag",
+    "sample": 3,
+    "score": 1,
+    "answer": "无法回答：证据仅包含检索模式、指标和技能模板等技术文档，未提供任何定价或订阅信息。",
+    "latency_s": 4.93
+  },
+  {
+    "id": "q10",
+    "system": "bm25_rag",
+    "sample": 4,
+    "score": 1,
+    "answer": "无法回答。现有证据只涉及检索模式、指标计算和质量检查命令，未包含任何订阅或价格信息，缺少 EvolveKB 定价相关的证据。",
+    "latency_s": 4.35
+  },
+  {
+    "id": "q10",
+    "system": "kb_evidence",
+    "sample": 0,
+    "score": 2,
+    "answer": "无法回答。证据中没有提供 EvolveKB 的订阅或价格信息，缺少涉及定价、套餐或计费的相关内容。",
+    "latency_s": 1.46
+  },
+  {
+    "id": "q10",
+    "system": "kb_evidence",
+    "sample": 1,
+    "score": 2,
+    "answer": "无法回答。证据中未包含 EvolveKB 的定价或订阅信息，缺少月度订阅价格相关事实。",
+    "latency_s": 1.85
+  },
+  {
+    "id": "q10",
+    "system": "kb_evidence",
+    "sample": 2,
+    "score": 2,
+    "answer": "无法回答。现有证据仅涉及 EvolveKB 的检索、运行追踪和 CLI 用法，未包含任何订阅定价或月度价格信息 [kb/claims/src_cb4a544a91ae.jsonl][kb/claims/src_63bb2f482779.jsonl][kb/claims/src_5a9306a8ee6d.jsonl]。缺少官方定价页面或订阅计划相关证据。",
+    "latency_s": 2.92
+  },
+  {
+    "id": "q10",
+    "system": "kb_evidence",
+    "sample": 3,
+    "score": 1,
+    "answer": "无法回答。证据中没有提到 EvolveKB 的月度订阅价格或任何定价信息；现有内容只涉及 CLI 命令、检索证据包、RunTrace 记录等，缺少价格相关证据。",
+    "latency_s": 3.78
+  },
+  {
+    "id": "q10",
+    "system": "kb_evidence",
+    "sample": 4,
+    "score": 2,
+    "answer": "无法回答。证据中没有关于 EvolveKB 订阅价格或任何商业定价的信息，缺少价格表、订阅方案或计费说明等内容。",
+    "latency_s": 2.18
+  }
+]

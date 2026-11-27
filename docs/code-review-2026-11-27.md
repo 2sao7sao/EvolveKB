@@ -151,6 +151,21 @@ benchmark.
 The order matters: F1 and F2 must be fixed before any new number is published,
 otherwise the project repeats the mistake this review is criticising.
 
+## 7. Update — metric integrity and reliability (2026-11-27)
+
+Issue #19 is fixed in [PR #21](https://github.com/2sao7sao/EvolveKB/pull/21).
+
+- `claim_grounding_rate` now requires the quote to appear in its source chunk, so a fabricated quote lowers it.
+- `retrieval_vs_playbook_delta` now runs both arms, turns each into an artefact, and scores both with the same checker. The demo delta moves from a definitional **0.80** to a measured **0.60** (retrieval arm 2/5, playbook 5/5), and a degraded playbook lowers it further (test enforced).
+
+Reliability over repeated samples (`experiments/reliability/`): 10 questions, **5 samples each** at temperature 0.8, pass means judge score 2.
+
+| System | pass@1 | pass@5 | pass^5 | mean score |
+| --- | --- | --- | --- | --- |
+| Independent BM25 RAG | **0.28** | **0.50** | **0.10** | **1.20** |
+| EvolveKB with ingested KB | 0.16 | 0.30 | **0.00** | 0.96 |
+
+Reading: the KB's occasional correct answer is not a stable capability. It never answers any question correctly in all five samples, while with more attempts BM25 reaches 0.50 — the gap widens with k, which is what you expect when the bottleneck is evidence quality rather than sampling noise. That points back to F3 (retrieval indexes summaries, not bodies) and to issue #20.
 ## 6. Reproduction
 
 ```bash
